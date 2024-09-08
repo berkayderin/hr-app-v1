@@ -9,7 +9,6 @@ import { Eye, EyeOff } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import {
 	Card,
 	CardContent,
@@ -26,7 +25,6 @@ import {
 	FormLabel,
 	FormMessage
 } from '@/components/ui/form'
-import axios from 'axios'
 import { useToast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
 import { signIn } from 'next-auth/react'
@@ -55,7 +53,7 @@ export default function LoginPage() {
 	})
 
 	const onSubmit = async (data) => {
-		console.log('login data:', data)
+		console.log('LOGIN DATA:', data)
 		try {
 			const login = await signIn('credentials', {
 				email: data.email,
@@ -69,7 +67,6 @@ export default function LoginPage() {
 					variant: 'success'
 				})
 
-				// window.location.assign('/') yerine router.push kullanın
 				router.push('/')
 			} else if (login?.error) {
 				toast.error(login.error)
@@ -109,7 +106,7 @@ export default function LoginPage() {
 												{...field}
 											/>
 										</FormControl>
-										<FormMessage />
+										<FormMessage className="text-xs" />
 									</FormItem>
 								)}
 							/>
@@ -141,7 +138,7 @@ export default function LoginPage() {
 												</button>
 											</div>
 										</FormControl>
-										<FormMessage />
+										<FormMessage className="text-xs" />
 									</FormItem>
 								)}
 							/>
@@ -154,9 +151,10 @@ export default function LoginPage() {
 				<CardFooter className="flex justify-center">
 					<Link
 						href="/register"
-						className="text-sm text-blue-600 hover:underline"
+						className="text-sm text-black hover:underline"
 					>
-						Hesabınız yok mu? Kayıt olun
+						Hesabınız yok mu?{' '}
+						<span className="font-semibold"> Kayıt olun </span>
 					</Link>
 				</CardFooter>
 			</Card>

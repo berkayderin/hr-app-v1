@@ -101,7 +101,7 @@ export default function RegisterPage() {
 												{...field}
 											/>
 										</FormControl>
-										<FormMessage />
+										<FormMessage className="text-xs" />
 									</FormItem>
 								)}
 							/>
@@ -133,7 +133,7 @@ export default function RegisterPage() {
 												</button>
 											</div>
 										</FormControl>
-										<FormMessage />
+										<FormMessage className="text-xs" />
 									</FormItem>
 								)}
 							/>
@@ -146,9 +146,10 @@ export default function RegisterPage() {
 				<CardFooter className="flex justify-center">
 					<Link
 						href="/login"
-						className="text-sm text-blue-600 hover:underline"
+						className="text-sm text-black hover:underline"
 					>
-						Zaten hesabınız var mı? Giriş yapın
+						Zaten hesabınız var mı?{' '}
+						<span className="font-semibold"> Giriş Yapın </span>
 					</Link>
 				</CardFooter>
 			</Card>
