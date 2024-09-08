@@ -26,6 +26,10 @@ import {
 	FormLabel,
 	FormMessage
 } from '@/components/ui/form'
+import axios from 'axios'
+import { useToast } from '@/hooks/use-toast'
+import { useRouter } from 'next/navigation'
+import { signIn } from 'next-auth/react'
 
 const loginSchema = z.object({
 	email: z
@@ -39,6 +43,9 @@ const loginSchema = z.object({
 export default function LoginPage() {
 	const [showPassword, setShowPassword] = useState(false)
 
+	const { toast } = useToast()
+	const router = useRouter()
+
 	const form = useForm({
 		resolver: zodResolver(loginSchema),
 		defaultValues: {
@@ -47,9 +54,34 @@ export default function LoginPage() {
 		}
 	})
 
-	const onSubmit = (data) => {
-		console.log('Giriş verileri:', data)
-		// Burada normalde kimlik doğrulama API'nize bir istek yapardınız
+	const onSubmit = async (data) => {
+		console.log('login data:', data)
+		try {
+			const login = await signIn('credentials', {
+				email: data.email,
+				password: data.password,
+				redirect: false
+			})
+
+			if (login?.ok) {
+				toast({
+					title: 'Başarılı',
+					variant: 'success'
+				})
+
+				// window.location.assign('/') yerine router.push kullanın
+				router.push('/')
+			} else if (login?.error) {
+				toast.error(login.error)
+			}
+		} catch (error) {
+			console.error('Giriş hatası:', error)
+			toast({
+				title: 'Hata',
+				description: 'Bir hata oluştu, lütfen tekrar deneyin',
+				variant: 'destructive'
+			})
+		}
 	}
 
 	return (

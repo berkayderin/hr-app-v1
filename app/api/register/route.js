@@ -19,26 +19,13 @@ export async function POST(req, res) {
 			}
 		})
 
-		if (isUserExist) {
+		if (isUserExist?.id) {
 			return new NextResponse('Kullanıcı zaten var', {
 				status: 400
 			})
 		}
 
-		const user = await prismadb.user.create({
-			data: {
-				email,
-				hashedPassword: password
-			}
-		})
-
 		const hashedPassword = await bcrypt.hash(password, 12)
-
-		if (hashedPassword !== user.hashedPassword) {
-			return new NextResponse('Şifreleme hatası', {
-				status: 500
-			})
-		}
 
 		const newUser = await prismadb.user.create({
 			data: {

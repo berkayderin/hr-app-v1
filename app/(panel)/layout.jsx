@@ -3,8 +3,8 @@ import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import React from 'react'
 
-const ProtectedRootLayout = ({ children }) => {
-	const session = getServerSession(authOptions)
+const ProtectedRootLayout = async ({ children }) => {
+	const session = await getServerSession(authOptions)
 
 	if (!session?.user?.email) {
 		redirect('/login')

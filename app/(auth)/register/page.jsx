@@ -25,43 +25,55 @@ import {
 	FormLabel,
 	FormMessage
 } from '@/components/ui/form'
+import axios from 'axios'
+import { useRouter } from 'next/navigation'
+import { useToast } from '@/hooks/use-toast'
 
-const registerSchema = z
-	.object({
-		name: z
-			.string()
-			.min(2, { message: 'İsim en az 2 karakter olmalıdır' }),
-		email: z
-			.string()
-			.email({ message: 'Geçerli bir e-posta adresi giriniz' }),
-		password: z
-			.string()
-			.min(8, { message: 'Şifre en az 8 karakter olmalıdır' }),
-		confirmPassword: z.string()
-	})
-	.refine((data) => data.password === data.confirmPassword, {
-		message: 'Şifreler eşleşmiyor',
-		path: ['confirmPassword']
-	})
+const registerSchema = z.object({
+	email: z
+		.string()
+		.email({ message: 'Geçerli bir e-posta adresi giriniz' }),
+	password: z
+		.string()
+		.min(8, { message: 'Şifre en az 8 karakter olmalıdır' })
+})
 
 export default function RegisterPage() {
 	const [showPassword, setShowPassword] = useState(false)
-	const [showConfirmPassword, setShowConfirmPassword] =
-		useState(false)
+
+	const { toast } = useToast()
+	const router = useRouter()
 
 	const form = useForm({
 		resolver: zodResolver(registerSchema),
 		defaultValues: {
-			name: '',
 			email: '',
-			password: '',
-			confirmPassword: ''
+			password: ''
 		}
 	})
 
-	const onSubmit = (data) => {
-		console.log('Kayıt verileri:', data)
-		// Burada normalde kayıt API'nize bir istek yapardınız
+	const onSubmit = async (data) => {
+		try {
+			await axios.post('/api/register', {
+				email: data.email,
+				password: data.password
+			})
+
+			toast({
+				title: 'Başarılı',
+				description: 'Kayıt başarılı, yönlendiriliyorsunuz...',
+				variant: 'success'
+			})
+
+			router.push('/login')
+		} catch (error) {
+			console.error('Kayıt veya giriş hatası:', error)
+			toast({
+				title: 'Hata',
+				description: 'Bir hata oluştu, lütfen tekrar deneyin',
+				variant: 'destructive'
+			})
+		}
 	}
 
 	return (
@@ -77,22 +89,6 @@ export default function RegisterPage() {
 							onSubmit={form.handleSubmit(onSubmit)}
 							className="space-y-4"
 						>
-							<FormField
-								control={form.control}
-								name="name"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>İsim</FormLabel>
-										<FormControl>
-											<Input
-												placeholder="Adınız Soyadınız"
-												{...field}
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
 							<FormField
 								control={form.control}
 								name="email"
@@ -130,42 +126,6 @@ export default function RegisterPage() {
 													className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
 												>
 													{showPassword ? (
-														<EyeOff className="h-5 w-5" />
-													) : (
-														<Eye className="h-5 w-5" />
-													)}
-												</button>
-											</div>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-							<FormField
-								control={form.control}
-								name="confirmPassword"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Şifre Tekrarı</FormLabel>
-										<FormControl>
-											<div className="relative">
-												<Input
-													type={
-														showConfirmPassword ? 'text' : 'password'
-													}
-													placeholder="********"
-													{...field}
-												/>
-												<button
-													type="button"
-													onClick={() =>
-														setShowConfirmPassword(
-															!showConfirmPassword
-														)
-													}
-													className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-												>
-													{showConfirmPassword ? (
 														<EyeOff className="h-5 w-5" />
 													) : (
 														<Eye className="h-5 w-5" />
