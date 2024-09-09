@@ -27,7 +27,7 @@ import {
 } from '@/components/ui/form'
 import { useToast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
-import { signIn } from 'next-auth/react'
+import { getSession, signIn } from 'next-auth/react'
 
 const loginSchema = z.object({
 	email: z
@@ -53,29 +53,36 @@ export default function LoginPage() {
 	})
 
 	const onSubmit = async (data) => {
-		console.log('LOGIN DATA:', data)
 		try {
-			const login = await signIn('credentials', {
+			const result = await signIn('credentials', {
+				redirect: false,
 				email: data.email,
-				password: data.password,
-				redirect: false
+				password: data.password
 			})
 
-			if (login?.ok) {
-				toast({
-					title: 'Başarılı',
-					variant: 'success'
-				})
+			if (result.error) {
+				throw new Error(result.error)
+			}
 
-				router.push('/')
-			} else if (login?.error) {
-				toast.error(login.error)
+			toast({
+				title: 'Başarılı',
+				description: 'Giriş başarılı, yönlendiriliyorsunuz...',
+				variant: 'success'
+			})
+
+			// Kullanıcı rolüne göre yönlendirme
+			const session = await getSession()
+			if (session?.user?.role === 'admin') {
+				router.push('/') // veya admin için uygun bir sayfa
+			} else {
+				router.push('/test') // normal kullanıcılar için profil sayfası
 			}
 		} catch (error) {
 			console.error('Giriş hatası:', error)
 			toast({
 				title: 'Hata',
-				description: 'Bir hata oluştu, lütfen tekrar deneyin',
+				description:
+					error.message || 'Giriş yapılırken bir hata oluştu',
 				variant: 'destructive'
 			})
 		}

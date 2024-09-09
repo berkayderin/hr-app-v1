@@ -56,7 +56,8 @@ export default function RegisterPage() {
 		try {
 			await axios.post('/api/register', {
 				email: data.email,
-				password: data.password
+				password: data.password,
+				role: 'user' // Varsayılan rol olarak 'user' ekliyoruz
 			})
 
 			toast({
@@ -67,10 +68,12 @@ export default function RegisterPage() {
 
 			router.push('/login')
 		} catch (error) {
-			console.error('Kayıt veya giriş hatası:', error)
+			console.error('Kayıt hatası:', error)
 			toast({
 				title: 'Hata',
-				description: 'Bir hata oluştu, lütfen tekrar deneyin',
+				description:
+					error.response?.data?.message ||
+					'Bir hata oluştu, lütfen tekrar deneyin',
 				variant: 'destructive'
 			})
 		}

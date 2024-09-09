@@ -2,10 +2,10 @@ import { NextResponse } from 'next/server'
 import prismadb from '@/lib/prismadb'
 import bcrypt from 'bcrypt'
 
-export async function POST(req, res) {
+export async function POST(req) {
 	try {
 		const body = await req.json()
-		const { email, password } = body
+		const { email, password, role } = body
 
 		if (!email || !password) {
 			return new NextResponse('Eksik kimlik bilgileri', {
@@ -13,16 +13,12 @@ export async function POST(req, res) {
 			})
 		}
 
-		const isUserExist = await prismadb.user.findUnique({
-			where: {
-				email
-			}
+		const existingUser = await prismadb.user.findUnique({
+			where: { email }
 		})
 
-		if (isUserExist?.id) {
-			return new NextResponse('Kullanıcı zaten var', {
-				status: 400
-			})
+		if (existingUser) {
+			return new NextResponse('Kullanıcı zaten var', { status: 400 })
 		}
 
 		const hashedPassword = await bcrypt.hash(password, 12)
@@ -30,13 +26,17 @@ export async function POST(req, res) {
 		const newUser = await prismadb.user.create({
 			data: {
 				email,
-				hashedPassword
+				hashedPassword,
+				role: role || 'user'
 			}
 		})
 
-		return new NextResponse(newUser, { status: 201 })
+		return new NextResponse(JSON.stringify(newUser), {
+			status: 201,
+			headers: { 'Content-Type': 'application/json' }
+		})
 	} catch (error) {
-		console.log('Kayıt olurken hata oluştu: ', error)
-		return new NextResponse(error, { status: 500 })
+		console.error('Kayıt olurken hata oluştu: ', error)
+		return new NextResponse('Internal Error', { status: 500 })
 	}
 }
