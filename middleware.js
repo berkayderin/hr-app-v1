@@ -6,16 +6,18 @@ export async function middleware(request) {
 		req: request,
 		secret: process.env.NEXTAUTH_SECRET
 	})
+
 	const { pathname } = request.nextUrl
 
 	// Açık erişimli sayfalar
 	if (
+		pathname === '/' ||
 		pathname.startsWith('/login') ||
 		pathname.startsWith('/register')
 	) {
 		if (token) {
-			// Kullanıcı zaten giriş yapmışsa, ana sayfaya yönlendir
-			return NextResponse.redirect(new URL('/', request.url))
+			// Kullanıcı zaten giriş yapmışsa, panel sayfasına yönlendir
+			return NextResponse.redirect(new URL('/panel', request.url))
 		}
 		return NextResponse.next()
 	}
@@ -27,25 +29,35 @@ export async function middleware(request) {
 		return NextResponse.redirect(loginUrl)
 	}
 
-	// Admin için tüm sayfalara erişim izni
-	if (token.role === 'admin') {
-		return NextResponse.next()
-	}
+	// Panel ve alt sayfaları için erişim kontrolü
+	if (pathname.startsWith('/panel')) {
+		// Admin için tüm panel sayfalarına erişim izni
+		if (token.role === 'admin') {
+			return NextResponse.next()
+		}
 
-	// User için sadece profil ve test sayfalarına erişim izni
-	if (
-		token.role === 'user' &&
-		(pathname.startsWith('/profile') || pathname.startsWith('/test'))
-	) {
-		return NextResponse.next()
+		// Normal kullanıcılar için kısıtlı erişim
+		if (token.role === 'user') {
+			// Kullanıcıların erişebileceği sayfalar
+			const allowedUserPages = [
+				'/panel',
+				'/panel/account',
+				'/panel/test'
+			]
+
+			if (
+				allowedUserPages.some((page) => pathname.startsWith(page))
+			) {
+				return NextResponse.next()
+			}
+
+			// İzin verilmeyen sayfalara erişim durumunda ana panel sayfasına yönlendir
+			return NextResponse.redirect(new URL('/panel', request.url))
+		}
 	}
 
 	// Diğer tüm durumlar için ana sayfaya yönlendir
-	if (pathname !== '/') {
-		return NextResponse.redirect(new URL('/', request.url))
-	}
-
-	return NextResponse.next()
+	return NextResponse.redirect(new URL('/', request.url))
 }
 
 export const config = {
