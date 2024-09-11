@@ -52,6 +52,9 @@ export async function POST(req) {
 		})
 	} catch (error) {
 		console.error('Error updating account:', error)
-		return new NextResponse('Internal Server Error', { status: 500 })
+		return new NextResponse(
+			`Internal Server Error: ${error.message}`,
+			{ status: 500 }
+		)
 	}
 }
