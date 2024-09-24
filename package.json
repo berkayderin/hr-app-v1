@@ -11,6 +11,8 @@
 		"prisma:push": "dotenv -e .env.local -- prisma db push"
 	},
 	"dependencies": {
+		"@anthropic-ai/sdk": "^0.27.3",
+		"@aws-sdk/client-bedrock-runtime": "^3.658.0",
 		"@hookform/resolvers": "^3.9.0",
 		"@prisma/client": "^5.19.1",
 		"@radix-ui/react-dropdown-menu": "^2.1.1",
