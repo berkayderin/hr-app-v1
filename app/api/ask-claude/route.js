@@ -2,24 +2,27 @@ import {
 	BedrockRuntimeClient,
 	InvokeModelCommand
 } from '@aws-sdk/client-bedrock-runtime'
+import { fromNodeProviderChain } from '@aws-sdk/credential-providers'
 import { NextResponse } from 'next/server'
 
-// Kimlik bilgilerini belirtmeden sadece bölgeyi belirtin
 const bedrockClient = new BedrockRuntimeClient({
-	region: 'eu-central-1'
+	region: process.env.AWS_REGION,
+	credentials: fromNodeProviderChain({
+		profile: process.env.AWS_PROFILE
+	})
 })
 
 export async function POST(request) {
-	const { question } = await request.json()
-
 	try {
+		const { question } = await request.json()
+
 		const input = {
-			modelId: 'anthropic.claude-3-sonnet-20240229-v1:0', // veya listedeki uygun bir model ID'si
+			modelId: 'anthropic.claude-3-sonnet-20240229-v1:0',
 			contentType: 'application/json',
 			accept: 'application/json',
 			body: JSON.stringify({
 				anthropic_version: 'bedrock-2023-05-31',
-				max_tokens: 1000,
+				max_tokens: 10000,
 				messages: [
 					{
 						role: 'user',
@@ -31,6 +34,7 @@ export async function POST(request) {
 
 		const command = new InvokeModelCommand(input)
 		const data = await bedrockClient.send(command)
+
 		const jsonResponse = JSON.parse(
 			new TextDecoder().decode(data.body)
 		)
@@ -39,10 +43,9 @@ export async function POST(request) {
 			response: jsonResponse.content[0].text
 		})
 	} catch (error) {
-		console.error('Error:', error)
 		return NextResponse.json(
 			{
-				error: 'An error occurred while fetching the message.',
+				error: 'Mesaj alınırken bir hata oluştu.',
 				details: error.message
 			},
 			{ status: 500 }
