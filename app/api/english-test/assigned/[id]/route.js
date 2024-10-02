@@ -19,19 +19,25 @@ export async function GET(request, { params }) {
 		const assignedTest = await prisma.assignedTest.findFirst({
 			where: {
 				id: params.id,
-				userId: session.user.id,
-				completedAt: null
+				userId: session.user.id
 			},
 			include: { test: true }
 		})
-		console.log('AssignedTest found:', assignedTest)
+
+		console.log('AssignedTest ID:', params.id)
+		console.log('User ID:', session.user.id)
+		console.log('Query result:', assignedTest)
+		console.log('Database query result:', assignedTest)
 
 		if (!assignedTest) {
 			console.log(
-				`AssignedTest with ID ${params.id} not found or not assigned to user ${session.user.id}`
+				`AssignedTest not found. ID: ${params.id}, User ID: ${session.user.id}`
 			)
 			return NextResponse.json(
-				{ error: 'Test not found or not assigned' },
+				{
+					error: 'Test not found or not assigned',
+					details: { id: params.id, userId: session.user.id }
+				},
 				{ status: 404 }
 			)
 		}

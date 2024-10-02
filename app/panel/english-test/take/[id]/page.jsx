@@ -1,9 +1,8 @@
-'use client'
-
+// app/panel/english-test/take/[id]/page.jsx
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
 	RadioGroup,
@@ -19,7 +18,8 @@ import {
 } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
 
-export default function TakeEnglishTestPage({ params }) {
+export default function TakeEnglishTestPage() {
+	const params = useParams()
 	const [test, setTest] = useState(null)
 	const [currentQuestion, setCurrentQuestion] = useState(0)
 	const [answers, setAnswers] = useState({})

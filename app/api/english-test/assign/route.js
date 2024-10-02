@@ -64,7 +64,13 @@ export async function POST(request) {
 			}
 		})
 
-		console.log('Test assigned successfully:', assignedTest)
+		console.log(
+			'Test atanıyor. Test ID:',
+			testId,
+			'Kullanıcı ID:',
+			userId
+		)
+		console.log('AssignedTest oluşturuldu:', assignedTest)
 
 		return NextResponse.json(assignedTest)
 	} catch (error) {
