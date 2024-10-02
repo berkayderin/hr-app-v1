@@ -2,14 +2,15 @@ import {
 	BedrockRuntimeClient,
 	InvokeModelCommand
 } from '@aws-sdk/client-bedrock-runtime'
-import { fromNodeProviderChain } from '@aws-sdk/credential-providers'
 import { NextResponse } from 'next/server'
 
 const bedrockClient = new BedrockRuntimeClient({
 	region: process.env.AWS_REGION,
-	credentials: fromNodeProviderChain({
-		profile: process.env.AWS_PROFILE
-	})
+	credentials: {
+		accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+		secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+		sessionToken: process.env.AWS_SESSION_TOKEN
+	}
 })
 
 export async function POST(request) {
@@ -17,12 +18,12 @@ export async function POST(request) {
 		const { question } = await request.json()
 
 		const input = {
-			modelId: 'anthropic.claude-3-sonnet-20240229-v1:0',
+			modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
 			contentType: 'application/json',
 			accept: 'application/json',
 			body: JSON.stringify({
 				anthropic_version: 'bedrock-2023-05-31',
-				max_tokens: 10000,
+				max_tokens: 1000,
 				messages: [
 					{
 						role: 'user',
