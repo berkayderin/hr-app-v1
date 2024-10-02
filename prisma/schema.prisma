@@ -1,3 +1,5 @@
+// prisma/schema.prisma
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,10 +10,34 @@ datasource db {
 }
 
 model User {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  email          String   @unique
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  email          String         @unique
   hashedPassword String
-  role           String   @default("user")
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  role           String         @default("user")
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  assignedTests  AssignedTest[]
+}
+
+model EnglishTest {
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  level         String
+  questions     Json
+  createdAt     DateTime       @default(now())
+  createdBy     String         @db.ObjectId
+  assignedTests AssignedTest[]
+}
+
+model AssignedTest {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String      @db.ObjectId
+  testId        String      @db.ObjectId
+  assignedAt    DateTime    @default(now())
+  completedAt   DateTime?
+  score         Int?
+  startedAt     DateTime?
+  timeRemaining Int?
+  user          User        @relation(fields: [userId], references: [id])
+  test          EnglishTest @relation(fields: [testId], references: [id])
 }

@@ -1,3 +1,5 @@
+// app/api/users/delete/route.js
+
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/AuthOptions'

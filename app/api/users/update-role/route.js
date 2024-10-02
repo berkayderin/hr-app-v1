@@ -1,3 +1,4 @@
+// app/api/users/update-role/route.js
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/AuthOptions'

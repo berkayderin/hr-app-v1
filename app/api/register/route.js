@@ -1,3 +1,4 @@
+// app/api/register/route.js
 import { NextResponse } from 'next/server'
 import prismadb from '@/lib/prismadb'
 import bcrypt from 'bcrypt'

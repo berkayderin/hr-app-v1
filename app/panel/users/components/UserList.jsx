@@ -22,8 +22,6 @@ import { Button } from '@/components/ui/button'
 const UserList = ({ initialUsers }) => {
 	const [users, setUsers] = useState(initialUsers)
 
-	console.log('Users in UserList:', users)
-
 	const handleRoleChange = async (userId, newRole) => {
 		try {
 			const response = await fetch('/api/users/update-role', {

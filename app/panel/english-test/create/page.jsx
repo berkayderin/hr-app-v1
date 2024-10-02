@@ -1,94 +1,84 @@
+// app/panel/english-test/create/page.jsx
 'use client'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
+import { Input } from '@/components/ui/input'
 import {
-	Card,
-	CardHeader,
-	CardTitle,
-	CardContent
-} from '@/components/ui/card'
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue
+} from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
 
-export default function Home() {
-	const [response, setResponse] = useState('')
+export default function CreateEnglishTestPage() {
+	const [title, setTitle] = useState('')
+	const [level, setLevel] = useState('')
+	const [prompt, setPrompt] = useState('')
+	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState('')
-	const [loading, setLoading] = useState(false)
-	const [question, setQuestion] = useState('')
+	const router = useRouter()
 
-	const handleQuestionChange = (event) => {
-		setQuestion(event.target.value)
-	}
-
-	const isButtonDisabled = loading || question.trim() === ''
-
-	const fetchMessage = async () => {
-		if (!question.trim()) {
-			alert('Please enter a question.')
-			return
-		}
-
-		setLoading(true)
+	const handleSubmit = async (e) => {
+		e.preventDefault()
+		setIsLoading(true)
 		setError('')
-		setResponse('')
+
 		try {
-			const res = await fetch('/api/ask-claude', {
+			const response = await fetch('/api/english-test/create', {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({ question })
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ title, level, prompt })
 			})
 
-			if (!res.ok) {
-				const errorData = await res.json()
-				throw new Error(errorData.details || 'Failed to fetch')
+			const data = await response.json()
+
+			if (!response.ok) {
+				throw new Error(data.error || 'Failed to create test')
 			}
 
-			const data = await res.json()
-			setResponse(data.response)
+			router.push('/panel/english-test')
 		} catch (error) {
-			console.error('Error fetching message:', error)
-			setError(`An error occurred: ${error.message}`)
+			console.error('Error creating test:', error)
+			setError(error.message || 'An unexpected error occurred')
+		} finally {
+			setIsLoading(false)
 		}
-		setLoading(false)
 	}
 
 	return (
-		<div className="container mx-auto p-4 max-w-2xl">
-			<Card>
-				<CardHeader>
-					<CardTitle>Test Oluştur</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<Textarea
-						value={question}
-						onChange={handleQuestionChange}
-						placeholder="Sorunuzu yazın..."
-						className="mb-4"
-						rows={4}
-					/>
-					<Button
-						onClick={fetchMessage}
-						disabled={isButtonDisabled}
-						className="w-full"
-					>
-						{loading ? 'Yükleniyor...' : 'Gönder'}
-					</Button>
-					{error && (
-						<div className="mt-4 text-red-500">
-							<h2 className="text-xl font-semibold mb-2">Hata:</h2>
-							<p>{error}</p>
-						</div>
-					)}
-					{response && (
-						<div className="mt-4">
-							<h2 className="text-xl font-semibold mb-2">Cevap:</h2>
-							<p className="whitespace-pre-wrap">{response}</p>
-						</div>
-					)}
-				</CardContent>
-			</Card>
+		<div className="container mx-auto p-6">
+			<h1 className="text-3xl font-bold mb-8">Create English Test</h1>
+			{error && <p className="text-red-500 mb-4">{error}</p>}
+			<form onSubmit={handleSubmit} className="space-y-4">
+				<Input
+					placeholder="Test Title"
+					value={title}
+					onChange={(e) => setTitle(e.target.value)}
+					required
+				/>
+				<Select value={level} onValueChange={setLevel} required>
+					<SelectTrigger>
+						<SelectValue placeholder="Select Level" />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="B1">B1</SelectItem>
+						<SelectItem value="B2">B2</SelectItem>
+					</SelectContent>
+				</Select>
+				<Textarea
+					placeholder="Enter prompt for AI to generate questions"
+					value={prompt}
+					onChange={(e) => setPrompt(e.target.value)}
+					required
+				/>
+				<Button type="submit" disabled={isLoading}>
+					{isLoading ? 'Creating...' : 'Create Test'}
+				</Button>
+			</form>
 		</div>
 	)
 }

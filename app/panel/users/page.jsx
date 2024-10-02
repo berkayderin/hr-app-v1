@@ -1,3 +1,4 @@
+// app/panel/users/page.jsx
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/AuthOptions'
 import { redirect } from 'next/navigation'
