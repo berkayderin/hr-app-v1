@@ -15,6 +15,7 @@ import {
 	FormMessage
 } from '@/components/ui/form'
 import { useToast } from '@/hooks/use-toast'
+import Link from 'next/link'
 
 const accountSchema = z
 	.object({
@@ -176,9 +177,14 @@ const AccountForm = ({ user }) => {
 						</FormItem>
 					)}
 				/>
-				<Button type="submit" disabled={isLoading}>
-					{isLoading ? 'Güncelleniyor...' : 'Güncelle'}
-				</Button>
+				<div className="flex justify-end gap-2">
+					<Button type="submit" disabled={isLoading}>
+						{isLoading ? 'Güncelleniyor...' : 'Güncelle'}
+					</Button>
+					<Link href="/panel">
+						<Button variant="outline">Geri Dön</Button>
+					</Link>
+				</div>
 			</form>
 		</Form>
 	)
