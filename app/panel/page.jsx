@@ -16,7 +16,9 @@ import {
 	ClipboardList,
 	Settings,
 	BookOpen,
-	PenTool
+	PenTool,
+	User,
+	BarChart
 } from 'lucide-react'
 import { PrismaClient } from '@prisma/client'
 
@@ -39,129 +41,161 @@ export default async function PanelPage() {
 	})
 
 	return (
-		<div className="container mx-auto p-6">
-			<h1 className="text-3xl font-bold mb-8 text-primary">
-				Kontrol Paneli
-			</h1>
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-				<Card>
-					<CardHeader className="space-y-1">
-						<CardTitle className="text-2xl">
-							Hesap Bilgileri
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<div className="space-y-2">
-							<p className="text-sm text-muted-foreground">
-								E-posta: {session.user.email}
-							</p>
-							<p className="text-sm text-muted-foreground">
-								Rol: {session.user.role}
-							</p>
-						</div>
-					</CardContent>
-					<CardFooter>
-						<Button asChild variant="outline" className="w-full">
-							<Link href="/panel/account">
-								<Settings className="mr-2 h-4 w-4" />
-								Hesap Ayarları
-							</Link>
-						</Button>
-					</CardFooter>
-				</Card>
-
-				{session.user.role === 'admin' && (
-					<>
-						<Card>
-							<CardHeader className="space-y-1">
-								<CardTitle className="text-2xl">
-									Kullanıcı Yönetimi
-								</CardTitle>
-							</CardHeader>
-							<CardContent>
-								<p className="text-sm text-muted-foreground">
-									Kullanıcıları yönetin ve rolleri düzenleyin.
-								</p>
-							</CardContent>
-							<CardFooter>
-								<Button asChild variant="outline" className="w-full">
-									<Link href="/panel/users">
-										<Users className="mr-2 h-4 w-4" />
-										Kullanıcıları Yönet
-									</Link>
-								</Button>
-							</CardFooter>
-						</Card>
-
-						<Card>
-							<CardHeader className="space-y-1">
-								<CardTitle className="text-2xl">
-									İngilizce Test Yönetimi
-								</CardTitle>
-							</CardHeader>
-							<CardContent>
-								<p className="text-sm text-muted-foreground">
-									Yapay zeka destekli İngilizce testleri oluşturun ve
-									yönetin.
-								</p>
-							</CardContent>
-							<CardFooter className="flex flex-col space-y-2">
-								<Button asChild variant="outline" className="w-full">
-									<Link href="/panel/english-test">
-										<ClipboardList className="mr-2 h-4 w-4" />
-										İngilizce Testlerini Görüntüle
-									</Link>
-								</Button>
-								<Button asChild variant="outline" className="w-full">
-									<Link href="/panel/english-test/create">
-										<PenTool className="mr-2 h-4 w-4" />
-										İngilizce Testi Oluştur
-									</Link>
-								</Button>
-								<Button asChild variant="outline" className="w-full">
-									<Link href="/panel/english-test/results">
-										<BookOpen className="mr-2 h-4 w-4" />
-										Test Sonuçlarını Görüntüle
-									</Link>
-								</Button>
-							</CardFooter>
-						</Card>
-					</>
-				)}
-
-				{session.user.role === 'user' && (
-					<Card>
+		<div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800">
+			<div className="container mx-auto p-6">
+				<h1 className="text-4xl font-bold mb-8 text-primary text-center">
+					Kontrol Paneli
+				</h1>
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+					<Card className="bg-white dark:bg-gray-800">
 						<CardHeader className="space-y-1">
-							<CardTitle className="text-2xl">
-								İngilizce Testlerim
+							<CardTitle className="text-2xl flex items-center space-x-2">
+								<User className="h-6 w-6 text-primary" />
+								<span>Hesap Bilgileri</span>
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
-							{assignedTests.length > 0 ? (
-								<ul className="space-y-2">
-									{assignedTests.map((assignedTest) => (
-										<li key={assignedTest.id}>
-											<Link
-												href={`/panel/english-test/take/${assignedTest.id}`}
-												className="text-blue-500 hover:underline font-bold"
-											>
-												{assignedTest.test.title}
-											</Link>
-										</li>
-									))}
-								</ul>
-							) : (
+							<div className="space-y-2">
 								<p className="text-sm text-muted-foreground">
-									Henüz atanmış bir testiniz bulunmamaktadır.
+									<span className="font-semibold">E-posta:</span>{' '}
+									{session.user.email}
 								</p>
-							)}
+								<p className="text-sm text-muted-foreground">
+									<span className="font-semibold">Rol:</span>{' '}
+									{session.user.role}
+								</p>
+							</div>
 						</CardContent>
+						<CardFooter>
+							<Button
+								asChild
+								variant="outline"
+								className="w-full hover:bg-primary hover:text-white transition-colors "
+							>
+								<Link href="/panel/account">
+									<Settings className="mr-2 h-4 w-4" />
+									Hesap Ayarları
+								</Link>
+							</Button>
+						</CardFooter>
 					</Card>
-				)}
-			</div>
 
-			<div className="mt-8 flex justify-end">
-				<LogoutButton />
+					{session.user.role === 'admin' && (
+						<>
+							<Card className="bg-white dark:bg-gray-800">
+								<CardHeader className="space-y-1">
+									<CardTitle className="text-2xl flex items-center space-x-2">
+										<Users className="h-6 w-6 text-primary" />
+										<span>Kullanıcı Yönetimi</span>
+									</CardTitle>
+								</CardHeader>
+								<CardContent>
+									<p className="text-sm text-muted-foreground">
+										Kullanıcıları yönetin ve rolleri düzenleyin.
+									</p>
+								</CardContent>
+								<CardFooter>
+									<Button
+										asChild
+										variant="outline"
+										className="w-full hover:bg-primary hover:text-white transition-colors "
+									>
+										<Link href="/panel/users">
+											<Users className="mr-2 h-4 w-4" />
+											Kullanıcıları Yönet
+										</Link>
+									</Button>
+								</CardFooter>
+							</Card>
+
+							<Card className="bg-white dark:bg-gray-800">
+								<CardHeader className="space-y-1">
+									<CardTitle className="text-2xl flex items-center space-x-2">
+										<ClipboardList className="h-6 w-6 text-primary" />
+										<span>İngilizce Test Yönetimi</span>
+									</CardTitle>
+								</CardHeader>
+								<CardContent>
+									<p className="text-sm text-muted-foreground">
+										Yapay zeka destekli İngilizce testleri oluşturun
+										ve yönetin.
+									</p>
+								</CardContent>
+								<CardFooter className="flex flex-col space-y-2">
+									<Button
+										asChild
+										variant="outline"
+										className="w-full hover:bg-primary hover:text-white transition-colors "
+									>
+										<Link href="/panel/english-test">
+											<ClipboardList className="mr-2 h-4 w-4" />
+											İngilizce Testlerini Görüntüle
+										</Link>
+									</Button>
+									<Button
+										asChild
+										variant="outline"
+										className="w-full hover:bg-primary hover:text-white transition-colors "
+									>
+										<Link href="/panel/english-test/create">
+											<PenTool className="mr-2 h-4 w-4" />
+											İngilizce Testi Oluştur
+										</Link>
+									</Button>
+									<Button
+										asChild
+										variant="outline"
+										className="w-full hover:bg-primary hover:text-white transition-colors "
+									>
+										<Link href="/panel/english-test/results">
+											<BarChart className="mr-2 h-4 w-4" />
+											Test Sonuçlarını Görüntüle
+										</Link>
+									</Button>
+								</CardFooter>
+							</Card>
+						</>
+					)}
+
+					{session.user.role === 'user' && (
+						<Card className="bg-white dark:bg-gray-800  ">
+							<CardHeader className="space-y-1">
+								<CardTitle className="text-2xl flex items-center space-x-2">
+									<BookOpen className="h-6 w-6 text-primary" />
+									<span>İngilizce Testlerim</span>
+								</CardTitle>
+							</CardHeader>
+							<CardContent>
+								{assignedTests.length > 0 ? (
+									<ul className="space-y-2">
+										{assignedTests.map((assignedTest) => (
+											<li
+												key={assignedTest.id}
+												className="bg-gray-100 dark:bg-gray-700 p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors "
+											>
+												<Link
+													href={`/panel/english-test/take/${assignedTest.id}`}
+													className="text-primary hover:text-primary-dark font-bold flex items-center space-x-2"
+												>
+													<ClipboardList className="h-4 w-4" />
+													<span>{assignedTest.test.title}</span>
+												</Link>
+											</li>
+										))}
+									</ul>
+								) : (
+									<p className="text-sm text-muted-foreground">
+										Henüz atanmış bir testiniz bulunmamaktadır.
+									</p>
+								)}
+							</CardContent>
+						</Card>
+					)}
+				</div>
+
+				<div className="mt-8 flex justify-end">
+					<LogoutButton />
+				</div>
 			</div>
 		</div>
 	)

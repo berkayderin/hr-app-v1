@@ -1,7 +1,6 @@
 // app/panel/english-test/create/page.jsx
 'use client'
-
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,17 +13,34 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/hooks/use-toast'
+import {
+	Card,
+	CardHeader,
+	CardTitle,
+	CardContent,
+	CardFooter
+} from '@/components/ui/card'
+import { Loader2, BookOpen, FileText } from 'lucide-react'
+import Link from 'next/link'
 
 export default function CreateEnglishTestPage() {
 	const [title, setTitle] = useState('')
 	const [level, setLevel] = useState('')
 	const [prompt, setPrompt] = useState('')
 	const [isLoading, setIsLoading] = useState(false)
+	const [isFormValid, setIsFormValid] = useState(false)
 	const router = useRouter()
 	const { toast } = useToast()
 
+	useEffect(() => {
+		setIsFormValid(
+			title.trim() !== '' && level !== '' && prompt.trim() !== ''
+		)
+	}, [title, level, prompt])
+
 	const handleSubmit = async (e) => {
 		e.preventDefault()
+		if (!isFormValid) return
 		setIsLoading(true)
 
 		try {
@@ -37,20 +53,25 @@ export default function CreateEnglishTestPage() {
 			const data = await response.json()
 
 			if (!response.ok) {
-				throw new Error(data.error || 'Failed to create test')
+				throw new Error(data.error || 'Test oluşturulamadı')
 			}
 
 			toast({
-				title: 'Success',
-				description: 'Test created successfully'
+				title: 'Başarılı',
+				description: 'Test başarıyla oluşturuldu',
+				duration: 3000
 			})
 			router.push('/panel/english-test')
 		} catch (error) {
-			console.error('Error creating test:', error)
+			console.error('Test oluşturma hatası:', error)
 			toast({
 				variant: 'destructive',
-				title: 'Error',
-				description: error.message || 'An unexpected error occurred'
+				title: 'Hata',
+				description:
+					error instanceof Error
+						? error.message
+						: 'Beklenmeyen bir hata oluştu',
+				duration: 5000
 			})
 		} finally {
 			setIsLoading(false)
@@ -58,34 +79,101 @@ export default function CreateEnglishTestPage() {
 	}
 
 	return (
-		<div className="container mx-auto p-6">
-			<h1 className="text-3xl font-bold mb-8">Create English Test</h1>
-			<form onSubmit={handleSubmit} className="space-y-4">
-				<Input
-					placeholder="Test Title"
-					value={title}
-					onChange={(e) => setTitle(e.target.value)}
-					required
-				/>
-				<Select value={level} onValueChange={setLevel} required>
-					<SelectTrigger>
-						<SelectValue placeholder="Select Level" />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value="B1">B1</SelectItem>
-						<SelectItem value="B2">B2</SelectItem>
-					</SelectContent>
-				</Select>
-				<Textarea
-					placeholder="Enter prompt for AI to generate questions"
-					value={prompt}
-					onChange={(e) => setPrompt(e.target.value)}
-					required
-				/>
-				<Button type="submit" disabled={isLoading}>
-					{isLoading ? 'Creating...' : 'Create Test'}
-				</Button>
-			</form>
+		<div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800 py-12">
+			<div className="container mx-auto px-4 sm:px-6 lg:px-8">
+				<Card className="max-w-2xl mx-auto">
+					<CardHeader>
+						<CardTitle className="text-3xl font-bold text-center">
+							İngilizce Testi Oluştur
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<form onSubmit={handleSubmit} className="space-y-6">
+							<div className="space-y-2">
+								<label
+									htmlFor="title"
+									className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+								>
+									Test Başlığı
+								</label>
+								<Input
+									id="title"
+									placeholder="Test Başlığı"
+									value={title}
+									onChange={(e) => setTitle(e.target.value)}
+									required
+									className="w-full"
+									icon={
+										<FileText className="h-4 w-4 text-gray-500" />
+									}
+								/>
+							</div>
+							<div className="space-y-2">
+								<label
+									htmlFor="level"
+									className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+								>
+									Seviye
+								</label>
+								<Select
+									value={level}
+									onValueChange={setLevel}
+									required
+								>
+									<SelectTrigger id="level" className="w-full">
+										<SelectValue placeholder="Seviye Seçin" />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value="B1">B1</SelectItem>
+										<SelectItem value="B2">B2</SelectItem>
+									</SelectContent>
+								</Select>
+							</div>
+							<div className="space-y-2">
+								<label
+									htmlFor="prompt"
+									className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+								>
+									AI Soru Üretme Yönergesi
+								</label>
+								<Textarea
+									id="prompt"
+									placeholder="AI'nın soru üretmesi için yönerge girin"
+									value={prompt}
+									onChange={(e) => setPrompt(e.target.value)}
+									required
+									className="w-full min-h-[100px]"
+								/>
+							</div>
+						</form>
+					</CardContent>
+					<CardFooter className="flex flex-col space-y-2">
+						<Button
+							type="submit"
+							onClick={handleSubmit}
+							disabled={isLoading || !isFormValid}
+							className="w-full"
+						>
+							{isLoading ? (
+								<>
+									<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+									Oluşturuluyor...
+								</>
+							) : (
+								<>
+									<BookOpen className="mr-2 h-4 w-4" />
+									Testi Oluştur
+								</>
+							)}
+						</Button>
+						<Link href="/panel/">
+							<Button variant="outline" className="w-full">
+								Panele Geri Dön
+							</Button>
+						</Link>
+					</CardFooter>
+				</Card>
+			</div>
 		</div>
 	)
 }

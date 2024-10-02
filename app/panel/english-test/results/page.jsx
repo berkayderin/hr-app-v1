@@ -17,6 +17,9 @@ import {
 	TableHeader,
 	TableRow
 } from '@/components/ui/table'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 
 const prisma = new PrismaClient()
 
@@ -35,36 +38,54 @@ export default async function ViewTestResultsPage() {
 
 	return (
 		<div className="container mx-auto p-6">
-			<h1 className="text-3xl font-bold mb-8">
-				English Test Results
+			<h1 className="text-3xl font-bold mb-8 text-center">
+				İngilizce Test Sonuçları
 			</h1>
+			<Link href="/panel/">
+				<Button>Panele Geri Dön</Button>
+			</Link>
 			<Card>
 				<CardHeader>
-					<CardTitle>All Test Results</CardTitle>
+					<CardTitle>Tüm Test Sonuçları</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<Table>
-						<TableHeader>
-							<TableRow>
-								<TableHead>User</TableHead>
-								<TableHead>Test</TableHead>
-								<TableHead>Score</TableHead>
-								<TableHead>Completed At</TableHead>
-							</TableRow>
-						</TableHeader>
-						<TableBody>
-							{results.map((result) => (
-								<TableRow key={result.id}>
-									<TableCell>{result.user.email}</TableCell>
-									<TableCell>{result.test.title}</TableCell>
-									<TableCell>{result.score}</TableCell>
-									<TableCell>
-										{result.completedAt.toLocaleString()}
-									</TableCell>
+					<ScrollArea className="h-[60vh]">
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead className="font-bold">
+										Kullanıcı
+									</TableHead>
+									<TableHead className="font-bold">Test</TableHead>
+									<TableHead className="font-bold">Puan</TableHead>
+									<TableHead className="font-bold">
+										Tamamlanma Zamanı
+									</TableHead>
 								</TableRow>
-							))}
-						</TableBody>
-					</Table>
+							</TableHeader>
+							<TableBody>
+								{results.map((result) => (
+									<TableRow
+										key={result.id}
+										className="hover:bg-muted/50"
+									>
+										<TableCell>{result.user.email}</TableCell>
+										<TableCell>{result.test.title}</TableCell>
+										<TableCell>{result.score}</TableCell>
+										<TableCell>
+											{new Date(result.completedAt).toLocaleString(
+												'tr-TR',
+												{
+													dateStyle: 'medium',
+													timeStyle: 'short'
+												}
+											)}
+										</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+						</Table>
+					</ScrollArea>
 				</CardContent>
 			</Card>
 		</div>

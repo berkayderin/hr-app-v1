@@ -1,3 +1,4 @@
+// app/panel/account/components/AccountForm.jsx
 'use client'
 
 import React, { useState } from 'react'
@@ -16,6 +17,7 @@ import {
 } from '@/components/ui/form'
 import { useToast } from '@/hooks/use-toast'
 import Link from 'next/link'
+import { User, Lock, Mail, ArrowLeft } from 'lucide-react'
 
 const accountSchema = z
 	.object({
@@ -95,10 +97,10 @@ const AccountForm = ({ user }) => {
 
 			toast({
 				title: 'Başarılı',
-				description: 'Hesap bilgileriniz güncellendi.'
+				description: 'Hesap bilgileriniz güncellendi.',
+				duration: 3000
 			})
 
-			// Formu sıfırla
 			form.reset({
 				email: data.email,
 				currentPassword: '',
@@ -112,7 +114,8 @@ const AccountForm = ({ user }) => {
 				description:
 					error.message ||
 					'Hesap bilgileriniz güncellenirken bir hata oluştu.',
-				variant: 'destructive'
+				variant: 'destructive',
+				duration: 3000
 			})
 		} finally {
 			setIsLoading(false)
@@ -123,67 +126,117 @@ const AccountForm = ({ user }) => {
 		<Form {...form}>
 			<form
 				onSubmit={form.handleSubmit(onSubmit)}
-				className="space-y-8"
+				className="space-y-6"
 			>
-				<FormField
-					control={form.control}
-					name="email"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>E-posta</FormLabel>
-							<FormControl>
-								<Input {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name="currentPassword"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Mevcut Şifre</FormLabel>
-							<FormControl>
-								<Input type="password" {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name="newPassword"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Yeni Şifre (Opsiyonel)</FormLabel>
-							<FormControl>
-								<Input type="password" {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name="confirmNewPassword"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Yeni Şifre Tekrar</FormLabel>
-							<FormControl>
-								<Input type="password" {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<div className="flex justify-end gap-2">
-					<Button type="submit" disabled={isLoading}>
-						{isLoading ? 'Güncelleniyor...' : 'Güncelle'}
-					</Button>
+				<div>
+					<FormField
+						control={form.control}
+						name="email"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel className="flex items-center space-x-2">
+									<Mail className="w-4 h-4" />
+									<span>E-posta</span>
+								</FormLabel>
+								<FormControl>
+									<Input
+										{...field}
+										className="bg-gray-50 dark:bg-gray-700"
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</div>
+
+				<div>
+					<FormField
+						control={form.control}
+						name="currentPassword"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel className="flex items-center space-x-2">
+									<Lock className="w-4 h-4" />
+									<span>Mevcut Şifre</span>
+								</FormLabel>
+								<FormControl>
+									<Input
+										type="password"
+										{...field}
+										className="bg-gray-50 dark:bg-gray-700"
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</div>
+
+				<div>
+					<FormField
+						control={form.control}
+						name="newPassword"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel className="flex items-center space-x-2">
+									<Lock className="w-4 h-4" />
+									<span>Yeni Şifre (Opsiyonel)</span>
+								</FormLabel>
+								<FormControl>
+									<Input
+										type="password"
+										{...field}
+										className="bg-gray-50 dark:bg-gray-700"
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</div>
+
+				<div>
+					<FormField
+						control={form.control}
+						name="confirmNewPassword"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel className="flex items-center space-x-2">
+									<Lock className="w-4 h-4" />
+									<span>Yeni Şifre Tekrar</span>
+								</FormLabel>
+								<FormControl>
+									<Input
+										type="password"
+										{...field}
+										className="bg-gray-50 dark:bg-gray-700"
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</div>
+
+				<div className="flex justify-end gap-4">
 					<Link href="/panel">
-						<Button variant="outline">Geri Dön</Button>
+						<Button
+							variant="outline"
+							className="flex items-center space-x-2"
+						>
+							<ArrowLeft className="w-4 h-4" />
+							<span>Geri Dön</span>
+						</Button>
 					</Link>
+					<Button
+						type="submit"
+						disabled={isLoading}
+						className="flex items-center space-x-2"
+					>
+						<User className="w-4 h-4" />
+						<span>{isLoading ? 'Güncelleniyor...' : 'Güncelle'}</span>
+					</Button>
 				</div>
 			</form>
 		</Form>

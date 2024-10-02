@@ -8,8 +8,10 @@ import {
 	Card,
 	CardHeader,
 	CardTitle,
-	CardContent
+	CardContent,
+	CardFooter
 } from '@/components/ui/card'
+import { BookOpen, Plus } from 'lucide-react'
 import prisma from '@/lib/prismadb'
 
 export default async function ViewEnglishTestsPage() {
@@ -41,51 +43,73 @@ export default async function ViewEnglishTestsPage() {
 				assignedTestId: at.id
 			}))
 		}
-		console.log('Tests for user:', tests)
+		console.log('Kullanıcı için testler:', tests)
 	} catch (error) {
-		console.error('Failed to fetch English tests:', error)
+		console.error('İngilizce testleri getirme başarısız:', error)
 	}
 
 	return (
-		<div className="container mx-auto p-6">
-			<h1 className="text-3xl font-bold mb-8">English Tests</h1>
-			{tests.length === 0 ? (
-				<p>No tests available at the moment.</p>
-			) : (
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-					{tests.map((test) => (
-						<Card key={test.id}>
-							<CardHeader>
-								<CardTitle>{test.title}</CardTitle>
-							</CardHeader>
-							<CardContent>
-								<p>Level: {test.level}</p>
-								<p>Questions: {test.questions.length}</p>
-								<Button asChild className="mt-4">
-									<Link
-										href={
-											session.user.role === 'admin'
-												? `/panel/english-test/${test.id}`
-												: `/panel/english-test/take/${test.assignedTestId}`
-										}
-									>
-										{session.user.role === 'admin'
-											? 'View Details'
-											: 'Take Test'}
-									</Link>
-								</Button>
-							</CardContent>
-						</Card>
-					))}
-				</div>
-			)}
-			{session.user.role === 'admin' && (
-				<Button asChild className="mt-8">
-					<Link href="/panel/english-test/create">
-						Create New Test
-					</Link>
-				</Button>
-			)}
+		<div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800 py-12">
+			<div className="container mx-auto px-4 sm:px-6 lg:px-8">
+				<h1 className="text-4xl font-bold mb-8 text-center text-gray-900 dark:text-white">
+					İngilizce Testleri
+				</h1>
+				{tests.length === 0 ? (
+					<Card className="max-w-md mx-auto">
+						<CardContent className="text-center py-10">
+							<p className="text-lg text-gray-600 dark:text-gray-400">
+								Şu anda mevcut test bulunmamaktadır.
+							</p>
+						</CardContent>
+					</Card>
+				) : (
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+						{tests.map((test) => (
+							<Card key={test.id}>
+								<CardHeader>
+									<CardTitle className="text-xl font-semibold">
+										{test.title}
+									</CardTitle>
+								</CardHeader>
+								<CardContent>
+									<p className="text-sm text-gray-600 dark:text-gray-400">
+										Seviye: {test.level}
+									</p>
+									<p className="text-sm text-gray-600 dark:text-gray-400">
+										Soru Sayısı: {test.questions.length}
+									</p>
+								</CardContent>
+								<CardFooter>
+									<Button asChild className="w-full">
+										<Link
+											href={
+												session.user.role === 'admin'
+													? `/panel/english-test/${test.id}`
+													: `/panel/english-test/take/${test.assignedTestId}`
+											}
+										>
+											<BookOpen className="mr-2 h-4 w-4" />
+											{session.user.role === 'admin'
+												? 'Detayları Görüntüle'
+												: 'Testi Başlat'}
+										</Link>
+									</Button>
+								</CardFooter>
+							</Card>
+						))}
+					</div>
+				)}
+				{session.user.role === 'admin' && (
+					<div className="mt-12 text-center">
+						<Button asChild size="lg">
+							<Link href="/panel/english-test/create">
+								<Plus className="mr-2 h-5 w-5" />
+								Yeni Test Oluştur
+							</Link>
+						</Button>
+					</div>
+				)}
+			</div>
 		</div>
 	)
 }
