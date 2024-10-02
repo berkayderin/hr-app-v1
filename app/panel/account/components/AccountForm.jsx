@@ -27,8 +27,9 @@ const accountSchema = z
 		newPassword: z
 			.string()
 			.min(8, { message: 'Yeni şifre en az 8 karakter olmalıdır' })
-			.optional(),
-		confirmNewPassword: z.string().optional()
+			.optional()
+			.or(z.literal('')),
+		confirmNewPassword: z.string().optional().or(z.literal(''))
 	})
 	.refine(
 		(data) => {
@@ -43,6 +44,19 @@ const accountSchema = z
 		{
 			message: 'Yeni şifreler eşleşmiyor',
 			path: ['confirmNewPassword']
+		}
+	)
+	.refine(
+		(data) => {
+			if (data.newPassword && !data.currentPassword) {
+				return false
+			}
+			return true
+		},
+		{
+			message:
+				'Yeni şifre belirlemek için mevcut şifrenizi girmelisiniz',
+			path: ['currentPassword']
 		}
 	)
 
@@ -72,18 +86,30 @@ const AccountForm = ({ user }) => {
 			})
 
 			if (!response.ok) {
-				throw new Error('Hesap güncelleme başarısız oldu')
+				const errorData = await response.json()
+				throw new Error(
+					errorData.message || 'Hesap güncelleme başarısız oldu'
+				)
 			}
 
 			toast({
 				title: 'Başarılı',
 				description: 'Hesap bilgileriniz güncellendi.'
 			})
+
+			// Formu sıfırla
+			form.reset({
+				email: data.email,
+				currentPassword: '',
+				newPassword: '',
+				confirmNewPassword: ''
+			})
 		} catch (error) {
 			console.error('Hesap güncelleme hatası:', error)
 			toast({
 				title: 'Hata',
 				description:
+					error.message ||
 					'Hesap bilgileriniz güncellenirken bir hata oluştu.',
 				variant: 'destructive'
 			})

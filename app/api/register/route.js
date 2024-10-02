@@ -18,7 +18,10 @@ export async function POST(req) {
 		})
 
 		if (existingUser) {
-			return new NextResponse('Kullanıcı zaten var', { status: 400 })
+			return new NextResponse(
+				'Bu e-posta adresi ile kayıtlı bir hesap bulunmaktadır',
+				{ status: 409 }
+			)
 		}
 
 		const hashedPassword = await bcrypt.hash(password, 12)

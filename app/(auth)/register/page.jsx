@@ -57,7 +57,7 @@ export default function RegisterPage() {
 			await axios.post('/api/register', {
 				email: data.email,
 				password: data.password,
-				role: 'user' // Varsayılan rol olarak 'user' ekliyoruz
+				role: 'user'
 			})
 
 			toast({
@@ -68,14 +68,22 @@ export default function RegisterPage() {
 
 			router.push('/login')
 		} catch (error) {
-			console.error('Kayıt hatası:', error)
-			toast({
-				title: 'Hata',
-				description:
-					error.response?.data?.message ||
-					'Bir hata oluştu, lütfen tekrar deneyin',
-				variant: 'destructive'
-			})
+			if (error.response?.status === 409) {
+				toast({
+					title: 'Hata',
+					description:
+						'Bu e-posta adresi ile kayıtlı bir hesap bulunmaktadır',
+					variant: 'destructive'
+				})
+			} else {
+				toast({
+					title: 'Hata',
+					description:
+						error.response?.data?.message ||
+						'Bir hata oluştu, lütfen tekrar deneyin',
+					variant: 'destructive'
+				})
+			}
 		}
 	}
 
