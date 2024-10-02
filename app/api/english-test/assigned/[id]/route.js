@@ -1,4 +1,4 @@
-// app/api/english-test/[id]/route.js
+// app/api/english-test/assigned/[id]/route.js
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/AuthOptions'
@@ -18,7 +18,7 @@ export async function GET(request, { params }) {
 
 		const assignedTest = await prisma.assignedTest.findFirst({
 			where: {
-				testId: params.id,
+				id: params.id,
 				userId: session.user.id,
 				completedAt: null
 			},
@@ -28,7 +28,7 @@ export async function GET(request, { params }) {
 
 		if (!assignedTest) {
 			console.log(
-				`Test with ID ${params.id} not found or not assigned to user ${session.user.id}`
+				`AssignedTest with ID ${params.id} not found or not assigned to user ${session.user.id}`
 			)
 			return NextResponse.json(
 				{ error: 'Test not found or not assigned' },
@@ -37,13 +37,13 @@ export async function GET(request, { params }) {
 		}
 
 		const testData = {
-			...assignedTest.test,
+			test: assignedTest.test,
 			timeRemaining: assignedTest.timeRemaining
 		}
 
 		return NextResponse.json(testData)
 	} catch (error) {
-		console.error('Error in /api/english-test/[id]:', error)
+		console.error('Error in /api/english-test/assigned/[id]:', error)
 		return NextResponse.json(
 			{ error: 'Internal server error', details: error.message },
 			{ status: 500 }

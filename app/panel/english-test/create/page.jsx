@@ -13,19 +13,19 @@ import {
 	SelectValue
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { useToast } from '@/hooks/use-toast'
 
 export default function CreateEnglishTestPage() {
 	const [title, setTitle] = useState('')
 	const [level, setLevel] = useState('')
 	const [prompt, setPrompt] = useState('')
 	const [isLoading, setIsLoading] = useState(false)
-	const [error, setError] = useState('')
 	const router = useRouter()
+	const { toast } = useToast()
 
 	const handleSubmit = async (e) => {
 		e.preventDefault()
 		setIsLoading(true)
-		setError('')
 
 		try {
 			const response = await fetch('/api/english-test/create', {
@@ -40,10 +40,18 @@ export default function CreateEnglishTestPage() {
 				throw new Error(data.error || 'Failed to create test')
 			}
 
+			toast({
+				title: 'Success',
+				description: 'Test created successfully'
+			})
 			router.push('/panel/english-test')
 		} catch (error) {
 			console.error('Error creating test:', error)
-			setError(error.message || 'An unexpected error occurred')
+			toast({
+				variant: 'destructive',
+				title: 'Error',
+				description: error.message || 'An unexpected error occurred'
+			})
 		} finally {
 			setIsLoading(false)
 		}
@@ -52,7 +60,6 @@ export default function CreateEnglishTestPage() {
 	return (
 		<div className="container mx-auto p-6">
 			<h1 className="text-3xl font-bold mb-8">Create English Test</h1>
-			{error && <p className="text-red-500 mb-4">{error}</p>}
 			<form onSubmit={handleSubmit} className="space-y-4">
 				<Input
 					placeholder="Test Title"

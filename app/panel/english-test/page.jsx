@@ -21,9 +21,27 @@ export default async function ViewEnglishTestsPage() {
 
 	let tests = []
 	try {
-		tests = await prisma.englishTest.findMany({
-			orderBy: { createdAt: 'desc' }
-		})
+		if (session.user.role === 'admin') {
+			tests = await prisma.englishTest.findMany({
+				orderBy: { createdAt: 'desc' }
+			})
+		} else {
+			const assignedTests = await prisma.assignedTest.findMany({
+				where: {
+					userId: session.user.id,
+					completedAt: null
+				},
+				include: {
+					test: true
+				},
+				orderBy: { assignedAt: 'desc' }
+			})
+			tests = assignedTests.map((at) => ({
+				...at.test,
+				assignedTestId: at.id
+			}))
+		}
+		console.log('Tests for user:', tests)
 	} catch (error) {
 		console.error('Failed to fetch English tests:', error)
 	}
@@ -31,24 +49,36 @@ export default async function ViewEnglishTestsPage() {
 	return (
 		<div className="container mx-auto p-6">
 			<h1 className="text-3xl font-bold mb-8">English Tests</h1>
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-				{tests.map((test) => (
-					<Card key={test.id}>
-						<CardHeader>
-							<CardTitle>{test.title}</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<p>Level: {test.level}</p>
-							<p>Questions: {test.questions.length}</p>
-							<Button asChild className="mt-4">
-								<Link href={`/panel/english-test/${test.id}`}>
-									View Details
-								</Link>
-							</Button>
-						</CardContent>
-					</Card>
-				))}
-			</div>
+			{tests.length === 0 ? (
+				<p>No tests available at the moment.</p>
+			) : (
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+					{tests.map((test) => (
+						<Card key={test.id}>
+							<CardHeader>
+								<CardTitle>{test.title}</CardTitle>
+							</CardHeader>
+							<CardContent>
+								<p>Level: {test.level}</p>
+								<p>Questions: {test.questions.length}</p>
+								<Button asChild className="mt-4">
+									<Link
+										href={
+											session.user.role === 'admin'
+												? `/panel/english-test/${test.id}`
+												: `/panel/english-test/take/${test.assignedTestId}`
+										}
+									>
+										{session.user.role === 'admin'
+											? 'View Details'
+											: 'Take Test'}
+									</Link>
+								</Button>
+							</CardContent>
+						</Card>
+					))}
+				</div>
+			)}
 			{session.user.role === 'admin' && (
 				<Button asChild className="mt-8">
 					<Link href="/panel/english-test/create">

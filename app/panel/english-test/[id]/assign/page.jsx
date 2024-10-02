@@ -56,8 +56,9 @@ export default function AssignEnglishTestPage({ params }) {
 					userId: selectedUser
 				})
 			})
+			const data = await response.json()
 			if (!response.ok) {
-				throw new Error('Failed to assign test')
+				throw new Error(data.error || 'Failed to assign test')
 			}
 			toast({
 				title: 'Success',
@@ -69,7 +70,8 @@ export default function AssignEnglishTestPage({ params }) {
 			toast({
 				variant: 'destructive',
 				title: 'Error',
-				description: 'Failed to assign test. Please try again.'
+				description:
+					error.message || 'Failed to assign test. Please try again.'
 			})
 		} finally {
 			setIsLoading(false)
@@ -101,7 +103,10 @@ export default function AssignEnglishTestPage({ params }) {
 						))}
 					</SelectContent>
 				</Select>
-				<Button type="submit" disabled={isLoading || isUserLoading}>
+				<Button
+					type="submit"
+					disabled={isLoading || isUserLoading || !selectedUser}
+				>
 					{isLoading ? 'Assigning...' : 'Assign Test'}
 				</Button>
 			</form>

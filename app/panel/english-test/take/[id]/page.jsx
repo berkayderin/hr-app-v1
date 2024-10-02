@@ -1,8 +1,8 @@
-// app/panel/english-test/take/[id]/page.jsx
+'use client'
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
@@ -29,31 +29,40 @@ export default function TakeEnglishTestPage({ params }) {
 	const router = useRouter()
 	const { toast } = useToast()
 
-	useEffect(() => {
-		const fetchTest = async () => {
-			try {
-				const response = await fetch(`/api/english-test/${params.id}`)
-				if (!response.ok) {
-					const errorData = await response.json()
-					throw new Error(errorData.error || 'Failed to fetch test')
-				}
-				const data = await response.json()
-				setTest(data)
-				setTimeRemaining(data.timeRemaining)
-			} catch (error) {
-				console.error('Error fetching test:', error)
-				toast({
-					variant: 'destructive',
-					title: 'Error',
-					description:
-						error.message || 'Failed to load test. Please try again.'
-				})
-			} finally {
-				setIsLoading(false)
+	const fetchTest = useCallback(async () => {
+		console.log('Fetching test with AssignedTest ID:', params.id)
+		try {
+			const response = await fetch(
+				`/api/english-test/assigned/${params.id}`
+			)
+			console.log('API Response:', response)
+			if (!response.ok) {
+				const errorData = await response.json()
+				console.error('API Error:', errorData)
+				throw new Error(errorData.error || 'Failed to fetch test')
 			}
+			const data = await response.json()
+			console.log('Test data received:', data)
+			setTest(data.test)
+			setTimeRemaining(data.timeRemaining)
+		} catch (error) {
+			console.error('Error fetching test:', error)
+			toast({
+				variant: 'destructive',
+				title: 'Error',
+				description:
+					error.message ||
+					'An unexpected error occurred. Please try again.'
+			})
+			router.push('/panel/english-test')
+		} finally {
+			setIsLoading(false)
 		}
+	}, [params.id, router, toast])
+
+	useEffect(() => {
 		fetchTest()
-	}, [params.id, toast])
+	}, [fetchTest])
 
 	useEffect(() => {
 		if (timeRemaining === null) return
@@ -70,7 +79,6 @@ export default function TakeEnglishTestPage({ params }) {
 		}, 1000)
 
 		return () => clearInterval(timer)
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [timeRemaining])
 
 	useEffect(() => {
@@ -84,18 +92,21 @@ export default function TakeEnglishTestPage({ params }) {
 	}, [])
 
 	const handleAnswer = (answer) => {
-		setAnswers({ ...answers, [currentQuestion]: answer })
+		setAnswers((prevAnswers) => ({
+			...prevAnswers,
+			[currentQuestion]: answer
+		}))
 	}
 
 	const handleNext = () => {
 		if (currentQuestion < test.questions.length - 1) {
-			setCurrentQuestion(currentQuestion + 1)
+			setCurrentQuestion((prev) => prev + 1)
 		}
 	}
 
 	const handlePrevious = () => {
 		if (currentQuestion > 0) {
-			setCurrentQuestion(currentQuestion - 1)
+			setCurrentQuestion((prev) => prev - 1)
 		}
 	}
 
@@ -129,8 +140,9 @@ export default function TakeEnglishTestPage({ params }) {
 	}
 
 	if (isLoading) return <div>Loading...</div>
-	if (!test || !test.questions || test.questions.length === 0)
-		return <div>No test data available</div>
+	if (!test) return null
+
+	const question = test.questions[currentQuestion]
 
 	return (
 		<div className="container mx-auto p-6">
@@ -148,7 +160,7 @@ export default function TakeEnglishTestPage({ params }) {
 				<CardContent>
 					<p className="mb-4">{question.question}</p>
 					<RadioGroup
-						value={answers[currentQuestion]}
+						value={answers[currentQuestion]?.toString()}
 						onValueChange={handleAnswer}
 					>
 						{question.options.map((option, index) => (
@@ -157,7 +169,7 @@ export default function TakeEnglishTestPage({ params }) {
 								className="flex items-center space-x-2"
 							>
 								<RadioGroupItem
-									value={index}
+									value={index.toString()}
 									id={`option-${index}`}
 								/>
 								<Label htmlFor={`option-${index}`}>{option}</Label>

@@ -16,8 +16,44 @@ export async function POST(request) {
 
 		const { testId, userId } = await request.json()
 
-		if (!prisma || !prisma.assignedTest) {
-			throw new Error('Prisma client is not initialized properly')
+		// Check if the test exists
+		const test = await prisma.englishTest.findUnique({
+			where: { id: testId }
+		})
+
+		if (!test) {
+			return NextResponse.json(
+				{ error: 'Test not found' },
+				{ status: 404 }
+			)
+		}
+
+		// Check if the user exists
+		const user = await prisma.user.findUnique({
+			where: { id: userId }
+		})
+
+		if (!user) {
+			return NextResponse.json(
+				{ error: 'User not found' },
+				{ status: 404 }
+			)
+		}
+
+		// Check if the test is already assigned to the user
+		const existingAssignment = await prisma.assignedTest.findFirst({
+			where: {
+				userId: userId,
+				testId: testId,
+				completedAt: null
+			}
+		})
+
+		if (existingAssignment) {
+			return NextResponse.json(
+				{ error: 'Test already assigned to the user' },
+				{ status: 400 }
+			)
 		}
 
 		const assignedTest = await prisma.assignedTest.create({
@@ -27,6 +63,8 @@ export async function POST(request) {
 				timeRemaining: 20 * 60 // 20 minutes in seconds
 			}
 		})
+
+		console.log('Test assigned successfully:', assignedTest)
 
 		return NextResponse.json(assignedTest)
 	} catch (error) {
