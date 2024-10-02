@@ -12,6 +12,7 @@ import {
 
 export default function Home() {
 	const [response, setResponse] = useState('')
+	const [error, setError] = useState('')
 	const [loading, setLoading] = useState(false)
 	const [question, setQuestion] = useState('')
 
@@ -28,6 +29,8 @@ export default function Home() {
 		}
 
 		setLoading(true)
+		setError('')
+		setResponse('')
 		try {
 			const res = await fetch('/api/ask-claude', {
 				method: 'POST',
@@ -38,13 +41,15 @@ export default function Home() {
 			})
 
 			if (!res.ok) {
-				throw new Error('Failed to fetch')
+				const errorData = await res.json()
+				throw new Error(errorData.details || 'Failed to fetch')
 			}
 
 			const data = await res.json()
 			setResponse(data.response)
 		} catch (error) {
-			setResponse('An error occurred while fetching the message.')
+			console.error('Error fetching message:', error)
+			setError(`An error occurred: ${error.message}`)
 		}
 		setLoading(false)
 	}
@@ -70,6 +75,12 @@ export default function Home() {
 					>
 						{loading ? 'Yükleniyor...' : 'Gönder'}
 					</Button>
+					{error && (
+						<div className="mt-4 text-red-500">
+							<h2 className="text-xl font-semibold mb-2">Hata:</h2>
+							<p>{error}</p>
+						</div>
+					)}
 					{response && (
 						<div className="mt-4">
 							<h2 className="text-xl font-semibold mb-2">Cevap:</h2>

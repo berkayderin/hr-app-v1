@@ -15,10 +15,12 @@ const bedrockClient = new BedrockRuntimeClient({
 
 export async function POST(request) {
 	try {
+		console.log('Received request to /api/ask-claude')
 		const { question } = await request.json()
+		console.log('Question:', question)
 
 		const input = {
-			modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
+			modelId: 'anthropic.claude-3-sonnet-20240229-v1:0',
 			contentType: 'application/json',
 			accept: 'application/json',
 			body: JSON.stringify({
@@ -33,8 +35,10 @@ export async function POST(request) {
 			})
 		}
 
+		console.log('Sending request to Bedrock')
 		const command = new InvokeModelCommand(input)
 		const data = await bedrockClient.send(command)
+		console.log('Received response from Bedrock')
 
 		const jsonResponse = JSON.parse(
 			new TextDecoder().decode(data.body)
@@ -44,10 +48,24 @@ export async function POST(request) {
 			response: jsonResponse.content[0].text
 		})
 	} catch (error) {
+		console.error('Error in /api/ask-claude:', error)
+
+		if (error.name === 'ExpiredTokenException') {
+			return NextResponse.json(
+				{
+					error:
+						'AWS kimlik bilgileri süresi dolmuş. Lütfen yöneticinize başvurun.',
+					details: error.message
+				},
+				{ status: 401 }
+			)
+		}
+
 		return NextResponse.json(
 			{
 				error: 'Mesaj alınırken bir hata oluştu.',
-				details: error.message
+				details: error.message,
+				stack: error.stack
 			},
 			{ status: 500 }
 		)

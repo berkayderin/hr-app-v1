@@ -77,18 +77,30 @@ export default async function PanelPage() {
 
 				<Card>
 					<CardHeader className="space-y-1">
-						<CardTitle className="text-2xl">Testler</CardTitle>
+						<CardTitle className="text-2xl">İngilizce Test</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<p className="text-sm text-muted-foreground">
-							Mevcut testleri görüntüleyin ve yönetin.
+							Yapay zeka destekli İngilizce soruları oluşturun.
 						</p>
 					</CardContent>
-					<CardFooter>
+					<CardFooter className="flex flex-col space-y-2">
 						<Button asChild variant="outline" className="w-full">
-							<Link href="/panel/tests">
+							<Link href="/panel/english-test">
 								<ClipboardList className="mr-2 h-4 w-4" />
-								Testleri Görüntüle
+								İngilizce Testlerini Görüntüle
+							</Link>
+						</Button>
+						<Button asChild variant="outline" className="w-full">
+							<Link href="/panel/english-test/create">
+								<ClipboardList className="mr-2 h-4 w-4" />
+								İngilizce Testi Oluştur
+							</Link>
+						</Button>
+						<Button asChild variant="outline" className="w-full">
+							<Link href="/panel/english-test/">
+								<ClipboardList className="mr-2 h-4 w-4" />
+								İngilizce Testini Ata
 							</Link>
 						</Button>
 					</CardFooter>
