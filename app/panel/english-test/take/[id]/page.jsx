@@ -79,6 +79,7 @@ export default function TakeEnglishTestPage() {
 		}, 1000)
 
 		return () => clearInterval(timer)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [timeRemaining])
 
 	useEffect(() => {
@@ -112,27 +113,37 @@ export default function TakeEnglishTestPage() {
 
 	const handleSubmit = async () => {
 		setIsSubmitting(true)
+		console.log('Submitting test. Params ID:', params.id)
+		console.log('Answers:', answers)
 		try {
+			console.log('Sending POST request to /api/english-test/submit')
 			const response = await fetch('/api/english-test/submit', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ testId: params.id, answers })
 			})
+			console.log('Response status:', response.status)
+			console.log('Response OK:', response.ok)
+
 			if (response.ok) {
+				const data = await response.json()
+				console.log('Submission successful. Response data:', data)
 				toast({
 					title: 'Success',
 					description: 'Test submitted successfully'
 				})
 				router.push('/panel/english-test/results')
 			} else {
-				throw new Error('Failed to submit test')
+				const errorData = await response.json()
+				console.error('Submission failed. Error data:', errorData)
+				throw new Error(errorData.error || 'Failed to submit test')
 			}
 		} catch (error) {
-			console.error('Error submitting test:', error)
+			console.error('Error in handleSubmit:', error)
 			toast({
 				variant: 'destructive',
 				title: 'Error',
-				description: 'Failed to submit test. Please try again.'
+				description: `Failed to submit test: ${error.message}`
 			})
 		} finally {
 			setIsSubmitting(false)

@@ -38,6 +38,7 @@ model AssignedTest {
   score         Int?
   startedAt     DateTime?
   timeRemaining Int?
+  answers       Json?
   user          User        @relation(fields: [userId], references: [id])
   test          EnglishTest @relation(fields: [testId], references: [id])
 }
