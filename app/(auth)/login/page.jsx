@@ -26,9 +26,9 @@ import {
 	FormLabel,
 	FormMessage
 } from '@/components/ui/form'
-import { useToast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
 import { getSession, signIn } from 'next-auth/react'
+import { toast } from 'sonner'
 
 const loginSchema = z.object({
 	email: z
@@ -42,7 +42,6 @@ const loginSchema = z.object({
 export default function LoginPage() {
 	const [showPassword, setShowPassword] = useState(false)
 
-	const { toast } = useToast()
 	const router = useRouter()
 
 	const form = useForm({
@@ -65,12 +64,6 @@ export default function LoginPage() {
 				throw new Error(result.error)
 			}
 
-			toast({
-				title: 'Başarılı',
-				description: 'Giriş başarılı, yönlendiriliyorsunuz...',
-				variant: 'success'
-			})
-
 			// Kullanıcı rolüne göre yönlendirme
 			const session = await getSession()
 			if (session?.user?.role === 'admin') {
@@ -80,12 +73,7 @@ export default function LoginPage() {
 			}
 		} catch (error) {
 			console.error('Giriş hatası:', error)
-			toast({
-				title: 'Hata',
-				description:
-					error.message || 'Giriş yapılırken bir hata oluştu',
-				variant: 'destructive'
-			})
+			toast.error('Giriş yapılırken bir hata oluştu')
 		}
 	}
 

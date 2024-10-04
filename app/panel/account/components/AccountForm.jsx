@@ -15,9 +15,8 @@ import {
 	FormLabel,
 	FormMessage
 } from '@/components/ui/form'
-import Link from 'next/link'
-import { User, Lock, Mail, ArrowLeft } from 'lucide-react'
-import { useToast } from '@/hooks/use-toast'
+import { Lock, Mail } from 'lucide-react'
+import { toast } from 'sonner'
 
 const accountSchema = z
 	.object({
@@ -65,7 +64,6 @@ const accountSchema = z
 
 const AccountForm = ({ user }) => {
 	const [isLoading, setIsLoading] = useState(false)
-	const { toast } = useToast()
 
 	const form = useForm({
 		resolver: zodResolver(accountSchema),
@@ -95,11 +93,7 @@ const AccountForm = ({ user }) => {
 				)
 			}
 
-			toast({
-				title: 'Başarılı',
-				description: 'Hesap bilgileriniz güncellendi.',
-				duration: 3000
-			})
+			toast.success('Hesap bilgileriniz başarıyla güncellendi')
 
 			form.reset({
 				email: data.email,
@@ -109,14 +103,6 @@ const AccountForm = ({ user }) => {
 			})
 		} catch (error) {
 			console.error('Hesap güncelleme hatası:', error)
-			toast({
-				title: 'Hata',
-				description:
-					error.message ||
-					'Hesap bilgileriniz güncellenirken bir hata oluştu.',
-				variant: 'destructive',
-				duration: 3000
-			})
 		} finally {
 			setIsLoading(false)
 		}

@@ -28,7 +28,7 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
-import { useToast } from '@/hooks/use-toast'
+import { toast } from 'sonner'
 
 export default function AssignEnglishTestPage({ params }) {
 	const [users, setUsers] = useState([])
@@ -36,7 +36,6 @@ export default function AssignEnglishTestPage({ params }) {
 	const [isLoading, setIsLoading] = useState(false)
 	const [isUserLoading, setIsUserLoading] = useState(true)
 	const router = useRouter()
-	const { toast } = useToast()
 
 	useEffect(() => {
 		const fetchUsers = async () => {
@@ -61,6 +60,7 @@ export default function AssignEnglishTestPage({ params }) {
 			}
 		}
 		fetchUsers()
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [toast])
 
 	const handleSubmit = async (e) => {
@@ -79,20 +79,11 @@ export default function AssignEnglishTestPage({ params }) {
 			if (!response.ok) {
 				throw new Error(data.error || 'Test atanamadı')
 			}
-			toast({
-				title: 'Başarılı',
-				description: 'Test başarıyla atandı',
-				icon: <CheckCircle className="h-5 w-5 text-green-500" />
-			})
+			toast.success('Test başarıyla atandı')
 			router.push('/panel/english-test')
 		} catch (error) {
 			console.error('Test atama hatası:', error)
-			toast({
-				variant: 'destructive',
-				title: 'Hata',
-				description:
-					error.message || 'Test atanamadı. Lütfen tekrar deneyin.'
-			})
+			toast.error('Test atanırken bir hata oluştu')
 		} finally {
 			setIsLoading(false)
 		}

@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/form'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
-import { useToast } from '@/hooks/use-toast'
+import { toast } from 'sonner'
 
 const registerSchema = z.object({
 	email: z
@@ -42,7 +42,6 @@ const registerSchema = z.object({
 export default function RegisterPage() {
 	const [showPassword, setShowPassword] = useState(false)
 
-	const { toast } = useToast()
 	const router = useRouter()
 
 	const form = useForm({
@@ -61,29 +60,14 @@ export default function RegisterPage() {
 				role: 'user'
 			})
 
-			toast({
-				title: 'Başarılı',
-				description: 'Kayıt başarılı, yönlendiriliyorsunuz...',
-				variant: 'success'
-			})
+			toast.success('Hesabınız başarıyla oluşturuldu')
 
 			router.push('/login')
 		} catch (error) {
 			if (error.response?.status === 409) {
-				toast({
-					title: 'Hata',
-					description:
-						'Bu e-posta adresi ile kayıtlı bir hesap bulunmaktadır',
-					variant: 'destructive'
-				})
+				toast.error('Bu e-posta adresi zaten kullanımda')
 			} else {
-				toast({
-					title: 'Hata',
-					description:
-						error.response?.data?.message ||
-						'Bir hata oluştu, lütfen tekrar deneyin',
-					variant: 'destructive'
-				})
+				toast.error('Hesap oluşturulurken bir hata oluştu')
 			}
 		}
 	}

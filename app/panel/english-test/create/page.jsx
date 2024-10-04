@@ -12,7 +12,6 @@ import {
 	SelectValue
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { useToast } from '@/hooks/use-toast'
 import { Loader2, BookOpen, FileText } from 'lucide-react'
 import {
 	Breadcrumb,
@@ -22,6 +21,7 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
+import { toast } from 'sonner'
 
 export default function CreateEnglishTestPage() {
 	const [title, setTitle] = useState('')
@@ -30,7 +30,6 @@ export default function CreateEnglishTestPage() {
 	const [isLoading, setIsLoading] = useState(false)
 	const [isFormValid, setIsFormValid] = useState(false)
 	const router = useRouter()
-	const { toast } = useToast()
 
 	useEffect(() => {
 		setIsFormValid(
@@ -56,23 +55,10 @@ export default function CreateEnglishTestPage() {
 				throw new Error(data.error || 'Test oluşturulamadı')
 			}
 
-			toast({
-				title: 'Başarılı',
-				description: 'Test başarıyla oluşturuldu',
-				duration: 3000
-			})
+			toast.success('Test başarıyla oluşturuldu')
 			router.push('/panel/english-test')
 		} catch (error) {
 			console.error('Test oluşturma hatası:', error)
-			toast({
-				variant: 'destructive',
-				title: 'Hata',
-				description:
-					error instanceof Error
-						? error.message
-						: 'Beklenmeyen bir hata oluştu',
-				duration: 5000
-			})
 		} finally {
 			setIsLoading(false)
 		}

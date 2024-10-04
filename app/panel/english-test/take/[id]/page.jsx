@@ -24,7 +24,7 @@ import {
 	ChevronRight,
 	Send
 } from 'lucide-react'
-import { useToast } from '@/hooks/use-toast'
+import { toast } from 'sonner'
 
 export default function TakeEnglishTestPage() {
 	const params = useParams()
@@ -35,7 +35,6 @@ export default function TakeEnglishTestPage() {
 	const [isSubmitting, setIsSubmitting] = useState(false)
 	const [isLoading, setIsLoading] = useState(true)
 	const router = useRouter()
-	const { toast } = useToast()
 
 	const fetchTest = useCallback(async () => {
 		try {
@@ -47,28 +46,16 @@ export default function TakeEnglishTestPage() {
 			}
 			const data = await response.json()
 			if (data.test.completed) {
-				toast({
-					variant: 'destructive',
-					title: 'Test Zaten Tamamlandı',
-					description: 'Bu test daha önce gönderilmiş.'
-				})
-				router.push('/panel/english-test')
-				return
+				toast.info('Bu test zaten tamamlanmış')
 			}
 			setTest(data.test)
 			setTimeRemaining(data.timeRemaining)
 		} catch (error) {
-			toast({
-				variant: 'destructive',
-				title: 'Hata',
-				description:
-					error.message ||
-					'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.'
-			})
 			router.push('/panel/english-test')
 		} finally {
 			setIsLoading(false)
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [params.id, router, toast])
 
 	useEffect(() => {
