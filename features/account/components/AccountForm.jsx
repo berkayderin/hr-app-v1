@@ -1,7 +1,7 @@
-// app/panel/account/components/AccountForm.jsx
+// features/account/components/AccountForm.jsx
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -16,7 +16,7 @@ import {
 	FormMessage
 } from '@/components/ui/form'
 import { Lock, Mail } from 'lucide-react'
-import { toast } from 'sonner'
+import useAccount from '../queries/useAccount'
 
 const accountSchema = z
 	.object({
@@ -63,7 +63,8 @@ const accountSchema = z
 	)
 
 const AccountForm = ({ user }) => {
-	const [isLoading, setIsLoading] = useState(false)
+	const { useUpdateAccount } = useAccount()
+	const updateAccount = useUpdateAccount()
 
 	const form = useForm({
 		resolver: zodResolver(accountSchema),
@@ -75,37 +76,8 @@ const AccountForm = ({ user }) => {
 		}
 	})
 
-	const onSubmit = async (data) => {
-		setIsLoading(true)
-		try {
-			const response = await fetch('/api/account/update', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(data)
-			})
-
-			if (!response.ok) {
-				const errorData = await response.json()
-				throw new Error(
-					errorData.message || 'Hesap güncelleme başarısız oldu'
-				)
-			}
-
-			toast.success('Hesap bilgileriniz başarıyla güncellendi')
-
-			form.reset({
-				email: data.email,
-				currentPassword: '',
-				newPassword: '',
-				confirmNewPassword: ''
-			})
-		} catch (error) {
-			console.error('Hesap güncelleme hatası:', error)
-		} finally {
-			setIsLoading(false)
-		}
+	const onSubmit = (data) => {
+		updateAccount.mutate(data)
 	}
 
 	return (
@@ -202,10 +174,14 @@ const AccountForm = ({ user }) => {
 				<div className="flex flex-col sm:flex-row justify-end gap-4">
 					<Button
 						type="submit"
-						disabled={isLoading}
+						disabled={updateAccount.isLoading}
 						className="w-full sm:w-auto"
 					>
-						<span>{isLoading ? 'Güncelleniyor...' : 'Güncelle'}</span>
+						<span>
+							{updateAccount.isLoading
+								? 'Güncelleniyor...'
+								: 'Güncelle'}
+						</span>
 					</Button>
 				</div>
 			</form>

@@ -18,7 +18,6 @@ export async function POST(req) {
 
 		const { email, currentPassword, newPassword } = await req.json()
 
-		// Doğrudan e-posta kullanarak kullanıcıyı bul
 		const user = await prisma.user.findUnique({
 			where: { email: session.user.email }
 		})

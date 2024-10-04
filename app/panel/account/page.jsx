@@ -2,13 +2,7 @@
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/AuthOptions'
 import { redirect } from 'next/navigation'
-import AccountForm from './components/AccountForm'
-import {
-	Card,
-	CardContent,
-	CardHeader,
-	CardTitle
-} from '@/components/ui/card'
+import AccountForm from '@/features/account/components/AccountForm'
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -17,6 +11,7 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
+
 export default async function AccountSettingsPage() {
 	const session = await getServerSession(authOptions)
 
