@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt'
 export async function POST(req) {
 	try {
 		const body = await req.json()
-		const { email, password, role } = body
+		const { email, password } = body
 
 		if (!email || !password) {
 			return new NextResponse('Eksik kimlik bilgileri', {
@@ -31,7 +31,7 @@ export async function POST(req) {
 			data: {
 				email,
 				hashedPassword,
-				role: role || 'user'
+				role: 'user'
 			}
 		})
 
