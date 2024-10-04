@@ -66,7 +66,9 @@ export default async function ViewEnglishTestsPage() {
 					</BreadcrumbItem>
 					<BreadcrumbSeparator />
 					<BreadcrumbItem>
-						<BreadcrumbPage>İngilizce Testleri</BreadcrumbPage>
+						<BreadcrumbPage className="font-medium">
+							İngilizce Testleri
+						</BreadcrumbPage>
 					</BreadcrumbItem>
 				</BreadcrumbList>
 			</Breadcrumb>
