@@ -18,7 +18,8 @@ import {
 	BookOpen,
 	PenTool,
 	User,
-	BarChart
+	BarChart,
+	CheckCircle
 } from 'lucide-react'
 import { PrismaClient } from '@prisma/client'
 
@@ -51,7 +52,7 @@ export default async function PanelPage() {
 						<CardHeader className="space-y-1">
 							<CardTitle className="text-2xl flex items-center space-x-2">
 								<User className="h-6 w-6 text-primary" />
-								<span>Hesap Bilgileri</span>
+								<span>Hesap Bilgilerim</span>
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
@@ -158,7 +159,7 @@ export default async function PanelPage() {
 					)}
 
 					{session.user.role === 'user' && (
-						<Card className="bg-white dark:bg-gray-800  ">
+						<Card className="bg-white dark:bg-gray-800">
 							<CardHeader className="space-y-1">
 								<CardTitle className="text-2xl flex items-center space-x-2">
 									<BookOpen className="h-6 w-6 text-primary" />
@@ -171,15 +172,41 @@ export default async function PanelPage() {
 										{assignedTests.map((assignedTest) => (
 											<li
 												key={assignedTest.id}
-												className="bg-gray-100 dark:bg-gray-700 p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors "
+												className={`p-3 rounded-md transition-colors ${
+													assignedTest.completedAt
+														? 'bg-gray-100 dark:bg-gray-700 border-l-4 border-green-500'
+														: 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
+												}`}
 											>
-												<Link
-													href={`/panel/english-test/take/${assignedTest.id}`}
-													className="text-primary hover:text-primary-dark font-bold flex items-center space-x-2"
-												>
-													<ClipboardList className="h-4 w-4" />
-													<span>{assignedTest.test.title}</span>
-												</Link>
+												<div className="flex items-center justify-between">
+													{assignedTest.completedAt ? (
+														<div className="text-primary font-bold flex items-center space-x-2">
+															<CheckCircle className="h-4 w-4 text-green-500" />
+															<span>{assignedTest.test.title}</span>
+														</div>
+													) : (
+														<Link
+															href={`/panel/english-test/take/${assignedTest.id}`}
+															className="text-primary hover:text-primary-dark font-bold flex items-center space-x-2"
+														>
+															<ClipboardList className="h-4 w-4" />
+															<span>{assignedTest.test.title}</span>
+														</Link>
+													)}
+													{/* {assignedTest.completedAt && (
+														<span className="text-sm text-gray-500">
+															Puan: {assignedTest.score}
+														</span>
+													)} */}
+												</div>
+												{assignedTest.completedAt && (
+													<p className="text-xs text-gray-500 mt-1">
+														Tamamlandı:{' '}
+														{new Date(
+															assignedTest.completedAt
+														).toLocaleString()}
+													</p>
+												)}
 											</li>
 										))}
 									</ul>
@@ -189,6 +216,18 @@ export default async function PanelPage() {
 									</p>
 								)}
 							</CardContent>
+							<CardFooter>
+								<Button
+									asChild
+									variant="outline"
+									className="w-full hover:bg-primary hover:text-white transition-colors"
+								>
+									<Link href="/panel/english-test">
+										<BookOpen className="mr-2 h-4 w-4" />
+										Tüm Testleri Görüntüle
+									</Link>
+								</Button>
+							</CardFooter>
 						</Card>
 					)}
 				</div>
