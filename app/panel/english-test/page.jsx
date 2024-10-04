@@ -11,7 +11,7 @@ import {
 	CardContent,
 	CardFooter
 } from '@/components/ui/card'
-import { BookOpen, Plus } from 'lucide-react'
+import { BookOpen, Plus, BarChart } from 'lucide-react'
 import prisma from '@/lib/prismadb'
 import {
 	Breadcrumb,
@@ -21,6 +21,7 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
+import { Badge } from '@/components/ui/badge'
 
 export default async function ViewEnglishTestsPage() {
 	const session = await getServerSession(authOptions)
@@ -57,34 +58,35 @@ export default async function ViewEnglishTestsPage() {
 	}
 
 	return (
-		<div className="container mx-auto p-4">
-			<Breadcrumb className="mb-4">
+		<div className="container mx-auto p-4 space-y-6">
+			<Breadcrumb>
 				<BreadcrumbList>
 					<BreadcrumbItem>
 						<BreadcrumbLink href="/panel">Ana Sayfa</BreadcrumbLink>
 					</BreadcrumbItem>
 					<BreadcrumbSeparator />
 					<BreadcrumbItem>
-						<BreadcrumbPage className="font-medium">
-							İngilizce Testleri
-						</BreadcrumbPage>
+						<BreadcrumbPage>İngilizce Testleri</BreadcrumbPage>
 					</BreadcrumbItem>
 				</BreadcrumbList>
 			</Breadcrumb>
-			{session.user.role === 'admin' && (
-				<div className="flex justify-start mb-4">
-					<Button asChild size="sm">
+
+			<div className="flex justify-end items-center">
+				{/* <h1 className="text-3xl font-bold">İngilizce Testleri</h1> */}
+				{session.user.role === 'admin' && (
+					<Button asChild>
 						<Link href="/panel/english-test/create">
 							<Plus className="mr-2 h-4 w-4" />
 							Yeni Test Oluştur
 						</Link>
 					</Button>
-				</div>
-			)}
+				)}
+			</div>
+
 			{tests.length === 0 ? (
 				<Card className="max-w-md mx-auto">
 					<CardContent className="text-center py-10">
-						<p className="text-lg text-gray-600">
+						<p className="text-lg text-muted-foreground">
 							Şu anda mevcut test bulunmamaktadır.
 						</p>
 					</CardContent>
@@ -92,19 +94,22 @@ export default async function ViewEnglishTestsPage() {
 			) : (
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 					{tests.map((test) => (
-						<Card key={test.id}>
+						<Card key={test.id} className="flex flex-col">
 							<CardHeader>
-								<CardTitle className="text-xl font-semibold">
-									{test.title}
+								<CardTitle className="flex items-center justify-between">
+									<span>{test.title}</span>
+									<BarChart className="h-5 w-5 text-muted-foreground" />
 								</CardTitle>
 							</CardHeader>
-							<CardContent>
-								<p className="text-sm text-gray-600">
-									Seviye: {test.level}
-								</p>
-								<p className="text-sm text-gray-600">
-									Soru Sayısı: {test.questions.length}
-								</p>
+							<CardContent className="flex-grow">
+								<div className="flex flex-wrap gap-2">
+									<Badge variant="secondary" className="text-xs">
+										Seviye: {test.level}
+									</Badge>
+									<Badge variant="secondary" className="text-xs">
+										Soru Sayısı: {test.questions.length}
+									</Badge>
+								</div>
 							</CardContent>
 							<CardFooter>
 								<Button asChild className="w-full">

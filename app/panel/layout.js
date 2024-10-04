@@ -124,7 +124,7 @@ function SidebarItem({ item, pathname, onClick, isNested = false }) {
 						)}
 					</Button>
 				</CollapsibleTrigger>
-				<CollapsibleContent>
+				<CollapsibleContent className="space-y-1 mt-1">
 					{item.subItems.map((subItem) => (
 						<SidebarItem
 							key={subItem.href}

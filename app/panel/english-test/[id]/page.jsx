@@ -8,7 +8,8 @@ import {
 	CardHeader,
 	CardTitle,
 	CardContent,
-	CardFooter
+	CardFooter,
+	CardDescription
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
@@ -17,9 +18,19 @@ import {
 	Circle,
 	Users,
 	BookOpen,
-	ArrowRight
+	ArrowRight,
+	Pencil
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import {
+	Breadcrumb,
+	BreadcrumbItem,
+	BreadcrumbLink,
+	BreadcrumbList,
+	BreadcrumbPage,
+	BreadcrumbSeparator
+} from '@/components/ui/breadcrumb'
+import { Separator } from '@/components/ui/separator'
 
 export default async function EnglishTestDetailPage({ params }) {
 	const session = await getServerSession(authOptions)
@@ -35,22 +46,22 @@ export default async function EnglishTestDetailPage({ params }) {
 
 	if (!test) {
 		return (
-			<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800">
+			<div className="container mx-auto p-4 flex items-center justify-center min-h-screen">
 				<Card className="max-w-md w-full">
-					<CardContent className="text-center py-10">
-						<h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-							Test Bulunamadı
-						</h1>
-						<p className="text-gray-600 dark:text-gray-400 mb-6">
+					<CardHeader>
+						<CardTitle>Test Bulunamadı</CardTitle>
+						<CardDescription>
 							Aradığınız test mevcut değil veya silinmiş olabilir.
-						</p>
-						<Button asChild>
+						</CardDescription>
+					</CardHeader>
+					<CardFooter>
+						<Button asChild className="w-full">
 							<Link href="/panel/english-test">
 								<ArrowRight className="mr-2 h-4 w-4" />
 								Testlere Geri Dön
 							</Link>
 						</Button>
-					</CardContent>
+					</CardFooter>
 				</Card>
 			</div>
 		)
@@ -59,92 +70,126 @@ export default async function EnglishTestDetailPage({ params }) {
 	const letters = ['A', 'B', 'C', 'D']
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800 py-12">
-			<div className="container mx-auto px-4 sm:px-6 lg:px-8">
-				<h1 className="text-4xl font-bold mb-8 text-center text-gray-900 dark:text-white">
+		<div className="container mx-auto p-4 space-y-6">
+			<Breadcrumb>
+				<BreadcrumbList>
+					<BreadcrumbItem>
+						<BreadcrumbLink href="/panel">Ana Sayfa</BreadcrumbLink>
+					</BreadcrumbItem>
+					<BreadcrumbSeparator />
+					<BreadcrumbItem>
+						<BreadcrumbLink href="/panel/english-test">
+							İngilizce Testleri
+						</BreadcrumbLink>
+					</BreadcrumbItem>
+					<BreadcrumbSeparator />
+					<BreadcrumbItem>
+						<BreadcrumbPage className="font-medium">
+							{test.title}
+						</BreadcrumbPage>
+					</BreadcrumbItem>
+				</BreadcrumbList>
+			</Breadcrumb>
+
+			<div className="flex justify-between items-center">
+				<h1 className="text-3xl font-bold text-primary">
 					{test.title}
 				</h1>
+			</div>
 
-				{session.user.role === 'admin' && (
-					<div className="flex justify-center mb-4">
-						<Button asChild size="lg">
-							<Link href={`/panel/english-test/${test.id}/assign`}>
-								<Users className="mr-2 h-5 w-5" />
-								Testi Ata
-							</Link>
-						</Button>
+			<Card>
+				<CardHeader>
+					<CardTitle>Test Detayları</CardTitle>
+				</CardHeader>
+				<CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+					<div className="flex flex-col space-y-1">
+						<span className="text-sm font-medium text-muted-foreground">
+							Seviye
+						</span>
+						<div className="flex items-center">
+							<Badge variant="secondary" className="text-sm">
+								{test.level}
+							</Badge>
+						</div>
 					</div>
-				)}
+					<div className="flex flex-col space-y-1">
+						<span className="text-sm font-medium text-muted-foreground">
+							Soru Sayısı
+						</span>
+						<div className="flex items-center">
+							<BookOpen className="h-4 w-4 mr-2 text-primary" />
+							<span>{test.questions.length}</span>
+						</div>
+					</div>
+					<div className="flex flex-col space-y-1">
+						<span className="text-sm font-medium text-muted-foreground">
+							Atanma Sayısı
+						</span>
+						<div className="flex items-center">
+							<Users className="h-4 w-4 mr-2 text-primary" />
+							<span>{test.assignedTests.length}</span>
+						</div>
+					</div>
+					{session.user.role === 'admin' && (
+						<div className="flex items-end">
+							<Button asChild className="w-full">
+								<Link href={`/panel/english-test/${test.id}/assign`}>
+									<Users className="mr-2 h-4 w-4" />
+									Testi Ata
+								</Link>
+							</Button>
+						</div>
+					)}
+				</CardContent>
+			</Card>
 
-				<Card className="mb-8">
+			{session.user.role === 'admin' && (
+				<Card>
 					<CardHeader>
-						<CardTitle className="text-2xl">Test Detayları</CardTitle>
+						<CardTitle>Sorular</CardTitle>
 					</CardHeader>
-					<CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
-						<div className="flex items-center space-x-2">
-							<Badge variant="secondary">{test.level}</Badge>
-							<span className="text-gray-600 dark:text-gray-400">
-								Seviye
-							</span>
-						</div>
-						<div className="flex items-center space-x-2">
-							<BookOpen className="h-5 w-5 text-primary" />
-							<span className="text-gray-600 dark:text-gray-400">
-								{test.questions.length} Soru
-							</span>
-						</div>
-						<div className="flex items-center space-x-2">
-							<Users className="h-5 w-5 text-primary" />
-							<span className="text-gray-600 dark:text-gray-400">
-								{test.assignedTests.length} kez atandı
-							</span>
+					<CardContent>
+						<div className="space-y-6">
+							{test.questions.map((question, index) => (
+								<div key={index} className="space-y-4">
+									<div className="flex items-start">
+										<span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground font-medium text-sm mr-3">
+											{index + 1}
+										</span>
+										<h3 className="text-lg font-medium">
+											{question.question}
+										</h3>
+									</div>
+									<ul className="ml-11 space-y-2">
+										{question.options.map((option, optionIndex) => (
+											<li
+												key={optionIndex}
+												className={`flex items-center space-x-2 ${
+													optionIndex === question.correctAnswer
+														? 'text-green-600 dark:text-green-400 font-medium'
+														: 'text-muted-foreground'
+												}`}
+											>
+												{optionIndex === question.correctAnswer ? (
+													<CheckCircle className="h-5 w-5" />
+												) : (
+													<Circle className="h-5 w-5" />
+												)}
+												<span>
+													{letters[optionIndex]}) {option}
+												</span>
+											</li>
+										))}
+									</ul>
+									{index < test.questions.length - 1 && (
+										<Separator className="my-4" />
+									)}
+								</div>
+							))}
 						</div>
 					</CardContent>
 				</Card>
-
-				{session.user.role === 'admin' && (
-					<>
-						<Card className="mb-8">
-							<CardHeader>
-								<CardTitle className="text-2xl">Sorular</CardTitle>
-							</CardHeader>
-							<CardContent>
-								{test.questions.map((question, index) => (
-									<div
-										key={index}
-										className="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg"
-									>
-										<h3 className="font-semibold mb-3 text-lg text-gray-900 dark:text-white">
-											{index + 1}. {question.question}
-										</h3>
-										<ul className="space-y-2">
-											{question.options.map((option, optionIndex) => (
-												<li
-													key={optionIndex}
-													className={`flex items-center space-x-2 ${
-														optionIndex === question.correctAnswer
-															? 'text-green-600 dark:text-green-400 font-medium'
-															: 'text-gray-700 dark:text-gray-300'
-													}`}
-												>
-													{optionIndex === question.correctAnswer ? (
-														<CheckCircle className="h-5 w-5" />
-													) : (
-														<Circle className="h-5 w-5" />
-													)}
-													<span>
-														{letters[optionIndex]}) {option}
-													</span>
-												</li>
-											))}
-										</ul>
-									</div>
-								))}
-							</CardContent>
-						</Card>
-					</>
-				)}
-			</div>
+			)}
 		</div>
 	)
 }

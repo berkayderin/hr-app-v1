@@ -18,8 +18,14 @@ import {
 	TableRow
 } from '@/components/ui/table'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
+import {
+	Breadcrumb,
+	BreadcrumbItem,
+	BreadcrumbLink,
+	BreadcrumbList,
+	BreadcrumbPage,
+	BreadcrumbSeparator
+} from '@/components/ui/breadcrumb'
 
 const prisma = new PrismaClient()
 
@@ -38,15 +44,29 @@ export default async function ViewTestResultsPage() {
 
 	return (
 		<div className="container mx-auto p-6">
-			<h1 className="text-3xl font-bold mb-8 text-center">
-				İngilizce Test Sonuçları
-			</h1>
-			<Link href="/panel/">
-				<Button>Panele Geri Dön</Button>
-			</Link>
+			<Breadcrumb className="mb-4">
+				<BreadcrumbList>
+					<BreadcrumbItem>
+						<BreadcrumbLink href="/panel">Ana Sayfa</BreadcrumbLink>
+					</BreadcrumbItem>
+					<BreadcrumbSeparator />
+					<BreadcrumbItem>
+						<BreadcrumbLink href="/panel/english-test">
+							İngilizce Testleri
+						</BreadcrumbLink>
+					</BreadcrumbItem>
+					<BreadcrumbSeparator />
+					<BreadcrumbItem>
+						<BreadcrumbPage className="font-medium">
+							Test Sonuçları
+						</BreadcrumbPage>
+					</BreadcrumbItem>
+				</BreadcrumbList>
+			</Breadcrumb>
+
 			<Card>
 				<CardHeader>
-					<CardTitle>Tüm Test Sonuçları</CardTitle>
+					<CardTitle>İngilizce Test Sonuçları</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<ScrollArea className="h-[60vh]">
@@ -54,7 +74,7 @@ export default async function ViewTestResultsPage() {
 							<TableHeader>
 								<TableRow>
 									<TableHead className="font-bold">
-										Kullanıcı
+										Kullanıcı E-posta
 									</TableHead>
 									<TableHead className="font-bold">Test</TableHead>
 									<TableHead className="font-bold">Puan</TableHead>

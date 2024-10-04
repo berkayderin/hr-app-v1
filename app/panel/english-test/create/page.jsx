@@ -13,15 +13,15 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/hooks/use-toast'
-import {
-	Card,
-	CardHeader,
-	CardTitle,
-	CardContent,
-	CardFooter
-} from '@/components/ui/card'
 import { Loader2, BookOpen, FileText } from 'lucide-react'
-import Link from 'next/link'
+import {
+	Breadcrumb,
+	BreadcrumbItem,
+	BreadcrumbLink,
+	BreadcrumbList,
+	BreadcrumbPage,
+	BreadcrumbSeparator
+} from '@/components/ui/breadcrumb'
 
 export default function CreateEnglishTestPage() {
 	const [title, setTitle] = useState('')
@@ -79,100 +79,100 @@ export default function CreateEnglishTestPage() {
 	}
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800 py-12">
-			<div className="container mx-auto px-4 sm:px-6 lg:px-8">
-				<Card className="max-w-2xl mx-auto">
-					<CardHeader>
-						<CardTitle className="text-3xl font-bold text-center">
-							İngilizce Testi Oluştur
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<form onSubmit={handleSubmit} className="space-y-6">
-							<div className="space-y-2">
-								<label
-									htmlFor="title"
-									className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-								>
-									Test Başlığı
-								</label>
-								<Input
-									id="title"
-									placeholder="Test Başlığı"
-									value={title}
-									onChange={(e) => setTitle(e.target.value)}
-									required
-									className="w-full"
-									icon={
-										<FileText className="h-4 w-4 text-gray-500" />
-									}
-								/>
-							</div>
-							<div className="space-y-2">
-								<label
-									htmlFor="level"
-									className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-								>
-									Seviye
-								</label>
-								<Select
-									value={level}
-									onValueChange={setLevel}
-									required
-								>
-									<SelectTrigger id="level" className="w-full">
-										<SelectValue placeholder="Seviye Seçin" />
-									</SelectTrigger>
-									<SelectContent>
-										<SelectItem value="B1">B1</SelectItem>
-										<SelectItem value="B2">B2</SelectItem>
-									</SelectContent>
-								</Select>
-							</div>
-							<div className="space-y-2">
-								<label
-									htmlFor="prompt"
-									className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-								>
-									AI Soru Üretme Yönergesi
-								</label>
-								<Textarea
-									id="prompt"
-									placeholder="AI'nın soru üretmesi için yönerge girin"
-									value={prompt}
-									onChange={(e) => setPrompt(e.target.value)}
-									required
-									className="w-full min-h-[100px]"
-								/>
-							</div>
-						</form>
-					</CardContent>
-					<CardFooter className="flex flex-col space-y-2">
-						<Button
-							type="submit"
-							onClick={handleSubmit}
-							disabled={isLoading || !isFormValid}
-							className="w-full"
+		<div className="container mx-auto p-4">
+			<Breadcrumb className="mb-4">
+				<BreadcrumbList>
+					<BreadcrumbItem>
+						<BreadcrumbLink href="/panel">Ana Sayfa</BreadcrumbLink>
+					</BreadcrumbItem>
+					<BreadcrumbSeparator />
+					<BreadcrumbItem>
+						<BreadcrumbLink href="/panel/english-test">
+							İngilizce Testleri
+						</BreadcrumbLink>
+					</BreadcrumbItem>
+					<BreadcrumbSeparator />
+					<BreadcrumbItem>
+						<BreadcrumbPage className="font-medium">
+							Test Oluştur
+						</BreadcrumbPage>
+					</BreadcrumbItem>
+				</BreadcrumbList>
+			</Breadcrumb>
+
+			<div className="max-w-lg border border-gray-200rounded-lg p-6 rounded-lg">
+				<form onSubmit={handleSubmit} className="space-y-6">
+					<div className="space-y-2">
+						<label
+							htmlFor="title"
+							className="block text-sm font-medium text-gray-700 dark:text-gray-300"
 						>
-							{isLoading ? (
-								<>
-									<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-									Oluşturuluyor...
-								</>
-							) : (
-								<>
-									<BookOpen className="mr-2 h-4 w-4" />
-									Testi Oluştur
-								</>
-							)}
-						</Button>
-						<Link href="/panel/">
-							<Button variant="outline" className="w-full">
-								Panele Geri Dön
-							</Button>
-						</Link>
-					</CardFooter>
-				</Card>
+							Test Başlığı
+						</label>
+						<Input
+							id="title"
+							placeholder="Test Başlığı"
+							value={title}
+							onChange={(e) => setTitle(e.target.value)}
+							required
+							className="w-full"
+							icon={<FileText className="h-4 w-4 text-gray-500" />}
+						/>
+					</div>
+					<div className="space-y-2">
+						<label
+							htmlFor="level"
+							className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+						>
+							Seviye
+						</label>
+						<Select value={level} onValueChange={setLevel} required>
+							<SelectTrigger id="level" className="w-full">
+								<SelectValue placeholder="Seviye Seçin" />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="B1">B1</SelectItem>
+								<SelectItem value="B2">B2</SelectItem>
+							</SelectContent>
+						</Select>
+					</div>
+					<div className="space-y-2">
+						<label
+							htmlFor="prompt"
+							className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+						>
+							AI Soru Üretme Yönergesi
+						</label>
+						<Textarea
+							id="prompt"
+							placeholder="AI'nın soru üretmesi için yönerge girin"
+							value={prompt}
+							onChange={(e) => setPrompt(e.target.value)}
+							required
+							className="w-full min-h-[100px]"
+						/>
+					</div>
+				</form>
+				<div className="mt-6">
+					<Button
+						type="submit"
+						onClick={handleSubmit}
+						disabled={isLoading || !isFormValid}
+						className="w-full"
+					>
+						{isLoading ? (
+							<>
+								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+								Oluşturuluyor...
+							</>
+						) : (
+							<>
+								<BookOpen className="mr-2 h-4 w-4" />
+								Testi Oluştur
+							</>
+						)}
+					</Button>
+				</div>
 			</div>
 		</div>
 	)
