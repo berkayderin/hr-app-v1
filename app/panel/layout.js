@@ -31,6 +31,7 @@ import {
 	User,
 	Users
 } from 'lucide-react'
+import { signOut } from 'next-auth/react'
 
 const sidebarItems = [
 	{ icon: Home, label: 'Ana Sayfa', href: '/panel' },
@@ -167,8 +168,9 @@ function Sidebar({ pathname, isMobile = false, setOpen }) {
 					<span className="">HR App</span>
 				</Link>
 			</div>
+
 			<ScrollArea className="flex-1">
-				<div className="space-y-1 p-2">
+				<div className="space-y-1 p-2 font-medium">
 					{sidebarItems.map((item) => (
 						<SidebarItem
 							key={item.href}
@@ -179,16 +181,17 @@ function Sidebar({ pathname, isMobile = false, setOpen }) {
 					))}
 				</div>
 			</ScrollArea>
+
 			<div className="border-t p-4">
 				<Button
 					variant="outline"
 					className="w-full justify-start"
-					asChild
+					onClick={() => {
+						signOut()
+					}}
 				>
-					<Link href="/api/auth/signout">
-						<LogOut className="mr-2 h-4 w-4" />
-						Çıkış Yap
-					</Link>
+					<LogOut className="mr-2 h-4 w-4" />
+					Çıkış Yap
 				</Button>
 			</div>
 		</div>
