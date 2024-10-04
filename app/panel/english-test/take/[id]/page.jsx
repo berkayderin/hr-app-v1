@@ -16,6 +16,14 @@ import {
 	CardContent,
 	CardFooter
 } from '@/components/ui/card'
+import { Progress } from '@/components/ui/progress'
+import {
+	AlertCircle,
+	CheckCircle2,
+	ChevronLeft,
+	ChevronRight,
+	Send
+} from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 
 export default function TakeEnglishTestPage() {
@@ -30,29 +38,32 @@ export default function TakeEnglishTestPage() {
 	const { toast } = useToast()
 
 	const fetchTest = useCallback(async () => {
-		console.log('Fetching test with AssignedTest ID:', params.id)
 		try {
 			const response = await fetch(
 				`/api/english-test/assigned/${params.id}`
 			)
-			console.log('API Response:', response)
 			if (!response.ok) {
-				const errorData = await response.json()
-				console.error('API Error:', errorData)
-				throw new Error(errorData.error || 'Failed to fetch test')
+				throw new Error('Testi getirme başarısız oldu')
 			}
 			const data = await response.json()
-			console.log('Test data received:', data)
+			if (data.test.completed) {
+				toast({
+					variant: 'destructive',
+					title: 'Test Zaten Tamamlandı',
+					description: 'Bu test daha önce gönderilmiş.'
+				})
+				router.push('/panel/english-test')
+				return
+			}
 			setTest(data.test)
 			setTimeRemaining(data.timeRemaining)
 		} catch (error) {
-			console.error('Error fetching test:', error)
 			toast({
 				variant: 'destructive',
-				title: 'Error',
+				title: 'Hata',
 				description:
 					error.message ||
-					'An unexpected error occurred. Please try again.'
+					'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.'
 			})
 			router.push('/panel/english-test')
 		} finally {
@@ -113,77 +124,89 @@ export default function TakeEnglishTestPage() {
 
 	const handleSubmit = async () => {
 		setIsSubmitting(true)
-		console.log('Submitting test. Params ID:', params.id)
-		console.log('Answers:', answers)
 		try {
-			console.log('Sending POST request to /api/english-test/submit')
 			const response = await fetch('/api/english-test/submit', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ testId: params.id, answers })
 			})
-			console.log('Response status:', response.status)
-			console.log('Response OK:', response.ok)
 
 			if (response.ok) {
-				const data = await response.json()
-				console.log('Submission successful. Response data:', data)
 				toast({
-					title: 'Success',
-					description: 'Test submitted successfully'
+					title: 'Test Gönderildi',
+					description: 'Testiniz başarıyla gönderildi.',
+					icon: <CheckCircle2 className="h-4 w-4" />
 				})
 				router.push('/panel/english-test/results')
 			} else {
-				const errorData = await response.json()
-				console.error('Submission failed. Error data:', errorData)
-				throw new Error(errorData.error || 'Failed to submit test')
+				throw new Error('Testi gönderme başarısız oldu')
 			}
 		} catch (error) {
-			console.error('Error in handleSubmit:', error)
 			toast({
 				variant: 'destructive',
-				title: 'Error',
-				description: `Failed to submit test: ${error.message}`
+				title: 'Gönderme Hatası',
+				description: `Testi gönderme başarısız oldu: ${error.message}`,
+				icon: <AlertCircle className="h-4 w-4" />
 			})
 		} finally {
 			setIsSubmitting(false)
 		}
 	}
 
-	if (isLoading) return <div>Loading...</div>
+	if (isLoading)
+		return (
+			<div className="flex justify-center items-center h-screen">
+				Yükleniyor...
+			</div>
+		)
 	if (!test) return null
 
 	const question = test.questions[currentQuestion]
+	const progress =
+		((currentQuestion + 1) / test.questions.length) * 100
 
 	return (
-		<div className="container mx-auto p-6">
-			<h1 className="text-3xl font-bold mb-8">{test.title}</h1>
-			<div className="mb-4">
-				Time Remaining: {Math.floor(timeRemaining / 60)}:
-				{(timeRemaining % 60).toString().padStart(2, '0')}
+		<div className="container mx-auto p-6 max-w-2xl">
+			<h1 className="text-3xl font-bold mb-8 text-center">
+				İngilizce Tesim: {test.title}
+			</h1>
+			<div className="flex items-center justify-start gap-1 mb-4 border rounded-md p-2">
+				<AlertCircle className="h-5 w-5" />
+				<div className="font-medium">Kalan Süre:</div>
+				<div>
+					{Math.floor(timeRemaining / 60)}:
+					{(timeRemaining % 60).toString().padStart(2, '0')}
+				</div>
 			</div>
+			<Progress value={progress} className="mb-4" />
 			<Card>
 				<CardHeader>
 					<CardTitle>
-						Question {currentQuestion + 1} of {test.questions.length}
+						Soru {currentQuestion + 1} / {test.questions.length}
 					</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<p className="mb-4">{question.question}</p>
+					<p className="mb-4 text-lg">{question.question}</p>
 					<RadioGroup
-						value={answers[currentQuestion]?.toString()}
+						value={answers[currentQuestion]?.toString() || ''}
 						onValueChange={handleAnswer}
+						className="space-y-2"
 					>
 						{question.options.map((option, index) => (
 							<div
 								key={index}
-								className="flex items-center space-x-2"
+								className="flex items-center space-x-2 p-2 rounded-md hover:bg-secondary"
 							>
 								<RadioGroupItem
 									value={index.toString()}
 									id={`option-${index}`}
 								/>
-								<Label htmlFor={`option-${index}`}>{option}</Label>
+								<Label
+									htmlFor={`option-${index}`}
+									className="flex-grow cursor-pointer"
+								>
+									{option}
+								</Label>
 							</div>
 						))}
 					</RadioGroup>
@@ -192,14 +215,18 @@ export default function TakeEnglishTestPage() {
 					<Button
 						onClick={handlePrevious}
 						disabled={currentQuestion === 0}
+						variant="outline"
 					>
-						Previous
+						<ChevronLeft className="mr-2 h-4 w-4" /> Önceki
 					</Button>
 					{currentQuestion < test.questions.length - 1 ? (
-						<Button onClick={handleNext}>Next</Button>
+						<Button onClick={handleNext}>
+							Sonraki <ChevronRight className="ml-2 h-4 w-4" />
+						</Button>
 					) : (
 						<Button onClick={handleSubmit} disabled={isSubmitting}>
-							{isSubmitting ? 'Submitting...' : 'Submit Test'}
+							{isSubmitting ? 'Gönderiliyor...' : 'Gönder'}{' '}
+							<Send className="ml-2 h-4 w-4" />
 						</Button>
 					)}
 				</CardFooter>
