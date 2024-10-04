@@ -160,12 +160,8 @@ function Sidebar({ pathname, isMobile = false, setOpen }) {
 	return (
 		<div className="flex h-full flex-col">
 			<div className="flex h-14 items-center border-b px-4">
-				<Link
-					href="/"
-					className="flex items-center gap-2 font-semibold"
-				>
-					<Package2 className="h-6 w-6" />
-					<span className="">HR App</span>
+				<Link href="/" className="font-bold text-2xl">
+					GentenAI
 				</Link>
 			</div>
 

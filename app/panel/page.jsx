@@ -167,10 +167,6 @@ export default async function PanelPage() {
 					</Card>
 				)}
 			</div>
-
-			<div className="mt-8 flex justify-end">
-				<LogoutButton />
-			</div>
 		</div>
 	)
 }
