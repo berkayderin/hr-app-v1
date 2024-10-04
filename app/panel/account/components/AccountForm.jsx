@@ -126,7 +126,7 @@ const AccountForm = ({ user }) => {
 		<Form {...form}>
 			<form
 				onSubmit={form.handleSubmit(onSubmit)}
-				className="space-y-6"
+				className="space-y-6 border border-gray-200 p-6 rounded-lg w-1/2"
 			>
 				<div>
 					<FormField
@@ -139,10 +139,7 @@ const AccountForm = ({ user }) => {
 									<span>E-posta</span>
 								</FormLabel>
 								<FormControl>
-									<Input
-										{...field}
-										className="bg-gray-50 dark:bg-gray-700"
-									/>
+									<Input {...field} className="bg-gray-50 w-96" />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -164,7 +161,7 @@ const AccountForm = ({ user }) => {
 									<Input
 										type="password"
 										{...field}
-										className="bg-gray-50 dark:bg-gray-700"
+										className="bg-gray-50 w-96"
 									/>
 								</FormControl>
 								<FormMessage />
@@ -187,7 +184,7 @@ const AccountForm = ({ user }) => {
 									<Input
 										type="password"
 										{...field}
-										className="bg-gray-50 dark:bg-gray-700"
+										className="bg-gray-50 w-96"
 									/>
 								</FormControl>
 								<FormMessage />
@@ -210,7 +207,7 @@ const AccountForm = ({ user }) => {
 									<Input
 										type="password"
 										{...field}
-										className="bg-gray-50 dark:bg-gray-700"
+										className="bg-gray-50 w-96"
 									/>
 								</FormControl>
 								<FormMessage />

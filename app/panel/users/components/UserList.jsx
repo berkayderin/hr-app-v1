@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/table'
 import { toast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 
 const UserList = ({ initialUsers }) => {
 	const [users, setUsers] = useState(initialUsers)
@@ -103,8 +104,14 @@ const UserList = ({ initialUsers }) => {
 		return new Date(dateString).toLocaleDateString('tr-TR', options)
 	}
 
+	const getRoleBadge = (role) => {
+		const roleText = role === 'user' ? 'Kullanıcı' : 'Yönetici'
+		const variant = role === 'user' ? 'secondary' : 'default'
+		return <Badge variant={variant}>{roleText}</Badge>
+	}
+
 	return (
-		<Table className="border">
+		<Table className="border border-gray-200">
 			<TableHeader>
 				<TableRow>
 					<TableHead>E-posta</TableHead>
@@ -115,10 +122,10 @@ const UserList = ({ initialUsers }) => {
 			</TableHeader>
 			<TableBody>
 				{users
-					?.map((user, index) => (
+					?.map((user) => (
 						<TableRow key={user.id}>
 							<TableCell>{user.email}</TableCell>
-							<TableCell>{user.role}</TableCell>
+							<TableCell>{getRoleBadge(user.role)}</TableCell>
 							<TableCell>{formatDate(user.createdAt)}</TableCell>
 							<TableCell className="flex items-center">
 								<Select
@@ -132,7 +139,7 @@ const UserList = ({ initialUsers }) => {
 									</SelectTrigger>
 									<SelectContent>
 										<SelectItem value="user">Kullanıcı</SelectItem>
-										<SelectItem value="admin">Admin</SelectItem>
+										<SelectItem value="admin">Yönetici</SelectItem>
 									</SelectContent>
 								</Select>
 								<Button

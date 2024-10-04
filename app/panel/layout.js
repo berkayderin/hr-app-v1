@@ -34,7 +34,7 @@ import {
 
 const sidebarItems = [
 	{ icon: Home, label: 'Ana Sayfa', href: '/panel' },
-	{ icon: User, label: 'Hesap Bilgilerim', href: '/panel/account' },
+	{ icon: User, label: 'Hesap Ayarları', href: '/panel/account' },
 	{ icon: Users, label: 'Kullanıcı Yönetimi', href: '/panel/users' },
 	{
 		icon: ClipboardList,
@@ -57,8 +57,8 @@ const sidebarItems = [
 				href: '/panel/english-test/results'
 			}
 		]
-	},
-	{ icon: Settings, label: 'Ayarlar', href: '/panel/settings' }
+	}
+	// { icon: Settings, label: 'Ayarlar', href: '/panel/settings' }
 ]
 
 export default function PanelLayout({ children }) {

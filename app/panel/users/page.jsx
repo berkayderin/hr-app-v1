@@ -4,8 +4,14 @@ import { authOptions } from '@/lib/AuthOptions'
 import { redirect } from 'next/navigation'
 import prisma from '@/lib/prismadb'
 import UserList from './components/UserList'
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
+import {
+	Breadcrumb,
+	BreadcrumbItem,
+	BreadcrumbLink,
+	BreadcrumbList,
+	BreadcrumbPage,
+	BreadcrumbSeparator
+} from '@/components/ui/breadcrumb'
 
 export default async function UserManagementPage() {
 	const session = await getServerSession(authOptions)
@@ -32,10 +38,20 @@ export default async function UserManagementPage() {
 
 	return (
 		<div className="container mx-auto p-4">
-			<h1 className="text-2xl font-bold mb-6">Kullanıcı Yönetimi</h1>
-			<Link href="/panel/">
-				<Button className="mb-4">Geri Dön</Button>
-			</Link>
+			<Breadcrumb className="mb-4">
+				<BreadcrumbList>
+					<BreadcrumbItem>
+						<BreadcrumbLink href="/panel">Ana Sayfa</BreadcrumbLink>
+					</BreadcrumbItem>
+					<BreadcrumbSeparator />
+					<BreadcrumbItem>
+						<BreadcrumbPage className="font-medium">
+							Kullanıcı Yönetimi
+						</BreadcrumbPage>
+					</BreadcrumbItem>
+				</BreadcrumbList>
+			</Breadcrumb>
+
 			{error ? (
 				<p className="text-red-500">{error}</p>
 			) : (
