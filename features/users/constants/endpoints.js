@@ -1,3 +1,4 @@
+// features/users/constants/endpoints.js
 const Endpoints = {
 	USERS: {
 		DEFAULT: '/api/users',
