@@ -27,9 +27,9 @@ export default function RootLayout({ children }) {
 					enableSystem
 					disableTransitionOnChange
 				>
-					<div className="fixed top-0 right-0 p-4 z-50">
+					{/* <div className="fixed top-0 right-0 p-4 z-50">
 						<ModeToggle />
-					</div>
+					</div> */}
 					<NextAuthSessionProvider>
 						{children}
 					</NextAuthSessionProvider>
