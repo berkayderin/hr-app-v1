@@ -4,6 +4,8 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/AuthOptions'
 import prisma from '@/lib/prismadb'
 
+export const dynamic = 'force-dynamic'
+
 console.log(
 	'API route file loaded: /api/english-test/submit/route.js'
 )

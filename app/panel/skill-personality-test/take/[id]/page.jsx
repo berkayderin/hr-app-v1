@@ -115,12 +115,14 @@ export default function TakeSkillPersonalityTestPage() {
 			}
 
 			const result = await response.json()
-			console.log('Test submission result:', result) // Debugging için
-			toast.success('Test submitted successfully')
+			console.log('Test submission result:', result)
+			toast.success('Test başarıyla gönderildi')
 			router.push('/panel/skill-personality-test/results')
 		} catch (error) {
-			console.error('Error submitting test:', error)
-			toast.error(error.message || 'Failed to submit test')
+			console.error('Test gönderme hatası:', error)
+			toast.error(
+				error.message || 'Test gönderilirken bir hata oluştu'
+			)
 		} finally {
 			setIsSubmitting(false)
 		}

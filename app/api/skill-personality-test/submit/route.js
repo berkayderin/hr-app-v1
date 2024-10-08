@@ -4,6 +4,8 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/AuthOptions'
 import prisma from '@/lib/prismadb'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(request) {
 	try {
 		const session = await getServerSession(authOptions)
@@ -33,10 +35,8 @@ export async function POST(request) {
 			)
 		}
 
-		// Calculate scores and results
 		const results = calculateResults(assignedTest.test, answers)
 
-		// Update the assigned test with results
 		const updatedAssignedTest =
 			await prisma.assignedSkillPersonalityTest.update({
 				where: { id: assignedTest.id },
@@ -61,8 +61,6 @@ export async function POST(request) {
 }
 
 function calculateResults(test, answers) {
-	// Bu fonksiyon, test yapısına ve cevaplara göre sonuçları hesaplar
-	// Örnek bir hesaplama:
 	const sectionScores = test.sections.map((section, sectionIndex) => {
 		const sectionAnswers = Object.entries(answers)
 			.filter(([key]) => key.startsWith(`${sectionIndex}-`))
@@ -87,7 +85,6 @@ function calculateResults(test, answers) {
 		sectionScores.find((s) => s.title === 'Personality Analysis')
 			?.score ?? 0
 
-	// Basit bir kişilik profili ve departman uyumluluğu hesaplaması
 	const personalityProfile =
 		generatePersonalityProfile(personalityScore)
 	const departmentCompatibility = generateDepartmentCompatibility(

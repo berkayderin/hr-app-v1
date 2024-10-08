@@ -4,6 +4,8 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/AuthOptions'
 import prisma from '@/lib/prismadb'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(request, { params }) {
 	console.log('API route called with params:', params)
 	try {
