@@ -19,6 +19,7 @@ import { cn } from '@/lib/utils'
 import {
 	BarChart,
 	BookOpen,
+	Brain,
 	ChevronDown,
 	ChevronRight,
 	ClipboardList,
@@ -58,6 +59,28 @@ const sidebarItems = [
 				href: '/panel/english-test/results'
 			}
 		]
+	},
+	{
+		icon: Brain,
+		label: 'Yetenek ve Kişilik Testleri',
+		href: '/panel/skill-personality-test',
+		subItems: [
+			{
+				icon: BookOpen,
+				label: 'Testleri Görüntüle',
+				href: '/panel/skill-personality-test'
+			},
+			{
+				icon: PenTool,
+				label: 'Test Oluştur',
+				href: '/panel/skill-personality-test/create'
+			},
+			{
+				icon: BarChart,
+				label: 'Test Sonuçları',
+				href: '/panel/skill-personality-test/results'
+			}
+		]
 	}
 	// { icon: Settings, label: 'Ayarlar', href: '/panel/settings' }
 ]
@@ -80,12 +103,12 @@ export default function PanelLayout({ children }) {
 				</SheetTrigger>
 				<SheetContent
 					side="left"
-					className="w-[240px] p-0 bg-white dark:bg-gray-950"
+					className="w-[250px] p-0 bg-white dark:bg-gray-950"
 				>
 					<MobileSidebar pathname={pathname} setOpen={setOpen} />
 				</SheetContent>
 			</Sheet>
-			<aside className="hidden w-[240px] flex-col border-r lg:flex bg-white dark:bg-gray-950">
+			<aside className="hidden w-[250px] flex-col border-r lg:flex bg-white dark:bg-gray-950">
 				<DesktopSidebar pathname={pathname} />
 			</aside>
 			<main className="flex-1 overflow-y-auto p-8">{children}</main>

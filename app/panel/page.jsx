@@ -1,3 +1,4 @@
+// app/panel/page.jsx
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/AuthOptions'
 import { redirect } from 'next/navigation'
@@ -19,7 +20,8 @@ import {
 	PenTool,
 	User,
 	BarChart,
-	CheckCircle
+	CheckCircle,
+	Brain
 } from 'lucide-react'
 import { PrismaClient } from '@prisma/client'
 
@@ -40,6 +42,16 @@ export default async function PanelPage() {
 			test: true
 		}
 	})
+
+	const assignedSkillPersonalityTests =
+		await prisma.assignedSkillPersonalityTest.findMany({
+			where: {
+				userId: session.user.id
+			},
+			include: {
+				test: true
+			}
+		})
 
 	return (
 		<div className="container mx-auto p-4 space-y-6">
@@ -96,75 +108,193 @@ export default async function PanelPage() {
 								</Button>
 							</CardFooter>
 						</Card>
+						<Card className="bg-white">
+							<CardHeader className="space-y-1">
+								<CardTitle className="text-2xl flex items-center space-x-2">
+									<Brain className="h-6 w-6 text-primary" />
+									<span>Yetenek ve Kişilik Testi Yönetimi</span>
+								</CardTitle>
+							</CardHeader>
+							<CardContent>
+								<p className="text-sm text-muted-foreground">
+									Yapay zeka destekli yetenek ve kişilik testlerini
+									oluşturun ve yönetin.
+								</p>
+							</CardContent>
+							<CardFooter className="flex flex-col space-y-2">
+								<Button
+									asChild
+									variant="outline"
+									className="w-full hover:bg-primary hover:text-white transition-colors "
+								>
+									<Link href="/panel/skill-personality-test">
+										<ClipboardList className="mr-2 h-4 w-4" />
+										Yetenek ve Kişilik Testlerini Görüntüle
+									</Link>
+								</Button>
+								<Button
+									asChild
+									variant="outline"
+									className="w-full hover:bg-primary hover:text-white transition-colors "
+								>
+									<Link href="/panel/skill-personality-test/create">
+										<PenTool className="mr-2 h-4 w-4" />
+										Yetenek ve Kişilik Testi Oluştur
+									</Link>
+								</Button>
+								<Button
+									asChild
+									variant="outline"
+									className="w-full hover:bg-primary hover:text-white transition-colors "
+								>
+									<Link href="/panel/skill-personality-test/results">
+										<BarChart className="mr-2 h-4 w-4" />
+										Test Sonuçlarını Görüntüle
+									</Link>
+								</Button>
+							</CardFooter>
+						</Card>
 					</>
 				)}
 
 				{session.user.role === 'user' && (
-					<Card className="bg-white">
-						<CardHeader className="space-y-1">
-							<CardTitle className="text-2xl flex items-center space-x-2">
-								<BookOpen className="h-6 w-6 text-primary" />
-								<span>İngilizce Testlerim</span>
-							</CardTitle>
-						</CardHeader>
-						<CardContent>
-							{assignedTests.length > 0 ? (
-								<ul className="space-y-2">
-									{assignedTests.map((assignedTest) => (
-										<li
-											key={assignedTest.id}
-											className={`p-3 rounded-md transition-colors ${
-												assignedTest.completedAt
-													? 'bg-gray-100 border-l-4 border-green-500'
-													: 'bg-gray-100 hover:bg-gray-200'
-											}`}
-										>
-											<div className="flex items-center justify-between">
-												{assignedTest.completedAt ? (
-													<div className="text-primary font-bold flex items-center space-x-2">
-														<CheckCircle className="h-4 w-4 text-green-500" />
-														<span>{assignedTest.test.title}</span>
-													</div>
-												) : (
-													<Link
-														href={`/panel/english-test/take/${assignedTest.id}`}
-														className="text-primary hover:text-primary-dark font-bold flex items-center space-x-2"
-													>
-														<ClipboardList className="h-4 w-4" />
-														<span>{assignedTest.test.title}</span>
-													</Link>
+					<>
+						<Card className="bg-white">
+							<CardHeader className="space-y-1">
+								<CardTitle className="text-2xl flex items-center space-x-2">
+									<BookOpen className="h-6 w-6 text-primary" />
+									<span>İngilizce Testlerim</span>
+								</CardTitle>
+							</CardHeader>
+							<CardContent>
+								{assignedTests.length > 0 ? (
+									<ul className="space-y-2">
+										{assignedTests.map((assignedTest) => (
+											<li
+												key={assignedTest.id}
+												className={`p-3 rounded-md transition-colors ${
+													assignedTest.completedAt
+														? 'bg-gray-100 border-l-4 border-green-500'
+														: 'bg-gray-100 hover:bg-gray-200'
+												}`}
+											>
+												<div className="flex items-center justify-between">
+													{assignedTest.completedAt ? (
+														<div className="text-primary font-bold flex items-center space-x-2">
+															<CheckCircle className="h-4 w-4 text-green-500" />
+															<span>{assignedTest.test.title}</span>
+														</div>
+													) : (
+														<Link
+															href={`/panel/english-test/take/${assignedTest.id}`}
+															className="text-primary hover:text-primary-dark font-bold flex items-center space-x-2"
+														>
+															<ClipboardList className="h-4 w-4" />
+															<span>{assignedTest.test.title}</span>
+														</Link>
+													)}
+												</div>
+												{assignedTest.completedAt && (
+													<p className="text-xs text-gray-500 mt-1">
+														Tamamlandı:{' '}
+														{new Date(
+															assignedTest.completedAt
+														).toLocaleString()}
+													</p>
 												)}
-											</div>
-											{assignedTest.completedAt && (
-												<p className="text-xs text-gray-500 mt-1">
-													Tamamlandı:{' '}
-													{new Date(
+											</li>
+										))}
+									</ul>
+								) : (
+									<p className="text-sm text-muted-foreground">
+										Henüz atanmış bir İngilizce testiniz
+										bulunmamaktadır.
+									</p>
+								)}
+							</CardContent>
+							<CardFooter>
+								<Button
+									asChild
+									variant="outline"
+									className="w-full hover:bg-primary hover:text-white transition-colors"
+								>
+									<Link href="/panel/english-test">
+										<BookOpen className="mr-2 h-4 w-4" />
+										Tüm İngilizce Testlerini Görüntüle
+									</Link>
+								</Button>
+							</CardFooter>
+						</Card>
+
+						<Card className="bg-white">
+							<CardHeader className="space-y-1">
+								<CardTitle className="text-2xl flex items-center space-x-2">
+									<Brain className="h-6 w-6 text-primary" />
+									<span>Yetenek ve Kişilik Testlerim</span>
+								</CardTitle>
+							</CardHeader>
+							<CardContent>
+								{assignedSkillPersonalityTests.length > 0 ? (
+									<ul className="space-y-2">
+										{assignedSkillPersonalityTests.map(
+											(assignedTest) => (
+												<li
+													key={assignedTest.id}
+													className={`p-3 rounded-md transition-colors ${
 														assignedTest.completedAt
-													).toLocaleString()}
-												</p>
-											)}
-										</li>
-									))}
-								</ul>
-							) : (
-								<p className="text-sm text-muted-foreground">
-									Henüz atanmış bir testiniz bulunmamaktadır.
-								</p>
-							)}
-						</CardContent>
-						<CardFooter>
-							<Button
-								asChild
-								variant="outline"
-								className="w-full hover:bg-primary hover:text-white transition-colors"
-							>
-								<Link href="/panel/english-test">
-									<BookOpen className="mr-2 h-4 w-4" />
-									Tüm Testleri Görüntüle
-								</Link>
-							</Button>
-						</CardFooter>
-					</Card>
+															? 'bg-gray-100 border-l-4 border-green-500'
+															: 'bg-gray-100 hover:bg-gray-200'
+													}`}
+												>
+													<div className="flex items-center justify-between">
+														{assignedTest.completedAt ? (
+															<div className="text-primary font-bold flex items-center space-x-2">
+																<CheckCircle className="h-4 w-4 text-green-500" />
+																<span>{assignedTest.test.title}</span>
+															</div>
+														) : (
+															<Link
+																href={`/panel/skill-personality-test/take/${assignedTest.id}`}
+																className="text-primary hover:text-primary-dark font-bold flex items-center space-x-2"
+															>
+																<ClipboardList className="h-4 w-4" />
+																<span>{assignedTest.test.title}</span>
+															</Link>
+														)}
+													</div>
+													{assignedTest.completedAt && (
+														<p className="text-xs text-gray-500 mt-1">
+															Tamamlandı:{' '}
+															{new Date(
+																assignedTest.completedAt
+															).toLocaleString()}
+														</p>
+													)}
+												</li>
+											)
+										)}
+									</ul>
+								) : (
+									<p className="text-sm text-muted-foreground">
+										Henüz atanmış bir yetenek ve kişilik testiniz
+										bulunmamaktadır.
+									</p>
+								)}
+							</CardContent>
+							<CardFooter>
+								<Button
+									asChild
+									variant="outline"
+									className="w-full hover:bg-primary hover:text-white transition-colors"
+								>
+									<Link href="/panel/skill-personality-test">
+										<Brain className="mr-2 h-4 w-4" />
+										Tüm Yetenek ve Kişilik Testlerini Görüntüle
+									</Link>
+								</Button>
+							</CardFooter>
+						</Card>
+					</>
 				)}
 			</div>
 		</div>
