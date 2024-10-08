@@ -35,10 +35,10 @@ export async function POST(request) {
 
 		const aiPrompt = `Create a skill and personality test titled "${title}". ${prompt}
     The test should have 4 sections:
-    1. IQ Test (15 questions)
-    2. Practical Intelligence (15 questions)
-    3. Sharp Intelligence (15 questions)
-    4. Personality Analysis (15 questions)
+    1. IQ Test (5 questions)
+    2. Practical Intelligence (5 questions)
+    3. Sharp Intelligence (5 questions)
+    4. Personality Analysis (5 questions)
     
     Each question should have 4 options (A, B, C, D) with one correct answer.
     Format the output as a JSON array of objects, each containing 'section', 'question', 'options' (an array of 4 strings), and 'correctAnswer' (index of the correct option, 0-3).
@@ -73,19 +73,24 @@ export async function POST(request) {
 		let questions
 		try {
 			// Try to extract JSON from the response content
-			const jsonMatch =
-				jsonResponse.content[0].text.match(/\[[\s\S]*\]/)
+			const responseText = jsonResponse.content[0].text
+			console.log('Raw response text:', responseText)
+
+			// Use a more robust regex to find JSON array
+			const jsonMatch = responseText.match(/\[[\s\S]*?\](?=\s*$)/)
 			if (jsonMatch) {
 				questions = JSON.parse(jsonMatch[0])
 			} else {
-				throw new Error('No valid JSON found in the response')
+				throw new Error('No valid JSON array found in the response')
 			}
 		} catch (error) {
 			console.error('Error parsing AI response:', error)
+			console.log('Full AI response:', jsonResponse.content[0].text)
 			return NextResponse.json(
 				{
 					error: 'Failed to parse AI response',
-					details: error.message
+					details: error.message,
+					rawResponse: jsonResponse.content[0].text
 				},
 				{ status: 500 }
 			)
