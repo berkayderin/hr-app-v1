@@ -183,8 +183,11 @@ function Sidebar({ pathname, isMobile = false, setOpen }) {
 	return (
 		<div className="flex h-full flex-col">
 			<div className="flex h-14 items-center border-b px-4">
-				<Link href="/" className="font-bold text-2xl">
-					GentenAI
+				<Link
+					href="/"
+					className="font-bold text-2xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary"
+				>
+					EVALTALENT
 				</Link>
 			</div>
 
