@@ -1,65 +1,85 @@
 import { NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
 
+// Herkese açık sayfalar
+const publicPaths = ['/', '/login', '/register']
+
+// Rol bazlı erişim izinleri
+const rolePermissions = {
+	user: {
+		allowed: [
+			'/panel',
+			'/panel/account',
+			'/panel/english-test',
+			'/panel/english-test/take',
+			'/panel/skill-personality-test',
+			'/panel/skill-personality-test/take'
+		],
+		redirectTo: '/panel'
+	},
+	admin: {
+		allowed: ['/panel'], // Admin tüm /panel altındaki sayfalara erişebilir
+		redirectTo: '/panel'
+	}
+}
+
+// Yol eşleşmesi kontrolü için yardımcı fonksiyon
+const pathMatches = (path, patterns) =>
+	patterns.some(
+		(pattern) => path === pattern || path.startsWith(`${pattern}/`)
+	)
+
 export async function middleware(request) {
+	const { pathname } = request.nextUrl
+
+	// JWT token'ı al
 	const token = await getToken({
 		req: request,
 		secret: process.env.NEXTAUTH_SECRET
 	})
 
-	const { pathname } = request.nextUrl
-
-	// Açık erişimli sayfalar
-	if (
-		pathname === '/' ||
-		pathname.startsWith('/login') ||
-		pathname.startsWith('/register')
-	) {
-		if (token) {
-			// Kullanıcı zaten giriş yapmışsa, panel sayfasına yönlendir
-			return NextResponse.redirect(new URL('/panel', request.url))
-		}
-		return NextResponse.next()
+	// Herkese açık sayfalara erişim kontrolü
+	if (pathMatches(pathname, publicPaths)) {
+		return token
+			? NextResponse.redirect(new URL('/panel', request.url))
+			: NextResponse.next()
 	}
 
-	// Oturum açılmamışsa login sayfasına yönlendir
+	// Kimlik doğrulama kontrolü
 	if (!token) {
 		const loginUrl = new URL('/login', request.url)
 		loginUrl.searchParams.set('callbackUrl', encodeURI(request.url))
 		return NextResponse.redirect(loginUrl)
 	}
 
-	// Panel ve alt sayfaları için erişim kontrolü
+	// Rol bazlı erişim kontrolü
+	const role = token.role
+	const permissions = rolePermissions[role]
+
+	if (!permissions) {
+		// Tanımlanmamış rol için varsayılan yönlendirme
+		return NextResponse.redirect(new URL('/', request.url))
+	}
+
 	if (pathname.startsWith('/panel')) {
-		// Admin için tüm panel sayfalarına erişim izni
-		if (token.role === 'admin') {
+		if (
+			role === 'admin' ||
+			pathMatches(pathname, permissions.allowed)
+		) {
 			return NextResponse.next()
-		}
-
-		// Normal kullanıcılar için kısıtlı erişim
-		if (token.role === 'user') {
-			// Kullanıcıların erişebileceği sayfalar
-			const allowedUserPages = [
-				'/panel',
-				'/panel/account',
-				'/panel/test'
-			]
-
-			if (
-				allowedUserPages.some((page) => pathname.startsWith(page))
-			) {
-				return NextResponse.next()
-			}
-
-			// İzin verilmeyen sayfalara erişim durumunda ana panel sayfasına yönlendir
-			return NextResponse.redirect(new URL('/panel', request.url))
+		} else {
+			// Yetkisiz erişim için rol bazlı yönlendirme
+			return NextResponse.redirect(
+				new URL(permissions.redirectTo, request.url)
+			)
 		}
 	}
 
-	// Diğer tüm durumlar için ana sayfaya yönlendir
+	// Varsayılan durum: Ana sayfaya yönlendir
 	return NextResponse.redirect(new URL('/', request.url))
 }
 
+// Middleware'in çalışacağı yolları belirle
 export const config = {
 	matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)']
 }

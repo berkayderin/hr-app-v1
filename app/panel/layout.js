@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import {
@@ -26,37 +27,54 @@ import {
 	Home,
 	LogOut,
 	Menu,
-	Package2,
 	PenTool,
-	Settings,
 	User,
 	Users
 } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 
-const sidebarItems = [
-	{ icon: Home, label: 'Ana Sayfa', href: '/panel' },
-	{ icon: User, label: 'Hesap Ayarları', href: '/panel/account' },
-	{ icon: Users, label: 'Kullanıcı Yönetimi', href: '/panel/users' },
+const allSidebarItems = [
+	{
+		icon: Home,
+		label: 'Ana Sayfa',
+		href: '/panel',
+		roles: ['user', 'admin']
+	},
+	{
+		icon: User,
+		label: 'Hesap Ayarları',
+		href: '/panel/account',
+		roles: ['user', 'admin']
+	},
+	{
+		icon: Users,
+		label: 'Kullanıcı Yönetimi',
+		href: '/panel/users',
+		roles: ['admin']
+	},
 	{
 		icon: ClipboardList,
 		label: 'İngilizce Testleri',
 		href: '/panel/english-test',
+		roles: ['user', 'admin'],
 		subItems: [
 			{
 				icon: BookOpen,
 				label: 'Testleri Görüntüle',
-				href: '/panel/english-test'
+				href: '/panel/english-test',
+				roles: ['user', 'admin']
 			},
 			{
 				icon: PenTool,
 				label: 'Test Oluştur',
-				href: '/panel/english-test/create'
+				href: '/panel/english-test/create',
+				roles: ['admin']
 			},
 			{
 				icon: BarChart,
 				label: 'Test Sonuçları',
-				href: '/panel/english-test/results'
+				href: '/panel/english-test/results',
+				roles: ['admin']
 			}
 		]
 	},
@@ -64,30 +82,52 @@ const sidebarItems = [
 		icon: Brain,
 		label: 'Yetenek ve Kişilik Testleri',
 		href: '/panel/skill-personality-test',
+		roles: ['user', 'admin'],
 		subItems: [
 			{
 				icon: BookOpen,
 				label: 'Testleri Görüntüle',
-				href: '/panel/skill-personality-test'
+				href: '/panel/skill-personality-test',
+				roles: ['user', 'admin']
 			},
 			{
 				icon: PenTool,
 				label: 'Test Oluştur',
-				href: '/panel/skill-personality-test/create'
+				href: '/panel/skill-personality-test/create',
+				roles: ['admin']
 			},
 			{
 				icon: BarChart,
 				label: 'Test Sonuçları',
-				href: '/panel/skill-personality-test/results'
+				href: '/panel/skill-personality-test/results',
+				roles: ['admin']
 			}
 		]
 	}
-	// { icon: Settings, label: 'Ayarlar', href: '/panel/settings' }
 ]
-
 export default function PanelLayout({ children }) {
 	const [open, setOpen] = useState(false)
 	const pathname = usePathname()
+	const { data: session, status } = useSession()
+	const [sidebarItems, setSidebarItems] = useState([])
+
+	useEffect(() => {
+		if (status === 'authenticated') {
+			const userRole = session.user.role
+			// Kullanıcının rolüne göre menü öğelerini filtrele
+			const filteredItems = allSidebarItems
+				.filter((item) => item.roles.includes(userRole))
+				.map((item) => ({
+					...item,
+					subItems: item.subItems
+						? item.subItems.filter((subItem) =>
+								subItem.roles.includes(userRole)
+						  )
+						: undefined
+				}))
+			setSidebarItems(filteredItems)
+		}
+	}, [status, session])
 
 	return (
 		<div className="flex min-h-screen bg-background">
@@ -105,11 +145,15 @@ export default function PanelLayout({ children }) {
 					side="left"
 					className="w-[250px] p-0 bg-white dark:bg-gray-950"
 				>
-					<MobileSidebar pathname={pathname} setOpen={setOpen} />
+					<MobileSidebar
+						pathname={pathname}
+						setOpen={setOpen}
+						items={sidebarItems}
+					/>
 				</SheetContent>
 			</Sheet>
 			<aside className="hidden w-[250px] flex-col border-r lg:flex bg-white dark:bg-gray-950">
-				<DesktopSidebar pathname={pathname} />
+				<DesktopSidebar pathname={pathname} items={sidebarItems} />
 			</aside>
 			<main className="flex-1 overflow-y-auto p-8">{children}</main>
 		</div>
@@ -179,7 +223,7 @@ function SidebarItem({ item, pathname, onClick, isNested = false }) {
 	)
 }
 
-function Sidebar({ pathname, isMobile = false, setOpen }) {
+function Sidebar({ pathname, isMobile = false, setOpen, items }) {
 	return (
 		<div className="flex h-full flex-col">
 			<div className="flex h-14 items-center border-b px-4">
@@ -193,7 +237,7 @@ function Sidebar({ pathname, isMobile = false, setOpen }) {
 
 			<ScrollArea className="flex-1">
 				<div className="space-y-1 p-2 font-medium">
-					{sidebarItems.map((item) => (
+					{items.map((item) => (
 						<SidebarItem
 							key={item.href}
 							item={item}
@@ -220,10 +264,17 @@ function Sidebar({ pathname, isMobile = false, setOpen }) {
 	)
 }
 
-function MobileSidebar({ pathname, setOpen }) {
-	return <Sidebar pathname={pathname} isMobile setOpen={setOpen} />
+function MobileSidebar({ pathname, setOpen, items }) {
+	return (
+		<Sidebar
+			pathname={pathname}
+			isMobile
+			setOpen={setOpen}
+			items={items}
+		/>
+	)
 }
 
-function DesktopSidebar({ pathname }) {
-	return <Sidebar pathname={pathname} />
+function DesktopSidebar({ pathname, items }) {
+	return <Sidebar pathname={pathname} items={items} />
 }
