@@ -42,7 +42,6 @@ export default function SkillPersonalityTestResultsPage() {
 				if (!response.ok) throw new Error('Failed to fetch results')
 				const data = await response.json()
 				setResults(data.results)
-
 				console.log('Fetched test results:', data.results)
 			} catch (error) {
 				console.error('Error fetching test results:', error)
@@ -95,6 +94,7 @@ export default function SkillPersonalityTestResultsPage() {
 								<TableHead>Pratik Zeka</TableHead>
 								<TableHead>Keskin Zeka</TableHead>
 								<TableHead>Kişilik Analizi</TableHead>
+								<TableHead>Uyumlu Departmanlar</TableHead>
 							</TableRow>
 						</TableHeader>
 						<TableBody>
@@ -108,16 +108,23 @@ export default function SkillPersonalityTestResultsPage() {
 										{new Date(result.completedAt).toLocaleString()}
 									</TableCell>
 									<TableCell>
-										{result.scores?.iqScore ?? 'N/A'}
+										{result.scores?.iqScore?.toFixed(2) ?? 'N/A'}
 									</TableCell>
 									<TableCell>
-										{result.scores?.practicalScore ?? 'N/A'}
+										{result.scores?.practicalScore?.toFixed(2) ??
+											'N/A'}
 									</TableCell>
 									<TableCell>
-										{result.scores?.sharpScore ?? 'N/A'}
+										{result.scores?.sharpScore?.toFixed(2) ?? 'N/A'}
 									</TableCell>
 									<TableCell>
-										{result.scores?.personalityScore ?? 'N/A'}
+										{result.scores?.personalityScore?.toFixed(2) ??
+											'N/A'}
+									</TableCell>
+									<TableCell>
+										{result.scores?.departmentCompatibility?.join(
+											', '
+										) ?? 'N/A'}
 									</TableCell>
 								</TableRow>
 							))}
