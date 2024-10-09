@@ -116,6 +116,9 @@ export default function SkillPersonalityTestResultsPage() {
 									<TableCell>
 										{result.scores?.sharpScore ?? 'N/A'}
 									</TableCell>
+									<TableCell>
+										{result.scores?.personalityScore ?? 'N/A'}
+									</TableCell>
 								</TableRow>
 							))}
 						</TableBody>

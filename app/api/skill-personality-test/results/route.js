@@ -73,7 +73,8 @@ export async function GET(request) {
 				? {
 						iqScore: result.results.iqScore,
 						practicalScore: result.results.practicalScore,
-						sharpScore: result.results.sharpScore
+						sharpScore: result.results.sharpScore,
+						personalityScore: result.results.personalityScore // Add personality score
 				  }
 				: null
 		}))
