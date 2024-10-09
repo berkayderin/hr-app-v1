@@ -17,18 +17,30 @@ export async function POST(request) {
 		}
 
 		const { testId, answers } = await request.json()
+		console.log('Received payload:', { testId, answers })
+		console.log('User ID from session:', session.user.id)
 
-		const assignedTest =
+		// Find the test by id or testId
+		let assignedTest =
 			await prisma.assignedSkillPersonalityTest.findFirst({
 				where: {
-					id: testId,
-					userId: session.user.id,
-					completedAt: null
+					OR: [{ id: testId }, { testId: testId }],
+					userId: session.user.id
 				},
 				include: { test: true }
 			})
 
+		console.log('Found assigned test:', assignedTest)
+
 		if (!assignedTest) {
+			// Log all assigned tests for this user
+			const allAssignedTests =
+				await prisma.assignedSkillPersonalityTest.findMany({
+					where: { userId: session.user.id },
+					select: { id: true, testId: true }
+				})
+			console.log('All assigned tests for user:', allAssignedTests)
+
 			return NextResponse.json(
 				{ error: 'Test not found or already completed' },
 				{ status: 404 }
@@ -46,6 +58,8 @@ export async function POST(request) {
 					results
 				}
 			})
+
+		console.log('Updated assigned test:', updatedAssignedTest)
 
 		return NextResponse.json(updatedAssignedTest)
 	} catch (error) {

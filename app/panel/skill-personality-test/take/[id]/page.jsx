@@ -28,18 +28,23 @@ export default function TakeSkillPersonalityTestPage() {
 	const [answers, setAnswers] = useState({})
 	const [timeRemaining, setTimeRemaining] = useState(null)
 	const [isSubmitting, setIsSubmitting] = useState(false)
+	const [assignedTestId, setAssignedTestId] = useState(null)
 	const router = useRouter()
 
 	useEffect(() => {
 		const fetchTest = async () => {
 			try {
+				console.log('Fetching test with params.id:', params.id)
 				const response = await fetch(
 					`/api/skill-personality-test/assigned/${params.id}`
 				)
 				if (!response.ok) throw new Error('Failed to fetch test')
 				const data = await response.json()
+				console.log('Fetched test data:', data)
 				setTest(data.test)
 				setTimeRemaining(data.timeRemaining)
+				setAssignedTestId(data.id)
+				console.log('Set assignedTestId:', data.id)
 			} catch (error) {
 				console.error('Error fetching test:', error)
 				toast.error('Failed to load test')
@@ -65,57 +70,33 @@ export default function TakeSkillPersonalityTestPage() {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [timeRemaining])
 
-	const handleAnswer = (answer) => {
-		setAnswers((prevAnswers) => ({
-			...prevAnswers,
-			[`${currentSection}-${currentQuestion}`]: answer
-		}))
-	}
-
-	const handleNext = () => {
-		if (
-			currentQuestion <
-			test.sections[currentSection].questions.length - 1
-		) {
-			setCurrentQuestion((prev) => prev + 1)
-		} else if (currentSection < test.sections.length - 1) {
-			setCurrentSection((prev) => prev + 1)
-			setCurrentQuestion(0)
-		}
-	}
-
-	const handlePrevious = () => {
-		if (currentQuestion > 0) {
-			setCurrentQuestion((prev) => prev - 1)
-		} else if (currentSection > 0) {
-			setCurrentSection((prev) => prev - 1)
-			setCurrentQuestion(
-				test.sections[currentSection - 1].questions.length - 1
-			)
-		}
-	}
-
 	const handleSubmit = async () => {
 		setIsSubmitting(true)
 		try {
+			if (!assignedTestId) {
+				throw new Error('Test ID is not available')
+			}
+			const payload = { testId: assignedTestId, answers }
+			console.log('Sending payload:', payload)
+
 			const response = await fetch(
 				'/api/skill-personality-test/submit',
 				{
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ testId: params.id, answers })
+					body: JSON.stringify(payload)
 				}
 			)
 
+			const result = await response.json()
+			console.log('Received response:', result)
+
 			if (!response.ok) {
-				const errorData = await response.json()
 				throw new Error(
-					errorData.error || `HTTP error! status: ${response.status}`
+					result.error || `HTTP error! status: ${response.status}`
 				)
 			}
 
-			const result = await response.json()
-			console.log('Test submission result:', result)
 			toast.success('Test başarıyla gönderildi')
 			router.push('/panel/skill-personality-test/results')
 		} catch (error) {
@@ -128,7 +109,9 @@ export default function TakeSkillPersonalityTestPage() {
 		}
 	}
 
-	if (!test) return <div>Loading...</div>
+	if (!test || assignedTestId === null) {
+		return <div>Loading...</div>
+	}
 
 	const currentSectionData = test.sections[currentSection]
 	const question = currentSectionData.questions[currentQuestion]
@@ -170,7 +153,12 @@ export default function TakeSkillPersonalityTestPage() {
 								`${currentSection}-${currentQuestion}`
 							]?.toString() || ''
 						}
-						onValueChange={handleAnswer}
+						onValueChange={(value) =>
+							setAnswers((prev) => ({
+								...prev,
+								[`${currentSection}-${currentQuestion}`]: value
+							}))
+						}
 						className="space-y-2"
 					>
 						{question.options.map((option, index) => (
@@ -194,7 +182,17 @@ export default function TakeSkillPersonalityTestPage() {
 				</CardContent>
 				<CardFooter className="flex justify-between">
 					<Button
-						onClick={handlePrevious}
+						onClick={() => {
+							if (currentQuestion > 0) {
+								setCurrentQuestion((prev) => prev - 1)
+							} else if (currentSection > 0) {
+								setCurrentSection((prev) => prev - 1)
+								setCurrentQuestion(
+									test.sections[currentSection - 1].questions.length -
+										1
+								)
+							}
+						}}
 						disabled={currentSection === 0 && currentQuestion === 0}
 						variant="outline"
 					>
@@ -203,7 +201,22 @@ export default function TakeSkillPersonalityTestPage() {
 					{currentSection < test.sections.length - 1 ||
 					currentQuestion <
 						currentSectionData.questions.length - 1 ? (
-						<Button onClick={handleNext}>
+						<Button
+							onClick={() => {
+								if (
+									currentQuestion <
+									currentSectionData.questions.length - 1
+								) {
+									setCurrentQuestion((prev) => prev + 1)
+								} else if (
+									currentSection <
+									test.sections.length - 1
+								) {
+									setCurrentSection((prev) => prev + 1)
+									setCurrentQuestion(0)
+								}
+							}}
+						>
 							Next <ChevronRight className="ml-2 h-4 w-4" />
 						</Button>
 					) : (
