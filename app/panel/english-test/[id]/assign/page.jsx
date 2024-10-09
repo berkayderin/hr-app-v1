@@ -4,13 +4,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue
-} from '@/components/ui/select'
+import Select from 'react-select'
 import {
 	Card,
 	CardHeader,
@@ -18,8 +12,7 @@ import {
 	CardContent,
 	CardFooter
 } from '@/components/ui/card'
-import { Loader2, Users, CheckCircle } from 'lucide-react'
-import Link from 'next/link'
+import { Loader2, Users } from 'lucide-react'
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -32,7 +25,7 @@ import { toast } from 'sonner'
 
 export default function AssignEnglishTestPage({ params }) {
 	const [users, setUsers] = useState([])
-	const [selectedUser, setSelectedUser] = useState('')
+	const [selectedUsers, setSelectedUsers] = useState([])
 	const [isLoading, setIsLoading] = useState(false)
 	const [isUserLoading, setIsUserLoading] = useState(true)
 	const router = useRouter()
@@ -46,22 +39,20 @@ export default function AssignEnglishTestPage({ params }) {
 					throw new Error('Kullanıcılar yüklenemedi')
 				}
 				const data = await response.json()
-				setUsers(data)
+				setUsers(
+					data.map((user) => ({ value: user.id, label: user.email }))
+				)
 			} catch (error) {
 				console.error('Kullanıcıları yükleme hatası:', error)
-				toast({
-					variant: 'destructive',
-					title: 'Hata',
-					description:
-						'Kullanıcılar yüklenemedi. Lütfen tekrar deneyin.'
-				})
+				toast.error(
+					'Kullanıcılar yüklenemedi. Lütfen tekrar deneyin.'
+				)
 			} finally {
 				setIsUserLoading(false)
 			}
 		}
 		fetchUsers()
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [toast])
+	}, [])
 
 	const handleSubmit = async (e) => {
 		e.preventDefault()
@@ -72,7 +63,7 @@ export default function AssignEnglishTestPage({ params }) {
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					testId: params.id,
-					userId: selectedUser
+					userIds: selectedUsers.map((user) => user.value)
 				})
 			})
 			const data = await response.json()
@@ -122,30 +113,24 @@ export default function AssignEnglishTestPage({ params }) {
 								htmlFor="user-select"
 								className="block text-sm font-medium"
 							>
-								Kullanıcı Seçin
+								Kullanıcıları Seçin
 							</label>
 							<Select
-								value={selectedUser}
-								onValueChange={setSelectedUser}
-								disabled={isUserLoading}
-							>
-								<SelectTrigger id="user-select" className="w-full">
-									<SelectValue
-										placeholder={
-											isUserLoading
-												? 'Kullanıcılar yükleniyor...'
-												: 'Kullanıcı Seçin'
-										}
-									/>
-								</SelectTrigger>
-								<SelectContent>
-									{users.map((user) => (
-										<SelectItem key={user.id} value={user.id}>
-											{user.email}
-										</SelectItem>
-									))}
-								</SelectContent>
-							</Select>
+								isMulti
+								options={users}
+								value={selectedUsers}
+								onChange={setSelectedUsers}
+								isLoading={isUserLoading}
+								isDisabled={isUserLoading}
+								placeholder={
+									isUserLoading
+										? 'Kullanıcılar yükleniyor...'
+										: 'Kullanıcıları Seçin'
+								}
+								noOptionsMessage={() => 'Kullanıcı bulunamadı'}
+								className="basic-multi-select"
+								classNamePrefix="select"
+							/>
 						</div>
 					</form>
 				</CardContent>
@@ -154,7 +139,9 @@ export default function AssignEnglishTestPage({ params }) {
 						type="submit"
 						className="w-full"
 						onClick={handleSubmit}
-						disabled={isLoading || isUserLoading || !selectedUser}
+						disabled={
+							isLoading || isUserLoading || selectedUsers.length === 0
+						}
 					>
 						{isLoading ? (
 							<>

@@ -84,10 +84,19 @@ function calculateResults(test, answers) {
 			.filter(([key]) => key.startsWith(`${sectionIndex}-`))
 			.map(([, value]) => parseInt(value))
 
-		const score =
-			(sectionAnswers.reduce((sum, answer) => sum + answer, 0) /
-				sectionAnswers.length) *
-			100
+		// Her sorunun maksimum puanını bildiğimizi varsayalım
+		const maxScorePerQuestion = 5 // Bu değer, test yapısına göre değişebilir
+
+		const totalScore = sectionAnswers.reduce(
+			(sum, answer) => sum + answer,
+			0
+		)
+		const maxPossibleScore =
+			sectionAnswers.length * maxScorePerQuestion
+
+		// 0-100 arasında bir skor hesapla
+		const score = Math.round((totalScore / maxPossibleScore) * 100)
+
 		return { title: section.title, score }
 	})
 

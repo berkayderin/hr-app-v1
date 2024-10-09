@@ -14,7 +14,7 @@ export async function POST(request) {
 			)
 		}
 
-		const { testId, userId } = await request.json()
+		const { testId, userIds } = await request.json()
 
 		// Check if the test exists
 		const test = await prisma.englishTest.findUnique({
@@ -28,51 +28,63 @@ export async function POST(request) {
 			)
 		}
 
-		// Check if the user exists
-		const user = await prisma.user.findUnique({
-			where: { id: userId }
-		})
+		// Process each user
+		const results = await Promise.all(
+			userIds.map(async (userId) => {
+				// Check if the user exists
+				const user = await prisma.user.findUnique({
+					where: { id: userId }
+				})
 
-		if (!user) {
-			return NextResponse.json(
-				{ error: 'User not found' },
-				{ status: 404 }
-			)
-		}
+				if (!user) {
+					return { userId, error: 'User not found' }
+				}
 
-		// Check if the test is already assigned to the user
-		const existingAssignment = await prisma.assignedTest.findFirst({
-			where: {
-				userId: userId,
-				testId: testId,
-				completedAt: null
-			}
-		})
+				// Check if the test is already assigned to the user
+				const existingAssignment =
+					await prisma.assignedTest.findFirst({
+						where: {
+							userId: userId,
+							testId: testId,
+							completedAt: null
+						}
+					})
 
-		if (existingAssignment) {
-			return NextResponse.json(
-				{ error: 'Test already assigned to the user' },
-				{ status: 400 }
-			)
-		}
+				if (existingAssignment) {
+					return {
+						userId,
+						error: 'Test already assigned to the user'
+					}
+				}
 
-		const assignedTest = await prisma.assignedTest.create({
-			data: {
-				userId,
-				testId,
-				timeRemaining: 20 * 60 // 20 minutes in seconds
-			}
-		})
+				// Assign the test
+				const assignedTest = await prisma.assignedTest.create({
+					data: {
+						userId,
+						testId,
+						timeRemaining: 20 * 60 // 20 minutes in seconds
+					}
+				})
 
-		console.log(
-			'Test atanıyor. Test ID:',
-			testId,
-			'Kullanıcı ID:',
-			userId
+				console.log(
+					'Test atandı. Test ID:',
+					testId,
+					'Kullanıcı ID:',
+					userId
+				)
+				return { userId, success: true, assignedTest }
+			})
 		)
-		console.log('AssignedTest oluşturuldu:', assignedTest)
 
-		return NextResponse.json(assignedTest)
+		const successfulAssignments = results.filter(
+			(result) => result.success
+		)
+		const failedAssignments = results.filter((result) => result.error)
+
+		return NextResponse.json({
+			successfulAssignments,
+			failedAssignments
+		})
 	} catch (error) {
 		console.error('Error in /api/english-test/assign:', error)
 		return NextResponse.json(

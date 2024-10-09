@@ -19,7 +19,8 @@ import {
 	ArrowRight,
 	BookOpen,
 	CheckCircle,
-	Circle
+	Circle,
+	UserCheck
 } from 'lucide-react'
 import Link from 'next/link'
 import {
@@ -43,12 +44,15 @@ export default function AdminSkillPersonalityTestDetailPage() {
 				const response = await fetch(
 					`/api/skill-personality-test/${params.id}`
 				)
-				if (!response.ok) throw new Error('Failed to fetch test')
+				if (!response.ok) {
+					const errorData = await response.json()
+					throw new Error(errorData.error || 'Failed to fetch test')
+				}
 				const data = await response.json()
 				setTest(data.test)
 			} catch (error) {
 				console.error('Error fetching test:', error)
-				toast.error('Failed to load test')
+				toast.error(error.message || 'Failed to load test')
 				router.push('/panel/skill-personality-test')
 			}
 		}
@@ -127,6 +131,15 @@ export default function AdminSkillPersonalityTestDetailPage() {
 									0
 								)}
 							</span>
+						</div>
+					</div>
+					<div className="flex flex-col space-y-1">
+						<span className="text-sm font-medium text-muted-foreground">
+							Atanan Kişi Sayısı
+						</span>
+						<div className="flex items-center">
+							<UserCheck className="h-4 w-4 mr-2 text-primary" />
+							<span>{test.assignmentCount}</span>
 						</div>
 					</div>
 					<div className="flex items-end">

@@ -79,7 +79,7 @@ export default function RegisterForm() {
 									<button
 										type="button"
 										onClick={() => setShowPassword(!showPassword)}
-										className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+										className="absolute inset-y-0 right-4 pr-3 flex items-center text-gray-400 hover:text-gray-600"
 									>
 										{showPassword ? (
 											<EyeOff className="h-5 w-5" />

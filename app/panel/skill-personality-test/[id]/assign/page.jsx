@@ -11,16 +11,9 @@ import {
 	CardContent,
 	CardFooter
 } from '@/components/ui/card'
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue
-} from '@/components/ui/select'
 import { toast } from 'sonner'
 import { Loader2, Users } from 'lucide-react'
-import Link from 'next/link'
+import Select from 'react-select'
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -29,6 +22,7 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
+import { Label } from '@/components/ui/label'
 
 export default function AssignSkillPersonalityTestPage() {
 	const params = useParams()
@@ -43,7 +37,6 @@ export default function AssignSkillPersonalityTestPage() {
 		const fetchData = async () => {
 			setIsUserLoading(true)
 			try {
-				// Fetch test details
 				const testResponse = await fetch(
 					`/api/skill-personality-test/${params.id}`
 				)
@@ -51,12 +44,16 @@ export default function AssignSkillPersonalityTestPage() {
 				const testData = await testResponse.json()
 				setTest(testData.test)
 
-				// Fetch users
 				const usersResponse = await fetch('/api/users')
 				if (!usersResponse.ok)
 					throw new Error('Failed to fetch users')
 				const usersData = await usersResponse.json()
-				setUsers(usersData)
+				setUsers(
+					usersData.map((user) => ({
+						value: user.id,
+						label: user.email
+					}))
+				)
 			} catch (error) {
 				console.error('Error fetching data:', error)
 				toast.error('Veri yüklenemedi. Lütfen tekrar deneyin.')
@@ -68,12 +65,8 @@ export default function AssignSkillPersonalityTestPage() {
 		fetchData()
 	}, [params.id, router])
 
-	const handleUserSelect = (selectedValues) => {
-		setSelectedUsers(
-			Array.isArray(selectedValues)
-				? selectedValues
-				: [selectedValues]
-		)
+	const handleUserSelect = (selectedOptions) => {
+		setSelectedUsers(selectedOptions)
 	}
 
 	const handleAssign = async () => {
@@ -91,7 +84,7 @@ export default function AssignSkillPersonalityTestPage() {
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({
 						testId: params.id,
-						userIds: selectedUsers
+						userIds: selectedUsers.map((user) => user.value)
 					})
 				}
 			)
@@ -154,47 +147,19 @@ export default function AssignSkillPersonalityTestPage() {
 					</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<div className="space-y-2">
-						<label
-							htmlFor="user-select"
-							className="block text-sm font-medium"
-						>
-							Kullanıcı Seçin
-						</label>
-						<Select
-							value={selectedUsers}
-							onValueChange={handleUserSelect}
-							disabled={isUserLoading}
-						>
-							<SelectTrigger id="user-select" className="w-full">
-								<SelectValue placeholder="Kullanıcı seçin" />
-							</SelectTrigger>
-							<SelectContent>
-								{users.map((user) => (
-									<SelectItem key={user.id} value={user.id}>
-										{user.email}
-									</SelectItem>
-								))}
-							</SelectContent>
-						</Select>
-						{selectedUsers.length > 0 && (
-							<div className="mt-2">
-								<p className="text-sm font-medium">
-									Seçilen Kullanıcılar:
-								</p>
-								<ul className="list-disc list-inside">
-									{selectedUsers.map((userId) => {
-										const user = users.find((u) => u.id === userId)
-										return user ? (
-											<li key={userId} className="text-sm">
-												{user.email}
-											</li>
-										) : null
-									})}
-								</ul>
-							</div>
-						)}
-					</div>
+					<Label htmlFor="user-select"> Kullanıcı Seçin</Label>
+					<Select
+						id="user-select"
+						isMulti
+						options={users}
+						value={selectedUsers}
+						onChange={handleUserSelect}
+						isDisabled={isUserLoading}
+						placeholder="Kullanıcı seçin"
+						noOptionsMessage={() => 'Kullanıcı bulunamadı'}
+						className="react-select-container"
+						classNamePrefix="react-select"
+					/>
 				</CardContent>
 				<CardFooter>
 					<Button

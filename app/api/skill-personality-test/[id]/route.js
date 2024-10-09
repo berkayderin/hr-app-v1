@@ -19,7 +19,12 @@ export async function GET(request, { params }) {
 		const { id } = params
 		// Veritabanından belirtilen ID'ye sahip testin bulunması
 		const test = await prisma.skillPersonalityTest.findUnique({
-			where: { id }
+			where: { id },
+			include: {
+				_count: {
+					select: { assignedTests: true }
+				}
+			}
 		})
 
 		if (!test) {
@@ -29,7 +34,12 @@ export async function GET(request, { params }) {
 			)
 		}
 
-		return NextResponse.json({ test })
+		return NextResponse.json({
+			test: {
+				...test,
+				assignmentCount: test._count.assignedTests
+			}
+		})
 	} catch (error) {
 		console.error(
 			'GET /api/skill-personality-test/[id] işleminde hata:',
