@@ -10,6 +10,7 @@ export async function GET(request, { params }) {
 	try {
 		const session = await getServerSession(authOptions)
 		if (!session) {
+			console.log('Unauthorized access attempt')
 			return NextResponse.json(
 				{ error: 'Unauthorized' },
 				{ status: 401 }
@@ -17,6 +18,8 @@ export async function GET(request, { params }) {
 		}
 
 		const { id } = params
+		console.log('Fetching assigned test with id:', id)
+
 		const assignedTest =
 			await prisma.assignedSkillPersonalityTest.findUnique({
 				where: {
@@ -28,17 +31,25 @@ export async function GET(request, { params }) {
 				}
 			})
 
+		console.log('Found assigned test:', assignedTest ? 'Yes' : 'No')
+
 		if (!assignedTest) {
+			console.log('Test not found or not assigned to user')
 			return NextResponse.json(
 				{ error: 'Test not found or not assigned to user' },
 				{ status: 404 }
 			)
 		}
 
-		return NextResponse.json({
+		const response = {
+			id: assignedTest.id,
 			test: assignedTest.test,
 			timeRemaining: assignedTest.timeRemaining
-		})
+		}
+
+		console.log('Sending response:', response)
+
+		return NextResponse.json(response)
 	} catch (error) {
 		console.error(
 			'Error in GET /api/skill-personality-test/assigned/[id]:',
