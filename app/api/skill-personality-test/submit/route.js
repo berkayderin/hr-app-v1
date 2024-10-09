@@ -20,7 +20,7 @@ export async function POST(request) {
 		console.log('Received payload:', { testId, answers })
 		console.log('User ID from session:', session.user.id)
 
-		// Find the test by id or testId
+		// Test ID'sine göre atanmış testin bulunması
 		let assignedTest =
 			await prisma.assignedSkillPersonalityTest.findFirst({
 				where: {
@@ -33,7 +33,7 @@ export async function POST(request) {
 		console.log('Found assigned test:', assignedTest)
 
 		if (!assignedTest) {
-			// Log all assigned tests for this user
+			// Bu kullanıcı için atanmış tüm testlerin loglanması
 			const allAssignedTests =
 				await prisma.assignedSkillPersonalityTest.findMany({
 					where: { userId: session.user.id },
@@ -47,8 +47,10 @@ export async function POST(request) {
 			)
 		}
 
+		// Test sonuçlarının hesaplanması
 		const results = calculateResults(assignedTest.test, answers)
 
+		// Atanmış testin güncellenmesi
 		const updatedAssignedTest =
 			await prisma.assignedSkillPersonalityTest.update({
 				where: { id: assignedTest.id },
@@ -74,7 +76,9 @@ export async function POST(request) {
 	}
 }
 
+// Test sonuçlarının hesaplanması için fonksiyon
 function calculateResults(test, answers) {
+	// Her bölüm için skorların hesaplanması
 	const sectionScores = test.sections.map((section, sectionIndex) => {
 		const sectionAnswers = Object.entries(answers)
 			.filter(([key]) => key.startsWith(`${sectionIndex}-`))
@@ -87,6 +91,7 @@ function calculateResults(test, answers) {
 		return { title: section.title, score }
 	})
 
+	// Her alandaki skorların ayrıştırılması
 	const iqScore =
 		sectionScores.find((s) => s.title === 'IQ Test')?.score ?? 0
 	const practicalScore =
@@ -99,6 +104,7 @@ function calculateResults(test, answers) {
 		sectionScores.find((s) => s.title === 'Personality Analysis')
 			?.score ?? 0
 
+	// Kişilik profili ve departman uyumluluğunun oluşturulması
 	const personalityProfile =
 		generatePersonalityProfile(personalityScore)
 	const departmentCompatibility = generateDepartmentCompatibility(
@@ -118,6 +124,7 @@ function calculateResults(test, answers) {
 	}
 }
 
+// Kişilik profili oluşturma fonksiyonu
 function generatePersonalityProfile(score) {
 	if (score > 75) {
 		return 'Dışa dönük, yenilikçi ve risk almaya açık bir kişilik profili.'
@@ -128,6 +135,7 @@ function generatePersonalityProfile(score) {
 	}
 }
 
+// Departman uyumluluğu oluşturma fonksiyonu
 function generateDepartmentCompatibility(
 	iqScore,
 	practicalScore,

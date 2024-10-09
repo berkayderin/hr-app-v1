@@ -18,7 +18,7 @@ export async function GET(request) {
 
 		let results
 		if (session.user.role === 'admin') {
-			// Admins can see all test results
+			// Yöneticiler tüm test sonuçlarını görebilir
 			results = await prisma.assignedSkillPersonalityTest.findMany({
 				where: { completedAt: { not: null } },
 				include: {
@@ -38,7 +38,7 @@ export async function GET(request) {
 				orderBy: { completedAt: 'desc' }
 			})
 		} else {
-			// Regular users can only see their own test results
+			// Normal kullanıcılar sadece kendi test sonuçlarını görebilir
 			results = await prisma.assignedSkillPersonalityTest.findMany({
 				where: {
 					userId: session.user.id,
@@ -62,19 +62,19 @@ export async function GET(request) {
 			})
 		}
 
-		// Process results to include scores and other relevant information
+		// Sonuçların işlenmesi ve ilgili bilgilerin eklenmesi
 		const processedResults = results.map((result) => ({
 			id: result.id,
 			testId: result.testId,
 			testTitle: result.test.title,
 			completedAt: result.completedAt,
-			userEmail: result.user.email, // Always include the user email
+			userEmail: result.user.email,
 			scores: result.results
 				? {
 						iqScore: result.results.iqScore,
 						practicalScore: result.results.practicalScore,
 						sharpScore: result.results.sharpScore,
-						personalityScore: result.results.personalityScore // Add personality score
+						personalityScore: result.results.personalityScore
 				  }
 				: null
 		}))

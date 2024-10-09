@@ -1,4 +1,5 @@
 // app/api/skill-personality-test/assign/route.js
+
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/AuthOptions'
@@ -6,10 +7,11 @@ import prisma from '@/lib/prismadb'
 
 export async function POST(request) {
 	try {
+		// Kullanıcı oturumunun kontrol edilmesi
 		const session = await getServerSession(authOptions)
 		if (!session || session.user.role !== 'admin') {
 			return NextResponse.json(
-				{ error: 'Unauthorized' },
+				{ error: 'Yetkisiz erişim' },
 				{ status: 401 }
 			)
 		}
@@ -24,37 +26,37 @@ export async function POST(request) {
 			userIds.length === 0
 		) {
 			return NextResponse.json(
-				{ error: 'Invalid input data' },
+				{ error: 'Geçersiz giriş verisi' },
 				{ status: 400 }
 			)
 		}
 
-		// Check if the test exists
+		// Testin var olup olmadığının kontrol edilmesi
 		const test = await prisma.skillPersonalityTest.findUnique({
 			where: { id: testId }
 		})
 
 		if (!test) {
 			return NextResponse.json(
-				{ error: 'Test not found' },
+				{ error: 'Test bulunamadı' },
 				{ status: 404 }
 			)
 		}
 
-		// Assign the test to each user
+		// Testin her kullanıcıya atanması
 		const assignments = await Promise.all(
 			userIds.map(async (userId) => {
 				try {
-					// Check if the user exists
+					// Kullanıcının var olup olmadığının kontrol edilmesi
 					const user = await prisma.user.findUnique({
 						where: { id: userId }
 					})
 
 					if (!user) {
-						return { userId, error: 'User not found' }
+						return { userId, error: 'Kullanıcı bulunamadı' }
 					}
 
-					// Check if the test is already assigned to the user
+					// Testin kullanıcıya zaten atanıp atanmadığının kontrol edilmesi
 					const existingAssignment =
 						await prisma.assignedSkillPersonalityTest.findFirst({
 							where: {
@@ -67,46 +69,48 @@ export async function POST(request) {
 					if (existingAssignment) {
 						return {
 							userId,
-							error: 'Test already assigned to the user'
+							error: 'Test zaten kullanıcıya atanmış'
 						}
 					}
 
-					// Assign the test
+					// Testin atanması
 					const assignedTest =
 						await prisma.assignedSkillPersonalityTest.create({
 							data: {
 								userId,
 								testId,
-								timeRemaining: 60 * 60 // 60 minutes in seconds
+								timeRemaining: 60 * 60 // 60 dakika (saniye cinsinden)
 							}
 						})
 
 					return { userId, assignedTest }
 				} catch (error) {
 					console.error(
-						`Error assigning test to user ${userId}:`,
+						`${userId} ID'li kullanıcıya test atanırken hata oluştu:`,
 						error
 					)
-					return { userId, error: 'Failed to assign test' }
+					return { userId, error: 'Test atama başarısız oldu' }
 				}
 			})
 		)
 
+		// Başarılı ve başarısız atamaların ayrıştırılması
 		const successfulAssignments = assignments.filter((a) => !a.error)
 		const failedAssignments = assignments.filter((a) => a.error)
 
 		return NextResponse.json({
 			successfulAssignments,
 			failedAssignments,
-			message: `Successfully assigned to ${successfulAssignments.length} users. Failed for ${failedAssignments.length} users.`
+			message: `${successfulAssignments.length} kullanıcıya başarıyla atandı. ${failedAssignments.length} kullanıcı için başarısız oldu.`
 		})
 	} catch (error) {
 		console.error(
-			'Error in /api/skill-personality-test/assign:',
+			'/api/skill-personality-test/assign işleminde hata:',
 			error
 		)
+
 		return NextResponse.json(
-			{ error: 'Failed to assign test', details: error.message },
+			{ error: 'Test atama başarısız oldu', details: error.message },
 			{ status: 500 }
 		)
 	}

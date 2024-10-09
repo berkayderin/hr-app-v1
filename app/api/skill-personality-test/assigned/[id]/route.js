@@ -1,4 +1,5 @@
 // app/api/skill-personality-test/assigned/[id]/route.js
+
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/AuthOptions'
@@ -10,16 +11,17 @@ export async function GET(request, { params }) {
 	try {
 		const session = await getServerSession(authOptions)
 		if (!session) {
-			console.log('Unauthorized access attempt')
+			console.log('Yetkisiz erişim girişimi')
 			return NextResponse.json(
-				{ error: 'Unauthorized' },
+				{ error: 'Yetkisiz erişim' },
 				{ status: 401 }
 			)
 		}
 
 		const { id } = params
-		console.log('Fetching assigned test with id:', id)
+		console.log('Atanmış test getiriliyor, ID:', id)
 
+		// Veritabanından belirtilen ID'ye ve kullanıcıya sahip atanmış testin bulunması
 		const assignedTest =
 			await prisma.assignedSkillPersonalityTest.findUnique({
 				where: {
@@ -31,12 +33,16 @@ export async function GET(request, { params }) {
 				}
 			})
 
-		console.log('Found assigned test:', assignedTest ? 'Yes' : 'No')
+		console.log(
+			'Atanmış test bulundu:',
+			assignedTest ? 'Evet' : 'Hayır'
+		)
 
+		// Test bulunamazsa veya kullanıcıya atanmamışsa hata döndürme
 		if (!assignedTest) {
-			console.log('Test not found or not assigned to user')
+			console.log('Test bulunamadı veya kullanıcıya atanmamış')
 			return NextResponse.json(
-				{ error: 'Test not found or not assigned to user' },
+				{ error: 'Test bulunamadı veya kullanıcıya atanmamış' },
 				{ status: 404 }
 			)
 		}
@@ -47,16 +53,16 @@ export async function GET(request, { params }) {
 			timeRemaining: assignedTest.timeRemaining
 		}
 
-		console.log('Sending response:', response)
+		console.log('Yanıt gönderiliyor:', response)
 
 		return NextResponse.json(response)
 	} catch (error) {
 		console.error(
-			'Error in GET /api/skill-personality-test/assigned/[id]:',
+			'GET /api/skill-personality-test/assigned/[id] işleminde hata:',
 			error
 		)
 		return NextResponse.json(
-			{ error: 'Failed to fetch test', details: error.message },
+			{ error: 'Test getirme başarısız', details: error.message },
 			{ status: 500 }
 		)
 	}
