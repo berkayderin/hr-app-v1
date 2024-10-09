@@ -236,7 +236,7 @@ function Sidebar({ pathname, isMobile = false, setOpen, items }) {
 			</div>
 
 			<ScrollArea className="flex-1">
-				<div className="space-y-1 p-2 font-medium">
+				<div className="space-y-1 p-2 font-medium ">
 					{items.map((item) => (
 						<SidebarItem
 							key={item.href}

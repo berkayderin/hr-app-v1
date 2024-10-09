@@ -31,7 +31,6 @@ import {
 export default function SkillPersonalityTestResultsPage() {
 	const [results, setResults] = useState([])
 	const [isLoading, setIsLoading] = useState(true)
-	const router = useRouter()
 	const { data: session } = useSession()
 
 	useEffect(() => {
@@ -43,6 +42,8 @@ export default function SkillPersonalityTestResultsPage() {
 				if (!response.ok) throw new Error('Failed to fetch results')
 				const data = await response.json()
 				setResults(data.results)
+
+				console.log('Fetched test results:', data.results)
 			} catch (error) {
 				console.error('Error fetching test results:', error)
 				toast.error('Failed to load test results')
@@ -88,11 +89,12 @@ export default function SkillPersonalityTestResultsPage() {
 								{session?.user.role === 'admin' && (
 									<TableHead>Kullanıcı E-posta</TableHead>
 								)}
-								<TableHead>Test Başlığı</TableHead>
+								<TableHead>Test Adı</TableHead>
 								<TableHead>Tamamlanma Zamanı</TableHead>
-								<TableHead>IQ Skor</TableHead>
-								<TableHead>Pratik Zeka Skor</TableHead>
-								<TableHead>Keskinlik Skor</TableHead>
+								<TableHead>IQ Testi</TableHead>
+								<TableHead>Pratik Zeka</TableHead>
+								<TableHead>Keskin Zeka</TableHead>
+								<TableHead>Kişilik Analizi</TableHead>
 							</TableRow>
 						</TableHeader>
 						<TableBody>

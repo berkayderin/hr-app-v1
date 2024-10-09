@@ -30,6 +30,16 @@ export default async function ViewSkillPersonalityTestsPage() {
 		redirect('/login')
 	}
 
+	const translateSectionTitle = (title) => {
+		const translations = {
+			'IQ Test': 'IQ Testi',
+			'Practical Intelligence': 'Pratik Zeka',
+			'Sharp Intelligence': 'Keskin Zeka',
+			'Personality Analysis': 'Kişilik Analizi'
+		}
+		return translations[title] || title
+	}
+
 	let tests = []
 	try {
 		if (session.user.role === 'admin') {
@@ -109,7 +119,7 @@ export default async function ViewSkillPersonalityTestsPage() {
 											variant="secondary"
 											className="text-xs"
 										>
-											{section.title}
+											{translateSectionTitle(section.title)}
 										</Badge>
 									))}
 								</div>
