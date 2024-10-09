@@ -14,6 +14,14 @@ import {
 import { BookOpen, Plus, BarChart } from 'lucide-react'
 import prisma from '@/lib/prismadb'
 import { Badge } from '@/components/ui/badge'
+import {
+	Breadcrumb,
+	BreadcrumbItem,
+	BreadcrumbLink,
+	BreadcrumbList,
+	BreadcrumbPage,
+	BreadcrumbSeparator
+} from '@/components/ui/breadcrumb'
 
 export default async function ViewSkillPersonalityTestsPage() {
 	const session = await getServerSession(authOptions)
@@ -51,10 +59,20 @@ export default async function ViewSkillPersonalityTestsPage() {
 
 	return (
 		<div className="container mx-auto p-4 space-y-6">
-			<div className="flex justify-between items-center">
-				<h1 className="text-3xl font-bold">
-					Yetenek ve Kişilik Testleri
-				</h1>
+			<Breadcrumb>
+				<BreadcrumbList>
+					<BreadcrumbItem>
+						<BreadcrumbLink href="/panel">Ana Sayfa</BreadcrumbLink>
+					</BreadcrumbItem>
+					<BreadcrumbSeparator />
+					<BreadcrumbItem>
+						<BreadcrumbPage className="font-medium">
+							Yetenek ve Kişilik Testleri
+						</BreadcrumbPage>
+					</BreadcrumbItem>
+				</BreadcrumbList>
+			</Breadcrumb>
+			<div className="flex justify-end items-center">
 				{session.user.role === 'admin' && (
 					<Button asChild>
 						<Link href="/panel/skill-personality-test/create">

@@ -15,6 +15,14 @@ import {
 } from '@/components/ui/card'
 import { Loader2, Save } from 'lucide-react'
 import { toast } from 'sonner'
+import {
+	Breadcrumb,
+	BreadcrumbItem,
+	BreadcrumbLink,
+	BreadcrumbList,
+	BreadcrumbPage,
+	BreadcrumbSeparator
+} from '@/components/ui/breadcrumb'
 
 export default function CreateSkillPersonalityTestPage() {
 	const [title, setTitle] = useState('')
@@ -45,26 +53,41 @@ export default function CreateSkillPersonalityTestPage() {
 	}
 
 	return (
-		<div className="container mx-auto p-6">
-			<h1 className="text-3xl font-bold mb-6">
-				Create Skill and Personality Test
-			</h1>
+		<div className="container mx-auto p-4">
+			<Breadcrumb className="mb-4">
+				<BreadcrumbList>
+					<BreadcrumbItem>
+						<BreadcrumbLink href="/panel">Ana Sayfa</BreadcrumbLink>
+					</BreadcrumbItem>
+					<BreadcrumbSeparator />
+					<BreadcrumbItem>
+						<BreadcrumbLink href="/panel/skill-personality-test">
+							Yetenek ve Kişilik Testleri
+						</BreadcrumbLink>
+					</BreadcrumbItem>
+					<BreadcrumbSeparator />
+					<BreadcrumbItem>
+						<BreadcrumbPage className="font-medium">
+							Test Oluştur
+						</BreadcrumbPage>
+					</BreadcrumbItem>
+				</BreadcrumbList>
+			</Breadcrumb>
+
 			<form onSubmit={handleSubmit}>
 				<Card>
-					<CardHeader>
-						<CardTitle>Test Details</CardTitle>
-					</CardHeader>
+					<CardHeader></CardHeader>
 					<CardContent className="space-y-4">
 						<div>
 							<label
 								htmlFor="title"
 								className="block text-sm font-medium text-gray-700"
 							>
-								Test Title
+								Test Başlığı
 							</label>
 							<Input
 								id="title"
-								placeholder="Enter test title"
+								placeholder="Test Başlığı"
 								value={title}
 								onChange={(e) => setTitle(e.target.value)}
 								required
@@ -75,11 +98,11 @@ export default function CreateSkillPersonalityTestPage() {
 								htmlFor="prompt"
 								className="block text-sm font-medium text-gray-700"
 							>
-								AI Prompt
+								AI Soru Üretme Yönergesi
 							</label>
 							<Textarea
 								id="prompt"
-								placeholder="Enter additional instructions for AI to generate the test"
+								placeholder="AI'nın soru üretmesi için yönerg girin"
 								value={prompt}
 								onChange={(e) => setPrompt(e.target.value)}
 								rows={4}
@@ -92,11 +115,11 @@ export default function CreateSkillPersonalityTestPage() {
 							{isLoading ? (
 								<>
 									<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-									Creating Test...
+									Oluşturuluyor...
 								</>
 							) : (
 								<>
-									<Save className="mr-2 h-4 w-4" /> Create Test
+									<Save className="mr-2 h-4 w-4" /> Testi Oluştur
 								</>
 							)}
 						</Button>

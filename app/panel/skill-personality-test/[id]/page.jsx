@@ -9,12 +9,28 @@ import {
 	CardHeader,
 	CardTitle,
 	CardContent,
-	CardFooter
+	CardFooter,
+	CardDescription
 } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
-import { Users, ArrowRight } from 'lucide-react'
+import {
+	Users,
+	ArrowRight,
+	BookOpen,
+	CheckCircle,
+	Circle
+} from 'lucide-react'
 import Link from 'next/link'
+import {
+	Breadcrumb,
+	BreadcrumbItem,
+	BreadcrumbLink,
+	BreadcrumbList,
+	BreadcrumbPage,
+	BreadcrumbSeparator
+} from '@/components/ui/breadcrumb'
+import { Separator } from '@/components/ui/separator'
 
 export default function AdminSkillPersonalityTestDetailPage() {
 	const params = useParams()
@@ -39,79 +55,140 @@ export default function AdminSkillPersonalityTestDetailPage() {
 		fetchTest()
 	}, [params.id, router])
 
-	if (!test) return <div>Loading...</div>
+	if (!test) {
+		return (
+			<div className="container mx-auto p-4 flex items-center justify-center min-h-screen">
+				<Card className="max-w-md w-full">
+					<CardHeader>
+						<CardTitle>Test Yükleniyor</CardTitle>
+						<CardDescription>
+							Lütfen bekleyin, test bilgileri yükleniyor...
+						</CardDescription>
+					</CardHeader>
+				</Card>
+			</div>
+		)
+	}
+
+	const letters = ['A', 'B', 'C', 'D']
 
 	return (
 		<div className="container mx-auto p-4 space-y-6">
-			<h1 className="text-3xl font-bold">{test.title}</h1>
+			<Breadcrumb>
+				<BreadcrumbList>
+					<BreadcrumbItem>
+						<BreadcrumbLink href="/panel">Ana Sayfa</BreadcrumbLink>
+					</BreadcrumbItem>
+					<BreadcrumbSeparator />
+					<BreadcrumbItem>
+						<BreadcrumbLink href="/panel/skill-personality-test">
+							Yetenek ve Kişilik Testleri
+						</BreadcrumbLink>
+					</BreadcrumbItem>
+					<BreadcrumbSeparator />
+					<BreadcrumbItem>
+						<BreadcrumbPage className="font-medium">
+							{test.title}
+						</BreadcrumbPage>
+					</BreadcrumbItem>
+				</BreadcrumbList>
+			</Breadcrumb>
+
+			<div className="flex justify-between items-center">
+				<h1 className="text-3xl font-bold text-primary">
+					{test.title}
+				</h1>
+			</div>
 
 			<Card>
 				<CardHeader>
-					<CardTitle>Test Overview</CardTitle>
+					<CardTitle>Test Detayları</CardTitle>
 				</CardHeader>
-				<CardContent>
-					<p>Total Sections: {test.sections.length}</p>
-					<p>
-						Total Questions:{' '}
-						{test.sections.reduce(
-							(acc, section) => acc + section.questions.length,
-							0
-						)}
-					</p>
+				<CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+					<div className="flex flex-col space-y-1">
+						<span className="text-sm font-medium text-muted-foreground">
+							Toplam Bölüm
+						</span>
+						<div className="flex items-center">
+							<Badge variant="secondary" className="text-sm">
+								{test.sections.length}
+							</Badge>
+						</div>
+					</div>
+					<div className="flex flex-col space-y-1">
+						<span className="text-sm font-medium text-muted-foreground">
+							Toplam Soru
+						</span>
+						<div className="flex items-center">
+							<BookOpen className="h-4 w-4 mr-2 text-primary" />
+							<span>
+								{test.sections.reduce(
+									(acc, section) => acc + section.questions.length,
+									0
+								)}
+							</span>
+						</div>
+					</div>
+					<div className="flex items-end">
+						<Button asChild className="w-full">
+							<Link
+								href={`/panel/skill-personality-test/${params.id}/assign`}
+							>
+								<Users className="mr-2 h-4 w-4" />
+								Testi Ata
+							</Link>
+						</Button>
+					</div>
 				</CardContent>
 			</Card>
 
-			{test.sections.map((section, index) => (
-				<Card key={index}>
+			{test.sections.map((section, sectionIndex) => (
+				<Card key={sectionIndex}>
 					<CardHeader>
 						<CardTitle>{section.title}</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<p>
-							Questions in this section: {section.questions.length}
-						</p>
-						{section.questions.map((question, qIndex) => (
-							<div key={qIndex} className="mt-4">
-								<p className="font-semibold">
-									{qIndex + 1}. {question.text}
-								</p>
-								<ul className="list-disc list-inside ml-4">
-									{question.options.map((option, oIndex) => (
-										<li
-											key={oIndex}
-											className={
-												oIndex === question.correctAnswer
-													? 'text-green-600'
-													: ''
-											}
-										>
-											{option}{' '}
-											{oIndex === question.correctAnswer &&
-												'(Correct)'}
-										</li>
-									))}
-								</ul>
-							</div>
-						))}
+						<div className="space-y-6">
+							{section.questions.map((question, questionIndex) => (
+								<div key={questionIndex} className="space-y-4">
+									<div className="flex items-start">
+										<span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground font-medium text-sm mr-3">
+											{questionIndex + 1}
+										</span>
+										<h3 className="text-lg font-medium">
+											{question.text}
+										</h3>
+									</div>
+									<ul className="ml-11 space-y-2">
+										{question.options.map((option, optionIndex) => (
+											<li
+												key={optionIndex}
+												className={`flex items-center space-x-2 ${
+													optionIndex === question.correctAnswer
+														? 'text-green-600 dark:text-green-400 font-medium'
+														: 'text-muted-foreground'
+												}`}
+											>
+												{optionIndex === question.correctAnswer ? (
+													<CheckCircle className="h-5 w-5" />
+												) : (
+													<Circle className="h-5 w-5" />
+												)}
+												<span>
+													{letters[optionIndex]}) {option}
+												</span>
+											</li>
+										))}
+									</ul>
+									{questionIndex < section.questions.length - 1 && (
+										<Separator className="my-4" />
+									)}
+								</div>
+							))}
+						</div>
 					</CardContent>
 				</Card>
 			))}
-
-			<Card>
-				<CardHeader>
-					<CardTitle>Test Management</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<Button asChild>
-						<Link
-							href={`/panel/skill-personality-test/${params.id}/assign`}
-						>
-							<Users className="mr-2 h-4 w-4" />
-							Assign Test to Users
-						</Link>
-					</Button>
-				</CardContent>
-			</Card>
 		</div>
 	)
 }

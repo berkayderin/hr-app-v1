@@ -131,9 +131,9 @@ export default function TakeSkillPersonalityTestPage() {
 				{test.title}
 			</h1>
 			<div className="flex items-center justify-between mb-4">
-				<div>Section: {currentSectionData.title}</div>
+				<div>Bölüm: {currentSectionData.title}</div>
 				<div>
-					Time Remaining: {Math.floor(timeRemaining / 60)}:
+					Kalan Süre: {Math.floor(timeRemaining / 60)}:
 					{(timeRemaining % 60).toString().padStart(2, '0')}
 				</div>
 			</div>
@@ -141,7 +141,7 @@ export default function TakeSkillPersonalityTestPage() {
 			<Card>
 				<CardHeader>
 					<CardTitle>
-						Question {currentQuestion + 1} /{' '}
+						Soru {currentQuestion + 1} /{' '}
 						{currentSectionData.questions.length}
 					</CardTitle>
 				</CardHeader>
@@ -196,7 +196,7 @@ export default function TakeSkillPersonalityTestPage() {
 						disabled={currentSection === 0 && currentQuestion === 0}
 						variant="outline"
 					>
-						<ChevronLeft className="mr-2 h-4 w-4" /> Previous
+						<ChevronLeft className="mr-2 h-4 w-4" /> Önceki
 					</Button>
 					{currentSection < test.sections.length - 1 ||
 					currentQuestion <
@@ -217,11 +217,11 @@ export default function TakeSkillPersonalityTestPage() {
 								}
 							}}
 						>
-							Next <ChevronRight className="ml-2 h-4 w-4" />
+							Sonraki <ChevronRight className="ml-2 h-4 w-4" />
 						</Button>
 					) : (
 						<Button onClick={handleSubmit} disabled={isSubmitting}>
-							{isSubmitting ? 'Submitting...' : 'Submit'}{' '}
+							{isSubmitting ? 'Gönderiliyor...' : 'Bitir'}{' '}
 							<Send className="ml-2 h-4 w-4" />
 						</Button>
 					)}

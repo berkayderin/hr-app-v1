@@ -19,8 +19,16 @@ import {
 	SelectValue
 } from '@/components/ui/select'
 import { toast } from 'sonner'
-import { Users, ArrowLeft, Send } from 'lucide-react'
+import { Loader2, Users } from 'lucide-react'
 import Link from 'next/link'
+import {
+	Breadcrumb,
+	BreadcrumbItem,
+	BreadcrumbLink,
+	BreadcrumbList,
+	BreadcrumbPage,
+	BreadcrumbSeparator
+} from '@/components/ui/breadcrumb'
 
 export default function AssignSkillPersonalityTestPage() {
 	const params = useParams()
@@ -28,10 +36,12 @@ export default function AssignSkillPersonalityTestPage() {
 	const [users, setUsers] = useState([])
 	const [selectedUsers, setSelectedUsers] = useState([])
 	const [isLoading, setIsLoading] = useState(false)
+	const [isUserLoading, setIsUserLoading] = useState(true)
 	const [test, setTest] = useState(null)
 
 	useEffect(() => {
 		const fetchData = async () => {
+			setIsUserLoading(true)
 			try {
 				// Fetch test details
 				const testResponse = await fetch(
@@ -49,15 +59,16 @@ export default function AssignSkillPersonalityTestPage() {
 				setUsers(usersData)
 			} catch (error) {
 				console.error('Error fetching data:', error)
-				toast.error('Failed to load data')
+				toast.error('Veri yüklenemedi. Lütfen tekrar deneyin.')
 				router.push('/panel/skill-personality-test')
+			} finally {
+				setIsUserLoading(false)
 			}
 		}
 		fetchData()
 	}, [params.id, router])
 
 	const handleUserSelect = (selectedValues) => {
-		// Ensure selectedValues is always an array
 		setSelectedUsers(
 			Array.isArray(selectedValues)
 				? selectedValues
@@ -67,95 +78,143 @@ export default function AssignSkillPersonalityTestPage() {
 
 	const handleAssign = async () => {
 		if (selectedUsers.length === 0) {
-			toast.error('Please select at least one user')
+			toast.error('Lütfen en az bir kullanıcı seçin')
 			return
 		}
 
 		setIsLoading(true)
 		try {
-			const payload = {
-				testId: params.id,
-				userIds: selectedUsers
-			}
-			console.log('Sending payload:', payload) // Log the payload
-
 			const response = await fetch(
 				'/api/skill-personality-test/assign',
 				{
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify(payload)
+					body: JSON.stringify({
+						testId: params.id,
+						userIds: selectedUsers
+					})
 				}
 			)
 
 			const result = await response.json()
-			console.log('Received response:', result) // Log the response
 
 			if (!response.ok) {
-				throw new Error(result.error || 'Failed to assign test')
+				throw new Error(result.error || 'Test atanamadı')
 			}
 
 			if (result.successfulAssignments?.length > 0) {
 				toast.success(
-					`Successfully assigned to ${result.successfulAssignments.length} users`
+					`${result.successfulAssignments.length} kullanıcıya başarıyla atandı`
 				)
 			}
 
 			if (result.failedAssignments?.length > 0) {
 				toast.error(
-					`Failed to assign to ${result.failedAssignments.length} users`
+					`${result.failedAssignments.length} kullanıcıya atama yapılamadı`
 				)
-				console.error('Failed assignments:', result.failedAssignments)
 			}
 
 			router.push(`/panel/skill-personality-test/${params.id}`)
 		} catch (error) {
-			console.error('Error assigning test:', error)
-			toast.error(error.message || 'Failed to assign test')
+			console.error('Test atama hatası:', error)
+			toast.error('Test atanırken bir hata oluştu')
 		} finally {
 			setIsLoading(false)
 		}
 	}
 
-	if (!test) return <div>Loading...</div>
+	if (!test) return <div>Yükleniyor...</div>
 
 	return (
 		<div className="container mx-auto p-4 space-y-6">
-			<h1 className="text-3xl font-bold">
-				Assign Test: {test.title}
-			</h1>
+			<Breadcrumb>
+				<BreadcrumbList>
+					<BreadcrumbItem>
+						<BreadcrumbLink href="/panel">Ana Sayfa</BreadcrumbLink>
+					</BreadcrumbItem>
+					<BreadcrumbSeparator />
+					<BreadcrumbItem>
+						<BreadcrumbLink href="/panel/skill-personality-test">
+							Yetenek ve Kişilik Testleri
+						</BreadcrumbLink>
+					</BreadcrumbItem>
+					<BreadcrumbSeparator />
+					<BreadcrumbItem>
+						<BreadcrumbPage className="font-medium">
+							Test Ata
+						</BreadcrumbPage>
+					</BreadcrumbItem>
+				</BreadcrumbList>
+			</Breadcrumb>
 
-			<Card>
+			<Card className="max-w-lg">
 				<CardHeader>
-					<CardTitle>Select Users</CardTitle>
+					<CardTitle>
+						Yetenek ve Kişilik Testi Ata: {test.title}
+					</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<Select
-						multiple
-						value={selectedUsers}
-						onValueChange={handleUserSelect}
-					>
-						<SelectTrigger className="w-full">
-							<SelectValue placeholder="Select users to assign the test" />
-						</SelectTrigger>
-						<SelectContent>
-							{users.map((user) => (
-								<SelectItem key={user.id} value={user.id}>
-									{user.email}
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
+					<div className="space-y-2">
+						<label
+							htmlFor="user-select"
+							className="block text-sm font-medium"
+						>
+							Kullanıcı Seçin
+						</label>
+						<Select
+							value={selectedUsers}
+							onValueChange={handleUserSelect}
+							disabled={isUserLoading}
+						>
+							<SelectTrigger id="user-select" className="w-full">
+								<SelectValue placeholder="Kullanıcı seçin" />
+							</SelectTrigger>
+							<SelectContent>
+								{users.map((user) => (
+									<SelectItem key={user.id} value={user.id}>
+										{user.email}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+						{selectedUsers.length > 0 && (
+							<div className="mt-2">
+								<p className="text-sm font-medium">
+									Seçilen Kullanıcılar:
+								</p>
+								<ul className="list-disc list-inside">
+									{selectedUsers.map((userId) => {
+										const user = users.find((u) => u.id === userId)
+										return user ? (
+											<li key={userId} className="text-sm">
+												{user.email}
+											</li>
+										) : null
+									})}
+								</ul>
+							</div>
+						)}
+					</div>
 				</CardContent>
-				<CardFooter className="flex justify-between">
-					<Button asChild variant="outline">
-						<Link href={`/panel/skill-personality-test/${params.id}`}>
-							<ArrowLeft className="mr-2 h-4 w-4" /> Back to Test
-						</Link>
-					</Button>
-					<Button onClick={handleAssign} disabled={isLoading}>
-						<Users className="mr-2 h-4 w-4" />
-						{isLoading ? 'Assigning...' : 'Assign Test'}
+				<CardFooter>
+					<Button
+						className="w-full"
+						onClick={handleAssign}
+						disabled={
+							isLoading || isUserLoading || selectedUsers.length === 0
+						}
+					>
+						{isLoading ? (
+							<>
+								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+								Atanıyor...
+							</>
+						) : (
+							<>
+								<Users className="mr-2 h-4 w-4" />
+								Testi Ata ({selectedUsers.length} kullanıcı)
+							</>
+						)}
 					</Button>
 				</CardFooter>
 			</Card>

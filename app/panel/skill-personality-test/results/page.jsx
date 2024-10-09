@@ -19,6 +19,14 @@ import {
 	TableRow
 } from '@/components/ui/table'
 import { toast } from 'sonner'
+import {
+	Breadcrumb,
+	BreadcrumbItem,
+	BreadcrumbLink,
+	BreadcrumbList,
+	BreadcrumbPage,
+	BreadcrumbSeparator
+} from '@/components/ui/breadcrumb'
 
 export default function SkillPersonalityTestResultsPage() {
 	const [results, setResults] = useState([])
@@ -49,26 +57,42 @@ export default function SkillPersonalityTestResultsPage() {
 
 	return (
 		<div className="container mx-auto p-6 space-y-6">
-			<h1 className="text-3xl font-bold mb-6">
-				Skill and Personality Test Results
-			</h1>
+			<Breadcrumb className="mb-4">
+				<BreadcrumbList>
+					<BreadcrumbItem>
+						<BreadcrumbLink href="/panel">Ana Sayfa</BreadcrumbLink>
+					</BreadcrumbItem>
+					<BreadcrumbSeparator />
+					<BreadcrumbItem>
+						<BreadcrumbLink href="/panel/skill-personality-test">
+							Yetenek ve Kişilik Testleri
+						</BreadcrumbLink>
+					</BreadcrumbItem>
+					<BreadcrumbSeparator />
+					<BreadcrumbItem>
+						<BreadcrumbPage className="font-medium">
+							Test Sonuçları
+						</BreadcrumbPage>
+					</BreadcrumbItem>
+				</BreadcrumbList>
+			</Breadcrumb>
 
 			<Card>
 				<CardHeader>
-					<CardTitle>Results Overview</CardTitle>
+					<CardTitle>Yetenek ve Kişilik Test Sonuçları</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<Table>
 						<TableHeader>
 							<TableRow>
 								{session?.user.role === 'admin' && (
-									<TableHead>User Email</TableHead>
+									<TableHead>Kullanıcı E-posta</TableHead>
 								)}
-								<TableHead>Test Title</TableHead>
-								<TableHead>Completed At</TableHead>
-								<TableHead>IQ Score</TableHead>
-								<TableHead>Practical Score</TableHead>
-								<TableHead>Sharp Score</TableHead>
+								<TableHead>Test Başlığı</TableHead>
+								<TableHead>Tamamlanma Zamanı</TableHead>
+								<TableHead>IQ Skor</TableHead>
+								<TableHead>Pratik Zeka Skor</TableHead>
+								<TableHead>Keskinlik Skor</TableHead>
 							</TableRow>
 						</TableHeader>
 						<TableBody>

@@ -86,7 +86,7 @@ export default function CreateEnglishTestPage() {
 				</BreadcrumbList>
 			</Breadcrumb>
 
-			<div className="max-w-lg border border-gray-200rounded-lg p-6 rounded-lg">
+			<div className="max-w-lg border border-gray-200 rounded-lg p-6 ">
 				<form onSubmit={handleSubmit} className="space-y-6">
 					<div className="space-y-2">
 						<label

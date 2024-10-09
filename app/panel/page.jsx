@@ -55,7 +55,7 @@ export default async function PanelPage() {
 
 	return (
 		<div className="container mx-auto p-4 space-y-6">
-			<div className="text-lg mb-4">
+			<div className="text-2xl mb-4">
 				Hoşgeldin,{' '}
 				<span className="font-medium">{session.user.email}</span> 😎
 			</div>
