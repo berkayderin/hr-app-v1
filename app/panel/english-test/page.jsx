@@ -31,30 +31,53 @@ export default async function ViewEnglishTestsPage() {
 	}
 
 	let tests = []
+	let debugInfo = {}
 	try {
 		if (session.user.role === 'admin') {
 			tests = await prisma.englishTest.findMany({
-				orderBy: { createdAt: 'desc' }
+				orderBy: { createdAt: 'desc' },
+				include: {
+					assignedTests: {
+						where: { completedAt: null },
+						select: { id: true }
+					}
+				}
 			})
+			tests = tests.map((test) => ({
+				...test,
+				assignedTestId: test.assignedTests[0]?.id
+			}))
+			debugInfo.adminQuery = 'Completed'
 		} else {
 			const assignedTests = await prisma.assignedTest.findMany({
 				where: {
-					userId: session.user.id,
-					completedAt: null
+					userId: session.user.id
+					// completedAt: null  // Bu filtreyi kaldırıyoruz
 				},
 				include: {
 					test: true
 				},
 				orderBy: { assignedAt: 'desc' }
 			})
+			debugInfo.userQueryResult = assignedTests
 			tests = assignedTests.map((at) => ({
 				...at.test,
-				assignedTestId: at.id
+				assignedTestId: at.id,
+				completedAt: at.completedAt // Tamamlanma durumunu da ekliyoruz
 			}))
 		}
 		console.log('Kullanıcı için testler:', tests)
+		console.log('Hata ayıklama bilgileri:', debugInfo)
+
+		// Ek kontrol: Tüm atanmış testleri getir
+		const allAssignedTests = await prisma.assignedTest.findMany({
+			where: { userId: session.user.id },
+			include: { test: true }
+		})
+		console.log('Tüm atanmış testler:', allAssignedTests)
 	} catch (error) {
 		console.error('İngilizce testleri getirme başarısız:', error)
+		debugInfo.error = error.message
 	}
 
 	return (
@@ -89,7 +112,9 @@ export default async function ViewEnglishTestsPage() {
 				<Card className="max-w-md mx-auto">
 					<CardContent className="text-center py-10">
 						<p className="text-lg text-muted-foreground">
-							Şu anda mevcut test bulunmamaktadır.
+							{session.user.role === 'admin'
+								? 'Henüz hiç test oluşturulmamış.'
+								: 'Size atanmış herhangi bir test bulunmamaktadır.'}
 						</p>
 					</CardContent>
 				</Card>

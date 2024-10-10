@@ -41,30 +41,55 @@ export default async function ViewSkillPersonalityTestsPage() {
 	}
 
 	let tests = []
+	let debugInfo = {}
 	try {
 		if (session.user.role === 'admin') {
 			tests = await prisma.skillPersonalityTest.findMany({
-				orderBy: { createdAt: 'desc' }
+				orderBy: { createdAt: 'desc' },
+				include: {
+					assignedTests: {
+						select: { id: true, completedAt: true }
+					}
+				}
 			})
+			tests = tests.map((test) => ({
+				...test,
+				assignedTestId: test.assignedTests[0]?.id,
+				completedAt: test.assignedTests[0]?.completedAt
+			}))
+			debugInfo.adminQuery = 'Completed'
 		} else {
 			const assignedTests =
 				await prisma.assignedSkillPersonalityTest.findMany({
 					where: {
-						userId: session.user.id,
-						completedAt: null
+						userId: session.user.id
+						// completedAt: null  // Bu filtreyi kaldırıyoruz
 					},
 					include: {
 						test: true
 					},
 					orderBy: { assignedAt: 'desc' }
 				})
+			debugInfo.userQueryResult = assignedTests
 			tests = assignedTests.map((at) => ({
 				...at.test,
-				assignedTestId: at.id
+				assignedTestId: at.id,
+				completedAt: at.completedAt
 			}))
 		}
+		console.log('Kullanıcı için testler:', tests)
+		console.log('Hata ayıklama bilgileri:', debugInfo)
+
+		// Ek kontrol: Tüm atanmış testleri getir
+		const allAssignedTests =
+			await prisma.assignedSkillPersonalityTest.findMany({
+				where: { userId: session.user.id },
+				include: { test: true }
+			})
+		console.log('Tüm atanmış testler:', allAssignedTests)
 	} catch (error) {
 		console.error('Testleri getirme başarısız:', error)
+		debugInfo.error = error.message
 	}
 
 	return (
@@ -97,7 +122,12 @@ export default async function ViewSkillPersonalityTestsPage() {
 				<Card className="max-w-md mx-auto">
 					<CardContent className="text-center py-10">
 						<p className="text-lg text-muted-foreground">
-							Şu anda mevcut test bulunmamaktadır.
+							{session.user.role === 'admin'
+								? 'Henüz hiç test oluşturulmamış.'
+								: 'Size atanmış herhangi bir test bulunmamaktadır.'}
+						</p>
+						<p className="mt-2 text-sm text-muted-foreground">
+							Hata ayıklama bilgileri: {JSON.stringify(debugInfo)}
 						</p>
 					</CardContent>
 				</Card>
@@ -122,10 +152,26 @@ export default async function ViewSkillPersonalityTestsPage() {
 											{translateSectionTitle(section.title)}
 										</Badge>
 									))}
+									<Badge
+										variant={
+											test.completedAt ? 'success' : 'destructive'
+										}
+										className="text-xs"
+									>
+										Tamamlanma Durumu: {''}
+										{test.completedAt ? 'Tamamlandı' : 'Bekliyor'}
+									</Badge>
 								</div>
 							</CardContent>
 							<CardFooter>
-								<Button asChild className="w-full">
+								<Button
+									asChild
+									className="w-full"
+									disabled={
+										session.user.role !== 'admin' &&
+										test.completedAt !== null
+									}
+								>
 									<Link
 										href={
 											session.user.role === 'admin'
@@ -136,6 +182,8 @@ export default async function ViewSkillPersonalityTestsPage() {
 										<BookOpen className="mr-2 h-4 w-4" />
 										{session.user.role === 'admin'
 											? 'Detayları Görüntüle'
+											: test.completedAt
+											? 'Tamamlandı'
 											: 'Testi Başlat'}
 									</Link>
 								</Button>
