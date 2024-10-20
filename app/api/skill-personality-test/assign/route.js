@@ -79,7 +79,7 @@ export async function POST(request) {
 							data: {
 								userId,
 								testId,
-								timeRemaining: 20 * 60 * 1000 // 20 dakika (saniye cinsinden)
+								timeRemaining: 15 * 60 // 15 dakika
 							}
 						})
 

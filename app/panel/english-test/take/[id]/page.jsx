@@ -34,6 +34,8 @@ export default function TakeEnglishTestPage() {
 	const [timeRemaining, setTimeRemaining] = useState(null)
 	const [isSubmitting, setIsSubmitting] = useState(false)
 	const [isLoading, setIsLoading] = useState(true)
+	const [isTestCompleted, setIsTestCompleted] = useState(false)
+
 	const router = useRouter()
 
 	const fetchTest = useCallback(async () => {
@@ -45,22 +47,31 @@ export default function TakeEnglishTestPage() {
 				throw new Error('Testi getirme başarısız oldu')
 			}
 			const data = await response.json()
-			if (data.test.completed) {
-				toast.info('Bu test zaten tamamlanmış')
-			}
 			setTest(data.test)
 			setTimeRemaining(data.timeRemaining)
+			if (data.test.completedAt) {
+				setIsTestCompleted(true)
+				toast.info('Bu test zaten tamamlanmış')
+				setTimeout(() => router.push('/panel/'), 3000) // 3 saniye sonra yönlendir
+			}
 		} catch (error) {
-			router.push('/panel/english-test')
+			console.error('Test yükleme hatası:', error)
+			toast.error('Test yüklenirken bir hata oluştu')
+			router.push('/panel/')
 		} finally {
 			setIsLoading(false)
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [params.id, router, toast])
+	}, [params.id, router])
 
 	useEffect(() => {
 		fetchTest()
 	}, [fetchTest])
+
+	useEffect(() => {
+		if (test && test.completedAt) {
+			setIsTestCompleted(true)
+		}
+	}, [test])
 
 	useEffect(() => {
 		if (timeRemaining === null) return
@@ -110,6 +121,12 @@ export default function TakeEnglishTestPage() {
 	}
 
 	const handleSubmit = async () => {
+		if (isTestCompleted) {
+			toast.info('Bu test zaten tamamlanmış')
+			router.push('/panel/')
+			return
+		}
+
 		setIsSubmitting(true)
 		try {
 			const response = await fetch('/api/english-test/submit', {
@@ -118,35 +135,44 @@ export default function TakeEnglishTestPage() {
 				body: JSON.stringify({ testId: params.id, answers })
 			})
 
-			if (response.ok) {
-				toast({
-					title: 'Test Gönderildi',
-					description: 'Testiniz başarıyla gönderildi.',
-					icon: <CheckCircle2 className="h-4 w-4" />
-				})
-				router.push('/panel/english-test/results')
-			} else {
-				throw new Error('Testi gönderme başarısız oldu')
+			if (!response.ok) {
+				const errorData = await response.json()
+				throw new Error(errorData.error || 'Bir hata oluştu')
 			}
+
+			toast.success('Test başarıyla gönderildi')
+			setIsTestCompleted(true)
+			setTimeout(() => router.push('/panel/'), 3000) // 3 saniye sonra yönlendir
 		} catch (error) {
-			toast({
-				variant: 'destructive',
-				title: 'Gönderme Hatası',
-				description: `Testi gönderme başarısız oldu: ${error.message}`,
-				icon: <AlertCircle className="h-4 w-4" />
-			})
+			console.error('Test gönderme hatası:', error)
+			if (error.message === 'Test already completed') {
+				toast.info('Bu test daha önce tamamlanmış')
+				setIsTestCompleted(true)
+				setTimeout(() => router.push('/panel/'), 3000) // 3 saniye sonra yönlendir
+			} else {
+				toast.error(`Gönderme Hatası: ${error.message}`)
+			}
 		} finally {
 			setIsSubmitting(false)
 		}
 	}
 
-	if (isLoading)
+	if (isLoading) {
 		return (
 			<div className="flex justify-center items-center h-screen">
 				Yükleniyor...
 			</div>
 		)
-	if (!test) return null
+	}
+
+	if (isTestCompleted) {
+		return (
+			<div className="flex flex-col items-center justify-center h-screen">
+				<h1 className="text-2xl font-bold mb-4">Test Tamamlandı</h1>
+				<p>Anasayfaya yönlendiriliyorsunuz...</p>
+			</div>
+		)
+	}
 
 	const question = test.questions[currentQuestion]
 	const progress =
@@ -211,9 +237,14 @@ export default function TakeEnglishTestPage() {
 							Sonraki <ChevronRight className="ml-2 h-4 w-4" />
 						</Button>
 					) : (
-						<Button onClick={handleSubmit} disabled={isSubmitting}>
-							{isSubmitting ? 'Gönderiliyor...' : 'Gönder'}{' '}
-							<Send className="ml-2 h-4 w-4" />
+						<Button
+							onClick={handleSubmit}
+							disabled={isSubmitting || isTestCompleted}
+							className="mt-4"
+						>
+							{isSubmitting
+								? 'Gönderiliyor...'
+								: 'Testi Bitir ve Gönder'}
 						</Button>
 					)}
 				</CardFooter>

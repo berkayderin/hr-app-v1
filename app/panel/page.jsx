@@ -212,7 +212,7 @@ export default async function PanelPage() {
 									</p>
 								)}
 							</CardContent>
-							<CardFooter>
+							{/* <CardFooter>
 								<Button
 									asChild
 									variant="outline"
@@ -223,7 +223,7 @@ export default async function PanelPage() {
 										Tüm İngilizce Testlerini Görüntüle
 									</Link>
 								</Button>
-							</CardFooter>
+							</CardFooter> */}
 						</Card>
 
 						<Card className="bg-white">
@@ -281,7 +281,7 @@ export default async function PanelPage() {
 									</p>
 								)}
 							</CardContent>
-							<CardFooter>
+							{/* <CardFooter>
 								<Button
 									asChild
 									variant="outline"
@@ -292,7 +292,7 @@ export default async function PanelPage() {
 										Tüm Yetenek ve Kişilik Testlerini Görüntüle
 									</Link>
 								</Button>
-							</CardFooter>
+							</CardFooter> */}
 						</Card>
 					</>
 				)}

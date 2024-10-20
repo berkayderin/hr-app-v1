@@ -25,6 +25,12 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 
+const formatTimeRemaining = (seconds) => {
+	const minutes = Math.floor(seconds / 60)
+	const remainingSeconds = seconds % 60
+	return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
+}
+
 export default function TakeSkillPersonalityTestPage() {
 	const params = useParams()
 	const [test, setTest] = useState(null)
@@ -74,6 +80,14 @@ export default function TakeSkillPersonalityTestPage() {
 					handleSubmit()
 					return 0
 				}
+				// 5 dakika kala uyarı
+				if (prevTime === 300) {
+					toast.warning('Testin bitmesine 5 dakika kaldı!')
+				}
+				// 1 dakika kala uyarı
+				if (prevTime === 60) {
+					toast.warning('Testin bitmesine 1 dakika kaldı!')
+				}
 				return prevTime - 1
 			})
 		}, 1000)
@@ -114,7 +128,7 @@ export default function TakeSkillPersonalityTestPage() {
 			}
 
 			toast.success('Test başarıyla gönderildi')
-			router.push('/panel/skill-personality-test/results')
+			router.push('/panel/')
 		} catch (error) {
 			console.error('Test gönderme hatası:', error)
 			toast.error(
@@ -216,10 +230,7 @@ export default function TakeSkillPersonalityTestPage() {
 						Soru {currentQuestion + 1} /{' '}
 						{currentSectionData.questions.length}
 					</div>
-					<div>
-						Kalan Süre: {Math.floor(timeRemaining / 60)}:
-						{(timeRemaining % 60).toString().padStart(2, '0')}
-					</div>
+					<div>Kalan Süre: {formatTimeRemaining(timeRemaining)}</div>
 				</div>
 				<Progress value={progress} className="mb-4" />
 				<Card>
