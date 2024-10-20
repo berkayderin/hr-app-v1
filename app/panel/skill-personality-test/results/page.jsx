@@ -1,24 +1,14 @@
 // app/panel/skill-personality-test/results/page.jsx
-'use client'
-
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/lib/AuthOptions'
+import { redirect } from 'next/navigation'
+import { PrismaClient } from '@prisma/client'
 import {
 	Card,
 	CardHeader,
 	CardTitle,
 	CardContent
 } from '@/components/ui/card'
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow
-} from '@/components/ui/table'
-import { toast } from 'sonner'
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -27,36 +17,29 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
+import { DataTable } from './components/datatable'
+import { columns } from './components/skillPersonalityResultColumns'
 
-export default function SkillPersonalityTestResultsPage() {
-	const [results, setResults] = useState([])
-	const [isLoading, setIsLoading] = useState(true)
-	const { data: session } = useSession()
+const prisma = new PrismaClient()
 
-	useEffect(() => {
-		const fetchResults = async () => {
-			try {
-				const response = await fetch(
-					'/api/skill-personality-test/results'
-				)
-				if (!response.ok) throw new Error('Failed to fetch results')
-				const data = await response.json()
-				setResults(data.results)
-				console.log('Fetched test results:', data.results)
-			} catch (error) {
-				console.error('Error fetching test results:', error)
-				toast.error('Failed to load test results')
-			} finally {
-				setIsLoading(false)
-			}
-		}
-		fetchResults()
-	}, [])
+export default async function SkillPersonalityTestResultsPage() {
+	const session = await getServerSession(authOptions)
 
-	if (isLoading) return <div>Loading...</div>
+	if (!session || session.user.role !== 'admin') {
+		redirect('/login')
+	}
+
+	const results = await prisma.assignedSkillPersonalityTest.findMany({
+		where: { completedAt: { not: null } },
+		include: {
+			user: true,
+			test: true
+		},
+		orderBy: { completedAt: 'desc' }
+	})
 
 	return (
-		<div className="container mx-auto p-6 space-y-6">
+		<div className="container mx-auto p-6">
 			<Breadcrumb className="mb-4">
 				<BreadcrumbList>
 					<BreadcrumbItem>
@@ -82,54 +65,7 @@ export default function SkillPersonalityTestResultsPage() {
 					<CardTitle>Yetenek ve Kişilik Test Sonuçları</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<Table>
-						<TableHeader>
-							<TableRow>
-								{session?.user.role === 'admin' && (
-									<TableHead>Kullanıcı E-posta</TableHead>
-								)}
-								<TableHead>Test Adı</TableHead>
-								<TableHead>Tamamlanma Zamanı</TableHead>
-								<TableHead>IQ Testi</TableHead>
-								<TableHead>Pratik Zeka</TableHead>
-								<TableHead>Keskin Zeka</TableHead>
-								<TableHead>Kişilik Analizi</TableHead>
-								<TableHead>Uyumlu Departmanlar</TableHead>
-							</TableRow>
-						</TableHeader>
-						<TableBody>
-							{results.map((result) => (
-								<TableRow key={result.id}>
-									{session?.user.role === 'admin' && (
-										<TableCell>{result.userEmail}</TableCell>
-									)}
-									<TableCell>{result.testTitle}</TableCell>
-									<TableCell>
-										{new Date(result.completedAt).toLocaleString()}
-									</TableCell>
-									<TableCell>
-										{result.scores?.iqScore?.toFixed(2) ?? 'N/A'}
-									</TableCell>
-									<TableCell>
-										{result.scores?.practicalScore?.toFixed(2) ??
-											'N/A'}
-									</TableCell>
-									<TableCell>
-										{result.scores?.sharpScore?.toFixed(2) ?? 'N/A'}
-									</TableCell>
-									<TableCell>
-										{result.scores?.personalityScore?.toFixed(2) ??
-											'N/A'}
-									</TableCell>
-									<TableCell>
-										{result.scores?.departmentCompatibility?.join(
-											', '
-										) ?? 'N/A'}
-									</TableCell>
-								</TableRow>
-							))}
-						</TableBody>
-					</Table>
+					<DataTable columns={columns} data={results} />
 				</CardContent>
 			</Card>
 		</div>
