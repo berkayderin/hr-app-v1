@@ -56,13 +56,13 @@ const allSidebarItems = [
 		icon: ClipboardList,
 		label: 'İngilizce Testleri',
 		href: '/panel/english-test',
-		roles: ['user', 'admin'],
+		roles: ['admin'],
 		subItems: [
 			{
 				icon: BookOpen,
 				label: 'Testleri Görüntüle',
 				href: '/panel/english-test',
-				roles: ['user', 'admin']
+				roles: ['admin']
 			},
 			{
 				icon: PenTool,
@@ -82,13 +82,13 @@ const allSidebarItems = [
 		icon: Brain,
 		label: 'Yetenek ve Kişilik Testleri',
 		href: '/panel/skill-personality-test',
-		roles: ['user', 'admin'],
+		roles: ['admin'],
 		subItems: [
 			{
 				icon: BookOpen,
 				label: 'Testleri Görüntüle',
 				href: '/panel/skill-personality-test',
-				roles: ['user', 'admin']
+				roles: ['admin']
 			},
 			{
 				icon: PenTool,
