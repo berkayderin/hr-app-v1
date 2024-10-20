@@ -155,7 +155,7 @@ export default function TakeEnglishTestPage() {
 	return (
 		<div className="container mx-auto p-6 max-w-2xl">
 			<h1 className="text-3xl font-bold mb-8 text-center">
-				İngilizce Tesim: {test.title}
+				İngilizce Testim: {test.title}
 			</h1>
 			<div className="flex items-center justify-start gap-1 mb-4 border rounded-md p-2">
 				<AlertCircle className="h-5 w-5" />
