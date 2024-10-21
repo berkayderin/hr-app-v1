@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import {
 	DragDropContext,
@@ -6,23 +6,27 @@ import {
 	Draggable
 } from '@hello-pangea/dnd'
 
-const initialBacklog = [
-	{
-		id: 'item1',
-		content: 'Kullanıcı kaydı özelliği',
-		priority: 'Yüksek'
-	},
-	{ id: 'item2', content: 'Raporlama modülü', priority: 'Orta' },
-	{
-		id: 'item3',
-		content: 'Performans iyileştirmeleri',
-		priority: 'Düşük'
-	}
-	// Daha fazla backlog öğesi ekleyin
-]
+export default function BacklogPrioritizationTask({
+	simulation,
+	onComplete
+}) {
+	const [backlog, setBacklog] = useState([])
+	const [error, setError] = useState(null)
 
-export default function BacklogPrioritizationTask({ onComplete }) {
-	const [backlog, setBacklog] = useState(initialBacklog)
+	useEffect(() => {
+		if (simulation && simulation.backlogPrioritization) {
+			// Ensure each item has a string id
+			const formattedBacklog = simulation.backlogPrioritization.map(
+				(item, index) => ({
+					...item,
+					id: item.id ? String(item.id) : `item-${index}`
+				})
+			)
+			setBacklog(formattedBacklog)
+		} else {
+			setError('Backlog data not found in the simulation.')
+		}
+	}, [simulation])
 
 	const onDragEnd = (result) => {
 		if (!result.destination) return
@@ -34,6 +38,14 @@ export default function BacklogPrioritizationTask({ onComplete }) {
 
 	const handleSubmit = () => {
 		onComplete({ backlogPrioritization: backlog })
+	}
+
+	if (error) {
+		return <p className="text-red-500">{error}</p>
+	}
+
+	if (backlog.length === 0) {
+		return <p>Yükleniyor...</p>
 	}
 
 	return (
@@ -62,11 +74,12 @@ export default function BacklogPrioritizationTask({ onComplete }) {
 											{...provided.dragHandleProps}
 											className="p-4 bg-white shadow rounded"
 										>
-											<div className="font-medium">
-												{item.content}
+											<div className="font-medium">{item.title}</div>
+											<div className="text-sm text-gray-500">
+												{item.description}
 											</div>
 											<div className="text-sm text-gray-500">
-												Öncelik: {item.priority}
+												Story Points: {item.storyPoints}
 											</div>
 										</li>
 									)}

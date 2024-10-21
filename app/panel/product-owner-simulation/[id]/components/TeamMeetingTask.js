@@ -1,5 +1,4 @@
-// app/panel/product-owner-simulation/[id]/components/TeamMeetingTask.js
-import { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import {
 	RadioGroup,
@@ -7,25 +6,33 @@ import {
 } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 
-const questions = [
-	{
-		question:
-			'Sprint planlama toplantısında, takım üyelerinden biri önceki sprintte tamamlanamayan bir görevi bu sprinte aktarmak istiyor. Ne yaparsınız?',
-		options: [
-			'Görevi olduğu gibi bu sprinte aktarırım.',
-			"Görevi reddeder ve backlog'a geri koyarım.",
-			'Görevi analiz eder, gerekirse böler ve önceliklendiririm.',
-			'Takım üyesini eleştirir ve daha sıkı çalışmasını söylerim.'
-		]
-	}
-	// Daha fazla soru ekleyin
-]
-
-export default function TeamMeetingTask({ onComplete }) {
+export default function TeamMeetingTask({ simulation, onComplete }) {
+	const [questions, setQuestions] = useState([])
 	const [answers, setAnswers] = useState({})
+	const [error, setError] = useState(null)
+
+	useEffect(() => {
+		if (simulation && simulation.teamMeeting) {
+			if (Array.isArray(simulation.teamMeeting)) {
+				setQuestions(simulation.teamMeeting)
+			} else {
+				setError('Team meeting data is not in the expected format.')
+			}
+		} else {
+			setError('Team meeting questions not found in the simulation.')
+		}
+	}, [simulation])
 
 	const handleSubmit = () => {
 		onComplete({ teamMeeting: answers })
+	}
+
+	if (error) {
+		return <p className="text-red-500">{error}</p>
+	}
+
+	if (questions.length === 0) {
+		return <p>Yükleniyor...</p>
 	}
 
 	return (
@@ -36,9 +43,9 @@ export default function TeamMeetingTask({ onComplete }) {
 					<p className="font-medium">{q.question}</p>
 					<RadioGroup
 						onValueChange={(value) =>
-							setAnswers({ ...answers, [index]: value })
+							setAnswers({ ...answers, [index]: parseInt(value) })
 						}
-						value={answers[index]}
+						value={answers[index]?.toString()}
 					>
 						{q.options.map((option, optionIndex) => (
 							<div
@@ -57,7 +64,12 @@ export default function TeamMeetingTask({ onComplete }) {
 					</RadioGroup>
 				</div>
 			))}
-			<Button onClick={handleSubmit}>Tamamla</Button>
+			<Button
+				onClick={handleSubmit}
+				disabled={Object.keys(answers).length !== questions.length}
+			>
+				Tamamla
+			</Button>
 		</div>
 	)
 }
