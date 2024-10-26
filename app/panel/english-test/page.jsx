@@ -1,7 +1,8 @@
 // app/panel/english-test/page.jsx
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/AuthOptions'
-import { redirect } from 'next/navigation'
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import {
@@ -11,8 +12,7 @@ import {
 	CardContent,
 	CardFooter
 } from '@/components/ui/card'
-import { BookOpen, Plus, BarChart } from 'lucide-react'
-import prisma from '@/lib/prismadb'
+import { BookOpen, Plus, BarChart, Trash2 } from 'lucide-react'
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -23,61 +23,129 @@ import {
 } from '@/components/ui/breadcrumb'
 import { Badge } from '@/components/ui/badge'
 
-export default async function ViewEnglishTestsPage() {
-	const session = await getServerSession(authOptions)
+import { toast } from 'sonner'
 
-	if (!session) {
-		redirect('/login')
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger
+} from '@/components/ui/dialog'
+
+// DeleteTestButton bileşeni
+const DeleteTestButton = ({ testId, onDelete }) => {
+	const [open, setOpen] = useState(false)
+
+	const handleDelete = async () => {
+		try {
+			const response = await fetch(`/api/english-test/${testId}`, {
+				method: 'DELETE'
+			})
+
+			if (!response.ok) {
+				throw new Error('Failed to delete test')
+			}
+
+			onDelete(testId)
+			toast.success('Test başarıyla silindi')
+			setOpen(false)
+		} catch (error) {
+			console.error('Error deleting test:', error)
+			toast.error('Test silinirken bir hata oluştu')
+		}
 	}
 
-	let tests = []
-	let debugInfo = {}
-	try {
-		if (session.user.role === 'admin') {
-			tests = await prisma.englishTest.findMany({
-				orderBy: { createdAt: 'desc' },
-				include: {
-					assignedTests: {
-						where: { completedAt: null },
-						select: { id: true }
-					}
-				}
-			})
-			tests = tests.map((test) => ({
-				...test,
-				assignedTestId: test.assignedTests[0]?.id
-			}))
-			debugInfo.adminQuery = 'Completed'
-		} else {
-			const assignedTests = await prisma.assignedTest.findMany({
-				where: {
-					userId: session.user.id
-					// completedAt: null  // Bu filtreyi kaldırıyoruz
-				},
-				include: {
-					test: true
-				},
-				orderBy: { assignedAt: 'desc' }
-			})
-			debugInfo.userQueryResult = assignedTests
-			tests = assignedTests.map((at) => ({
-				...at.test,
-				assignedTestId: at.id,
-				completedAt: at.completedAt // Tamamlanma durumunu da ekliyoruz
-			}))
-		}
-		console.log('Kullanıcı için testler:', tests)
-		console.log('Hata ayıklama bilgileri:', debugInfo)
+	return (
+		<Dialog open={open} onOpenChange={setOpen}>
+			<DialogTrigger asChild>
+				<Button
+					variant="ghost"
+					size="icon"
+					className="absolute top-2 right-2 hover:bg-destructive/10 hover:text-destructive"
+				>
+					<Trash2 className="h-4 w-4" />
+				</Button>
+			</DialogTrigger>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>
+						Testi Silmek İstediğinize Emin misiniz?
+					</DialogTitle>
+					<DialogDescription>
+						Bu işlem geri alınamaz. Test ve ilgili tüm yanıtlar kalıcı
+						olarak silinecektir.
+					</DialogDescription>
+				</DialogHeader>
+				<DialogFooter>
+					<Button variant="outline" onClick={() => setOpen(false)}>
+						İptal
+					</Button>
+					<Button variant="destructive" onClick={handleDelete}>
+						Sil
+					</Button>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
+	)
+}
 
-		// Ek kontrol: Tüm atanmış testleri getir
-		const allAssignedTests = await prisma.assignedTest.findMany({
-			where: { userId: session.user.id },
-			include: { test: true }
-		})
-		console.log('Tüm atanmış testler:', allAssignedTests)
-	} catch (error) {
-		console.error('İngilizce testleri getirme başarısız:', error)
-		debugInfo.error = error.message
+export default function ViewEnglishTestsPage() {
+	const [tests, setTests] = useState([])
+	const [loading, setLoading] = useState(true)
+	const [error, setError] = useState(null)
+	const [userRole, setUserRole] = useState(null)
+	const router = useRouter()
+
+	useEffect(() => {
+		const fetchTests = async () => {
+			try {
+				const response = await fetch('/api/english-test')
+				if (!response.ok) {
+					throw new Error('Failed to fetch tests')
+				}
+				const data = await response.json()
+				setTests(data.tests)
+				setUserRole(data.userRole)
+			} catch (err) {
+				setError(err.message)
+				toast.error('Testler yüklenirken bir hata oluştu')
+			} finally {
+				setLoading(false)
+			}
+		}
+
+		fetchTests()
+	}, [])
+
+	const handleTestDelete = (deletedTestId) => {
+		setTests((prevTests) =>
+			prevTests.filter((test) => test.id !== deletedTestId)
+		)
+	}
+
+	if (loading) {
+		return (
+			<div className="container mx-auto p-4">
+				<div className="flex justify-center items-center min-h-[200px]">
+					<p className="text-muted-foreground">Yükleniyor...</p>
+				</div>
+			</div>
+		)
+	}
+
+	if (error) {
+		return (
+			<div className="container mx-auto p-4">
+				<div className="flex justify-center items-center min-h-[200px]">
+					<p className="text-destructive">
+						Bir hata oluştu. Lütfen sayfayı yenileyin.
+					</p>
+				</div>
+			</div>
+		)
 	}
 
 	return (
@@ -97,8 +165,7 @@ export default async function ViewEnglishTestsPage() {
 			</Breadcrumb>
 
 			<div className="flex justify-end items-center">
-				{/* <h1 className="text-3xl font-bold">İngilizce Testleri</h1> */}
-				{session.user.role === 'admin' && (
+				{userRole === 'admin' && (
 					<Button asChild>
 						<Link href="/panel/english-test/create">
 							<Plus className="mr-2 h-4 w-4" />
@@ -112,7 +179,7 @@ export default async function ViewEnglishTestsPage() {
 				<Card className="max-w-md mx-auto">
 					<CardContent className="text-center py-10">
 						<p className="text-lg text-muted-foreground">
-							{session.user.role === 'admin'
+							{userRole === 'admin'
 								? 'Henüz hiç test oluşturulmamış.'
 								: 'Size atanmış herhangi bir test bulunmamaktadır.'}
 						</p>
@@ -121,11 +188,16 @@ export default async function ViewEnglishTestsPage() {
 			) : (
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 					{tests.map((test) => (
-						<Card key={test.id} className="flex flex-col">
+						<Card key={test.id} className="flex flex-col relative">
+							{userRole === 'admin' && (
+								<DeleteTestButton
+									testId={test.id}
+									onDelete={handleTestDelete}
+								/>
+							)}
 							<CardHeader>
 								<CardTitle className="flex items-center justify-between">
 									<span>{test.title}</span>
-									<BarChart className="h-5 w-5 text-muted-foreground" />
 								</CardTitle>
 							</CardHeader>
 							<CardContent className="flex-grow">
@@ -142,13 +214,13 @@ export default async function ViewEnglishTestsPage() {
 								<Button asChild className="w-full">
 									<Link
 										href={
-											session.user.role === 'admin'
+											userRole === 'admin'
 												? `/panel/english-test/${test.id}`
 												: `/panel/english-test/take/${test.assignedTestId}`
 										}
 									>
 										<BookOpen className="mr-2 h-4 w-4" />
-										{session.user.role === 'admin'
+										{userRole === 'admin'
 											? 'Detayları Görüntüle'
 											: 'Testi Başlat'}
 									</Link>

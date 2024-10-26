@@ -53,3 +53,34 @@ export async function GET(request, { params }) {
 		)
 	}
 }
+
+export async function DELETE(request, { params }) {
+	try {
+		const session = await getServerSession(authOptions)
+
+		if (!session || session.user.role !== 'admin') {
+			return NextResponse.json(
+				{ error: 'Unauthorized' },
+				{ status: 401 }
+			)
+		}
+
+		// Önce bu teste ait tüm atanmış testleri silelim
+		await prisma.assignedTest.deleteMany({
+			where: { testId: params.id }
+		})
+
+		// Sonra testin kendisini silelim
+		const deletedTest = await prisma.englishTest.delete({
+			where: { id: params.id }
+		})
+
+		return NextResponse.json(deletedTest)
+	} catch (error) {
+		console.error('Error in DELETE /api/english-test/[id]:', error)
+		return NextResponse.json(
+			{ error: 'Failed to delete test', details: error.message },
+			{ status: 500 }
+		)
+	}
+}
