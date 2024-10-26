@@ -1,7 +1,9 @@
 // app/panel/skill-personality-test/create/page.jsx
 'use client'
 
-import { useState } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -13,6 +15,14 @@ import {
 	CardContent,
 	CardFooter
 } from '@/components/ui/card'
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage
+} from '@/components/ui/form'
 import { Loader2, Save } from 'lucide-react'
 import { toast } from 'sonner'
 import {
@@ -24,31 +34,55 @@ import {
 	BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
 
+const formSchema = z.object({
+	title: z
+		.string()
+		.min(3, { message: 'Test başlığı en az 3 karakter olmalıdır.' })
+		.max(100, {
+			message: 'Test başlığı en fazla 100 karakter olabilir.'
+		})
+		.regex(/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/, {
+			message: 'Test başlığı sadece harf ve boşluk içerebilir.'
+		}),
+	prompt: z
+		.string()
+		.min(20, { message: 'Yönerge en az 20 karakter olmalıdır.' })
+		.max(1000, {
+			message: 'Yönerge en fazla 1000 karakter olabilir.'
+		})
+})
+
 export default function CreateSkillPersonalityTestPage() {
-	const [title, setTitle] = useState('')
-	const [prompt, setPrompt] = useState('')
-	const [isLoading, setIsLoading] = useState(false)
 	const router = useRouter()
 
-	const handleSubmit = async (e) => {
-		e.preventDefault()
-		setIsLoading(true)
+	const form = useForm({
+		resolver: zodResolver(formSchema),
+		defaultValues: {
+			title: '',
+			prompt: ''
+		}
+	})
+
+	const onSubmit = async (values) => {
 		try {
 			const response = await fetch(
 				'/api/skill-personality-test/create',
 				{
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ title, prompt })
+					body: JSON.stringify(values)
 				}
 			)
-			if (!response.ok) throw new Error('Failed to create test')
-			toast.success('Test created successfully')
+
+			if (!response.ok) {
+				throw new Error('Failed to create test')
+			}
+
+			toast.success('Test başarıyla oluşturuldu')
 			router.push('/panel/skill-personality-test')
 		} catch (error) {
-			toast.error('Failed to create test')
-		} finally {
-			setIsLoading(false)
+			console.error('Test creation error:', error)
+			toast.error('Test oluşturulurken bir hata oluştu')
 		}
 	}
 
@@ -74,64 +108,75 @@ export default function CreateSkillPersonalityTestPage() {
 				</BreadcrumbList>
 			</Breadcrumb>
 
-			<form onSubmit={handleSubmit}>
-				<Card>
-					<CardHeader></CardHeader>
-					<CardContent className="space-y-4">
-						<div>
-							<label
-								htmlFor="title"
-								className="block text-sm font-medium text-gray-700"
-							>
-								Test Başlığı
-							</label>
-							<Input
-								id="title"
-								placeholder="Satış ve Pazarlama Ekibi"
-								value={title}
-								onChange={(e) => setTitle(e.target.value)}
-								required
+			<Form {...form}>
+				<form onSubmit={form.handleSubmit(onSubmit)}>
+					<Card>
+						<CardHeader>
+							<CardTitle>Yeni Test Oluştur</CardTitle>
+						</CardHeader>
+						<CardContent className="space-y-4">
+							<FormField
+								control={form.control}
+								name="title"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Test Başlığı</FormLabel>
+										<FormControl>
+											<Input
+												placeholder="Satış ve Pazarlama Ekibi"
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
 							/>
-						</div>
-						<div>
-							<label
-								htmlFor="prompt"
-								className="block text-sm font-medium text-gray-700"
-							>
-								AI Soru Üretme Yönergesi
-							</label>
-							<Textarea
-								id="prompt"
-								placeholder="Satış ve pazarlama departmanına alınacak adaylar için test hazırla. Test şunları ölçmeli:
-    - Müşteri ilişkileri yönetimi becerileri
-    - İkna ve müzakere kabiliyeti
-    - Stres altında çalışabilme
-    - Problem çözme yaklaşımı
-    - Sosyal medya ve dijital pazarlama anlayışı
-    Senaryolar gerçek satış durumlarını içermeli. Özellikle zor müşterilerle başa çıkma, satış hedeflerine ulaşma baskısı ve takım içi rekabet gibi durumlar değerlendirilmeli."
-								value={prompt}
-								onChange={(e) => setPrompt(e.target.value)}
-								rows={4}
-								required
+
+							<FormField
+								control={form.control}
+								name="prompt"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>AI Soru Üretme Yönergesi</FormLabel>
+										<FormControl>
+											<Textarea
+												placeholder="Satış ve pazarlama departmanına alınacak adaylar için test hazırla. Test şunları ölçmeli:
+- Müşteri ilişkileri yönetimi becerileri
+- İkna ve müzakere kabiliyeti
+- Stres altında çalışabilme
+- Problem çözme yaklaşımı
+- Sosyal medya ve dijital pazarlama anlayışı
+Senaryolar gerçek satış durumlarını içermeli. Özellikle zor müşterilerle başa çıkma, satış hedeflerine ulaşma baskısı ve takım içi rekabet gibi durumlar değerlendirilmeli."
+												className="min-h-[200px]"
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
 							/>
-						</div>
-					</CardContent>
-					<CardFooter>
-						<Button type="submit" disabled={isLoading}>
-							{isLoading ? (
-								<>
-									<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-									Oluşturuluyor...
-								</>
-							) : (
-								<>
-									<Save className="mr-2 h-4 w-4" /> Testi Oluştur
-								</>
-							)}
-						</Button>
-					</CardFooter>
-				</Card>
-			</form>
+						</CardContent>
+						<CardFooter>
+							<Button
+								type="submit"
+								disabled={form.formState.isSubmitting}
+							>
+								{form.formState.isSubmitting ? (
+									<>
+										<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+										Oluşturuluyor...
+									</>
+								) : (
+									<>
+										<Save className="mr-2 h-4 w-4" />
+										Testi Oluştur
+									</>
+								)}
+							</Button>
+						</CardFooter>
+					</Card>
+				</form>
+			</Form>
 		</div>
 	)
 }
