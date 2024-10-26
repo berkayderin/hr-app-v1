@@ -5,10 +5,8 @@ import { authOptions } from '@/lib/AuthOptions'
 import prisma from '@/lib/prismadb'
 
 export async function GET(request, { params }) {
-	console.log('API route called with params:', params)
 	try {
 		const session = await getServerSession(authOptions)
-		console.log('Session:', session)
 		if (!session) {
 			return NextResponse.json(
 				{ error: 'Unauthorized' },
@@ -16,39 +14,118 @@ export async function GET(request, { params }) {
 			)
 		}
 
-		const assignedTest = await prisma.assignedTest.findFirst({
-			where: {
-				testId: params.id,
-				userId: session.user.id,
-				completedAt: null
-			},
+		if (session.user.role === 'admin') {
+			// Admin için tam test detayları
+			const test = await prisma.englishTest.findUnique({
+				where: { id: params.id },
+				include: {
+					assignedTests: {
+						include: {
+							user: true
+						}
+					}
+				}
+			})
+
+			if (!test) {
+				return NextResponse.json(
+					{ error: 'Test not found' },
+					{ status: 404 }
+				)
+			}
+
+			return NextResponse.json(test)
+		} else {
+			// Normal kullanıcı için atanmış test detayları
+			const assignedTest = await prisma.assignedTest.findFirst({
+				where: {
+					testId: params.id,
+					userId: session.user.id,
+					completedAt: null
+				},
+				include: {
+					test: true
+				}
+			})
+
+			if (!assignedTest) {
+				return NextResponse.json(
+					{ error: 'Test not found or not assigned' },
+					{ status: 404 }
+				)
+			}
+
+			return NextResponse.json({
+				...assignedTest.test,
+				timeRemaining: assignedTest.timeRemaining
+			})
+		}
+	} catch (error) {
+		console.error('Error:', error)
+		return NextResponse.json(
+			{ error: 'Internal server error', details: error.message },
+			{ status: 500 }
+		)
+	}
+}
+
+export async function PATCH(request, { params }) {
+	try {
+		const session = await getServerSession(authOptions)
+
+		if (!session || session.user.role !== 'admin') {
+			return NextResponse.json(
+				{ error: 'Unauthorized' },
+				{ status: 401 }
+			)
+		}
+
+		const body = await request.json()
+		const { questionIndex, newCorrectAnswer } = body
+
+		// Önce mevcut testi alalım
+		const currentTest = await prisma.englishTest.findUnique({
+			where: { id: params.id },
 			include: {
-				test: true,
-				user: true
+				assignedTests: {
+					include: {
+						user: true
+					}
+				}
 			}
 		})
-		console.log('AssignedTest found:', assignedTest)
 
-		if (!assignedTest) {
-			console.log(
-				`Test with ID ${params.id} not found or not assigned to user ${session.user.id}`
-			)
+		if (!currentTest) {
 			return NextResponse.json(
-				{ error: 'Test not found or not assigned' },
+				{ error: 'Test not found' },
 				{ status: 404 }
 			)
 		}
 
-		const testData = {
-			...assignedTest.test,
-			timeRemaining: assignedTest.timeRemaining
-		}
+		// Questions array'ini güncelleyelim
+		const updatedQuestions = [...currentTest.questions]
+		updatedQuestions[questionIndex].correctAnswer = newCorrectAnswer
 
-		return NextResponse.json(testData)
+		// Testi güncelleyelim
+		const updatedTest = await prisma.englishTest.update({
+			where: { id: params.id },
+			data: {
+				questions: updatedQuestions
+			},
+			include: {
+				assignedTests: {
+					include: {
+						user: true
+					}
+				}
+			}
+		})
+
+		return NextResponse.json(updatedTest)
 	} catch (error) {
-		console.error('Error in /api/english-test/[id]:', error)
+		console.error('Error updating test:', error)
 		return NextResponse.json(
-			{ error: 'Internal server error', details: error.message },
+			{ error: 'Failed to update test', details: error.message },
 			{ status: 500 }
 		)
 	}

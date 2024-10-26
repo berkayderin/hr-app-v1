@@ -1,8 +1,10 @@
 // app/panel/english-test/[id]/page.js
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/AuthOptions'
-import { redirect } from 'next/navigation'
-import prisma from '@/lib/prismadb'
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useParams, useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 import {
 	Card,
 	CardHeader,
@@ -11,15 +13,12 @@ import {
 	CardFooter,
 	CardDescription
 } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
 import {
 	CheckCircle,
 	Circle,
 	Users,
 	BookOpen,
-	ArrowRight,
-	Pencil
+	ArrowRight
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -31,28 +30,86 @@ import {
 	BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
 import { Separator } from '@/components/ui/separator'
-import AssignedUsersDialog from '@/components/Dialogs/AssignedUsersDialog';
+import AssignedUsersDialog from '@/components/Dialogs/AssignedUsersDialog'
+import { toast } from 'sonner'
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue
+} from '@/components/ui/select'
+import { useSession } from 'next-auth/react'
 
-export default async function EnglishTestDetailPage({ params }) {
-	const session = await getServerSession(authOptions)
+export default function EnglishTestDetailPage() {
+	const params = useParams()
+	const router = useRouter()
+	const { data: session } = useSession()
+	const [test, setTest] = useState(null)
+	const [loading, setLoading] = useState(true)
 
-	if (!session) {
-		redirect('/login')
+	useEffect(() => {
+		const fetchTest = async () => {
+			try {
+				const response = await fetch(`/api/english-test/${params.id}`)
+				if (!response.ok) {
+					throw new Error('Failed to fetch test')
+				}
+				const data = await response.json()
+				setTest(data)
+			} catch (error) {
+				console.error('Error fetching test:', error)
+				toast.error('Test yüklenirken bir hata oluştu')
+				router.push('/panel/english-test')
+			} finally {
+				setLoading(false)
+			}
+		}
+
+		if (session?.user) {
+			fetchTest()
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [params.id, session])
+
+	const handleCorrectAnswerChange = async (
+		questionIndex,
+		newValue
+	) => {
+		try {
+			const response = await fetch(`/api/english-test/${params.id}`, {
+				method: 'PATCH',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					questionIndex,
+					newCorrectAnswer: parseInt(newValue)
+				})
+			})
+
+			if (!response.ok) {
+				throw new Error('Failed to update correct answer')
+			}
+
+			const updatedTest = await response.json()
+			setTest(updatedTest)
+			toast.success('Doğru cevap güncellendi')
+		} catch (error) {
+			console.error('Error updating correct answer:', error)
+			toast.error('Doğru cevap güncellenirken bir hata oluştu')
+		}
 	}
 
-	const test = await prisma.englishTest.findUnique({
-		where: { id: params.id },
-		include: {
-		  assignedTests: {
-			include: {
-			  user: true  // `user` bilgilerini de `assignedTests` içinde dahil et
-			}
-		  }
-		}
-	  });
-	  
-	  console.log(JSON.stringify(test, null, 2));
-
+	if (loading) {
+		return (
+			<div className="container mx-auto p-4">
+				<div className="flex justify-center items-center min-h-[200px]">
+					<p className="text-muted-foreground">Yükleniyor...</p>
+				</div>
+			</div>
+		)
+	}
 
 	if (!test) {
 		return (
@@ -140,7 +197,7 @@ export default async function EnglishTestDetailPage({ params }) {
 							<span>{test.assignedTests.length}</span>
 						</div>
 					</div>
-					{session.user.role === 'admin' && (
+					{session?.user?.role === 'admin' && (
 						<div className="flex items-end gap-2">
 							<Button asChild className="w-full">
 								<Link href={`/panel/english-test/${test.id}/assign`}>
@@ -148,15 +205,17 @@ export default async function EnglishTestDetailPage({ params }) {
 									Testi Ata
 								</Link>
 							</Button>
-	
-							<AssignedUsersDialog assignedTests={test.assignedTests} user = {JSON.stringify(test.assignedTests)}/>
-					
+
+							<AssignedUsersDialog
+								assignedTests={test.assignedTests}
+								user={JSON.stringify(test.assignedTests)}
+							/>
 						</div>
 					)}
 				</CardContent>
 			</Card>
 
-			{session.user.role === 'admin' && (
+			{session?.user?.role === 'admin' && (
 				<Card>
 					<CardHeader>
 						<CardTitle>Sorular</CardTitle>
@@ -173,26 +232,54 @@ export default async function EnglishTestDetailPage({ params }) {
 											{question.question}
 										</h3>
 									</div>
-									<ul className="ml-11 space-y-2">
-										{question.options.map((option, optionIndex) => (
-											<li
-												key={optionIndex}
-												className={`flex items-center space-x-2 ${optionIndex === question.correctAnswer
-														? 'text-green-600 dark:text-green-400 font-medium'
-														: 'text-muted-foreground'
+									<div className="ml-11 space-y-4">
+										<ul className="space-y-2">
+											{question.options.map((option, optionIndex) => (
+												<li
+													key={optionIndex}
+													className={`flex items-center space-x-2 ${
+														optionIndex === question.correctAnswer
+															? 'text-green-600 dark:text-green-400 font-medium'
+															: 'text-muted-foreground'
 													}`}
+												>
+													{optionIndex === question.correctAnswer ? (
+														<CheckCircle className="h-5 w-5" />
+													) : (
+														<Circle className="h-5 w-5" />
+													)}
+													<span>
+														{letters[optionIndex]}) {option}
+													</span>
+												</li>
+											))}
+										</ul>
+										<div className="flex items-center space-x-2">
+											<span className="text-sm font-medium text-muted-foreground">
+												Doğru Cevap:
+											</span>
+											<Select
+												defaultValue={question.correctAnswer.toString()}
+												onValueChange={(value) =>
+													handleCorrectAnswerChange(index, value)
+												}
 											>
-												{optionIndex === question.correctAnswer ? (
-													<CheckCircle className="h-5 w-5" />
-												) : (
-													<Circle className="h-5 w-5" />
-												)}
-												<span>
-													{letters[optionIndex]}) {option}
-												</span>
-											</li>
-										))}
-									</ul>
+												<SelectTrigger className="w-20">
+													<SelectValue />
+												</SelectTrigger>
+												<SelectContent>
+													{question.options.map((_, optionIndex) => (
+														<SelectItem
+															key={optionIndex}
+															value={optionIndex.toString()}
+														>
+															{letters[optionIndex]}
+														</SelectItem>
+													))}
+												</SelectContent>
+											</Select>
+										</div>
+									</div>
 									{index < test.questions.length - 1 && (
 										<Separator className="my-4" />
 									)}

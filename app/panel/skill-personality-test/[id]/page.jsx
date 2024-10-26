@@ -24,6 +24,13 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue
+} from '@/components/ui/select'
+import {
 	Breadcrumb,
 	BreadcrumbItem,
 	BreadcrumbLink,
@@ -32,7 +39,7 @@ import {
 	BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
 import { Separator } from '@/components/ui/separator'
-import AssignedUsersDialog from '@/components/Dialogs/AssignedUsersDialog';
+import AssignedUsersDialog from '@/components/Dialogs/AssignedUsersDialog'
 
 export default function AdminSkillPersonalityTestDetailPage() {
 	const params = useParams()
@@ -47,6 +54,40 @@ export default function AdminSkillPersonalityTestDetailPage() {
 			'Personality Analysis': 'Kişilik Analizi'
 		}
 		return translations[title] || title
+	}
+
+	const handleCorrectAnswerChange = async (
+		sectionIndex,
+		questionIndex,
+		newValue
+	) => {
+		try {
+			const response = await fetch(
+				`/api/skill-personality-test/${params.id}`,
+				{
+					method: 'PATCH',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						sectionIndex,
+						questionIndex,
+						newCorrectAnswer: parseInt(newValue)
+					})
+				}
+			)
+
+			if (!response.ok) {
+				throw new Error('Failed to update correct answer')
+			}
+
+			const data = await response.json()
+			setTest(data.test) // API'den gelen test verilerini state'e atalım
+			toast.success('Doğru cevap güncellendi')
+		} catch (error) {
+			console.error('Error updating correct answer:', error)
+			toast.error('Doğru cevap güncellenirken bir hata oluştu')
+		}
 	}
 
 	useEffect(() => {
@@ -163,7 +204,10 @@ export default function AdminSkillPersonalityTestDetailPage() {
 							</Link>
 						</Button>
 
-						<AssignedUsersDialog assignedTests={test.assignedTests} user = {JSON.stringify(test.assignedTests)}/>
+						<AssignedUsersDialog
+							assignedTests={test.assignedTests}
+							user={JSON.stringify(test.assignedTests)}
+						/>
 					</div>
 				</CardContent>
 			</Card>
@@ -188,30 +232,68 @@ export default function AdminSkillPersonalityTestDetailPage() {
 												{question.text || question.question}
 											</h3>
 										</div>
-										<ul className="ml-11 space-y-2">
-											{question.options.map((option, optionIndex) => (
-												<li
-													key={optionIndex}
-													className={`flex items-center space-x-2 ${
-														optionIndex === question.correctAnswer
-															? 'text-green-600 dark:text-green-400 font-medium'
-															: 'text-muted-foreground'
-													}`}
+										<div className="ml-11 space-y-4">
+											<ul className="space-y-2">
+												{question.options.map(
+													(option, optionIndex) => (
+														<li
+															key={optionIndex}
+															className="flex items-center space-x-2"
+														>
+															<span
+																className={`flex-shrink-0 w-6 ${
+																	optionIndex ===
+																	question.correctAnswer
+																		? 'text-green-600 dark:text-green-400 font-medium'
+																		: 'text-muted-foreground'
+																}`}
+															>
+																{letters[optionIndex]})
+															</span>
+															<span
+																className={
+																	optionIndex ===
+																	question.correctAnswer
+																		? 'text-green-600 dark:text-green-400 font-medium'
+																		: ''
+																}
+															>
+																{option}
+															</span>
+														</li>
+													)
+												)}
+											</ul>
+											<div className="flex items-center space-x-2">
+												<span className="text-sm font-medium text-muted-foreground">
+													Doğru Cevap:
+												</span>
+												<Select
+													defaultValue={question.correctAnswer.toString()}
+													onValueChange={(value) =>
+														handleCorrectAnswerChange(
+															sectionIndex,
+															questionIndex,
+															value
+														)
+													}
 												>
-													{optionIndex === question.correctAnswer ? (
-														<CheckCircle className="h-5 w-5" />
-													) : (
-														<Circle className="h-5 w-5" />
-													)}
-													<span>
-														{letters[optionIndex]}) {option}
-													</span>
-												</li>
-											))}
-										</ul>
-										{questionIndex < section.questions.length - 1 && (
-											<Separator className="my-4" />
-										)}
+													<SelectTrigger className="w-20">
+														<SelectValue />
+													</SelectTrigger>
+													<SelectContent>
+														{question.options.map((_, index) => (
+															<SelectItem
+																key={index}
+																value={index.toString()}
+															>
+																{letters[index]}
+															</SelectItem>
+														))}
+													</SelectContent>
+												</Select>
+											</div>
+										</div>
 									</div>
 								))}
 						</div>

@@ -58,6 +58,82 @@ export async function GET(request, { params }) {
 	}
 }
 
+export async function PATCH(request, { params }) {
+	try {
+		const session = await getServerSession(authOptions)
+
+		if (!session || session.user.role !== 'admin') {
+			return NextResponse.json(
+				{ error: 'Unauthorized' },
+				{ status: 401 }
+			)
+		}
+
+		const body = await request.json()
+		const { sectionIndex, questionIndex, newCorrectAnswer } = body
+
+		// Önce mevcut testi alalım
+		const currentTest = await prisma.skillPersonalityTest.findUnique({
+			where: { id: params.id },
+			include: {
+				_count: {
+					select: { assignedTests: true }
+				},
+				assignedTests: {
+					include: {
+						user: true
+					}
+				}
+			}
+		})
+
+		if (!currentTest) {
+			return NextResponse.json(
+				{ error: 'Test not found' },
+				{ status: 404 }
+			)
+		}
+
+		// sections JSON'ını değiştirelim
+		const updatedSections = [...currentTest.sections]
+		updatedSections[sectionIndex].questions[
+			questionIndex
+		].correctAnswer = newCorrectAnswer
+
+		// Testi güncelleyelim
+		const updatedTest = await prisma.skillPersonalityTest.update({
+			where: { id: params.id },
+			data: {
+				sections: updatedSections
+			},
+			include: {
+				_count: {
+					select: { assignedTests: true }
+				},
+				assignedTests: {
+					include: {
+						user: true
+					}
+				}
+			}
+		})
+
+		// Yanıtı hazırlayalım
+		const response = {
+			...updatedTest,
+			assignmentCount: updatedTest._count.assignedTests
+		}
+
+		return NextResponse.json({ test: response })
+	} catch (error) {
+		console.error('Error updating test:', error)
+		return NextResponse.json(
+			{ error: 'Failed to update test', details: error.message },
+			{ status: 500 }
+		)
+	}
+}
+
 export async function DELETE(request, { params }) {
 	try {
 		const session = await getServerSession(authOptions)
