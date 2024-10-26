@@ -32,6 +32,7 @@ import {
 	BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
 import { Separator } from '@/components/ui/separator'
+import AssignedUsersDialog from '@/components/Dialogs/AssignedUsersDialog';
 
 export default function AdminSkillPersonalityTestDetailPage() {
 	const params = useParams()
@@ -142,7 +143,7 @@ export default function AdminSkillPersonalityTestDetailPage() {
 							<span>{test.assignmentCount}</span>
 						</div>
 					</div>
-					<div className="flex items-end">
+					<div className="flex items-end gap-2">
 						<Button asChild className="w-full">
 							<Link
 								href={`/panel/skill-personality-test/${params.id}/assign`}
@@ -151,6 +152,8 @@ export default function AdminSkillPersonalityTestDetailPage() {
 								Testi Ata
 							</Link>
 						</Button>
+
+						<AssignedUsersDialog assignedTests={test.assignedTests} user = {JSON.stringify(test.assignedTests)}/>
 					</div>
 				</CardContent>
 			</Card>

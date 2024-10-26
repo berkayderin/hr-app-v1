@@ -23,7 +23,13 @@ export async function GET(request, { params }) {
 			include: {
 				_count: {
 					select: { assignedTests: true }
+				},
+				assignedTests: {
+					include: {
+						user: true // user bilgileri de döndürülüyor
+					}
 				}
+				
 			}
 		})
 

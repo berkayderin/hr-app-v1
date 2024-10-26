@@ -31,6 +31,7 @@ import {
 	BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
 import { Separator } from '@/components/ui/separator'
+import AssignedUsersDialog from '@/components/Dialogs/AssignedUsersDialog';
 
 export default async function EnglishTestDetailPage({ params }) {
 	const session = await getServerSession(authOptions)
@@ -41,8 +42,17 @@ export default async function EnglishTestDetailPage({ params }) {
 
 	const test = await prisma.englishTest.findUnique({
 		where: { id: params.id },
-		include: { assignedTests: true }
-	})
+		include: {
+		  assignedTests: {
+			include: {
+			  user: true  // `user` bilgilerini de `assignedTests` içinde dahil et
+			}
+		  }
+		}
+	  });
+	  
+	  console.log(JSON.stringify(test, null, 2));
+
 
 	if (!test) {
 		return (
@@ -131,13 +141,16 @@ export default async function EnglishTestDetailPage({ params }) {
 						</div>
 					</div>
 					{session.user.role === 'admin' && (
-						<div className="flex items-end">
+						<div className="flex items-end gap-2">
 							<Button asChild className="w-full">
 								<Link href={`/panel/english-test/${test.id}/assign`}>
 									<Users className="mr-2 h-4 w-4" />
 									Testi Ata
 								</Link>
 							</Button>
+	
+							<AssignedUsersDialog assignedTests={test.assignedTests} user = {JSON.stringify(test.assignedTests)}/>
+					
 						</div>
 					)}
 				</CardContent>
@@ -164,11 +177,10 @@ export default async function EnglishTestDetailPage({ params }) {
 										{question.options.map((option, optionIndex) => (
 											<li
 												key={optionIndex}
-												className={`flex items-center space-x-2 ${
-													optionIndex === question.correctAnswer
+												className={`flex items-center space-x-2 ${optionIndex === question.correctAnswer
 														? 'text-green-600 dark:text-green-400 font-medium'
 														: 'text-muted-foreground'
-												}`}
+													}`}
 											>
 												{optionIndex === question.correctAnswer ? (
 													<CheckCircle className="h-5 w-5" />

@@ -22,7 +22,10 @@ export async function GET(request, { params }) {
 				userId: session.user.id,
 				completedAt: null
 			},
-			include: { test: true }
+			include: {
+				test: true,
+				user: true
+			}
 		})
 		console.log('AssignedTest found:', assignedTest)
 
