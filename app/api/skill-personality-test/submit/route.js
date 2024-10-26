@@ -80,27 +80,38 @@ export async function POST(request) {
 function calculateResults(test, answers) {
 	// Her bölüm için skorların hesaplanması
 	const sectionScores = test.sections.map((section, sectionIndex) => {
+		// Her bölümdeki soruların cevaplarını kontrol et
 		const sectionAnswers = Object.entries(answers)
 			.filter(([key]) => key.startsWith(`${sectionIndex}-`))
-			.map(([, value]) => parseInt(value))
+			.map(([key]) => {
+				const questionIndex = parseInt(key.split('-')[1])
+				const givenAnswer = parseInt(answers[key])
+				const correctAnswer =
+					section.questions[questionIndex].correctAnswer
 
-		// Her sorunun maksimum puanını bildiğimizi varsayalım
-		const maxScorePerQuestion = 5 // Bu değer, test yapısına göre değişebilir
+				// Cevap doğruysa 20 puan, yanlışsa 0 puan
+				return givenAnswer === correctAnswer ? 20 : 0
+			})
 
+		// Bölüm toplam puanı
 		const totalScore = sectionAnswers.reduce(
-			(sum, answer) => sum + answer,
+			(sum, score) => sum + score,
 			0
 		)
-		const maxPossibleScore =
-			sectionAnswers.length * maxScorePerQuestion
-
-		// 0-100 arasında bir skor hesapla
+		const maxPossibleScore = section.questions.length * 20
 		const score = Math.round((totalScore / maxPossibleScore) * 100)
+
+		console.log(`Section ${section.title}:`, {
+			answers: sectionAnswers,
+			totalScore,
+			maxPossibleScore,
+			finalScore: score
+		})
 
 		return { title: section.title, score }
 	})
 
-	// Her alandaki skorların ayrıştırılması
+	// Bölüm skorlarının ayrıştırılması
 	const iqScore =
 		sectionScores.find((s) => s.title === 'IQ Test')?.score ?? 0
 	const practicalScore =
@@ -113,35 +124,136 @@ function calculateResults(test, answers) {
 		sectionScores.find((s) => s.title === 'Personality Analysis')
 			?.score ?? 0
 
-	// Kişilik profili ve departman uyumluluğunun oluşturulması
-	const personalityProfile =
-		generatePersonalityProfile(personalityScore)
-	const departmentCompatibility = generateDepartmentCompatibility(
+	console.log('Overall Scores:', {
 		iqScore,
 		practicalScore,
 		sharpScore,
 		personalityScore
-	)
+	})
 
+	// Sonuçların JSON formatında hazırlanması
 	return {
-		iqScore,
-		practicalScore,
-		sharpScore,
-		personalityScore,
-		personalityProfile,
-		departmentCompatibility
+		sectionScores,
+		overallResults: {
+			iqScore,
+			practicalScore,
+			sharpScore,
+			personalityScore
+		},
+		personalityProfile: generatePersonalityProfile(personalityScore),
+		departmentCompatibility: generateDepartmentCompatibility(
+			iqScore,
+			practicalScore,
+			sharpScore,
+			personalityScore
+		)
 	}
 }
 
 // Kişilik profili oluşturma fonksiyonu
 function generatePersonalityProfile(score) {
-	if (score > 75) {
-		return 'Dışa dönük, yenilikçi ve risk almaya açık bir kişilik profili.'
-	} else if (score > 50) {
-		return 'Dengeli, uyumlu ve esnek bir kişilik profili.'
-	} else {
-		return 'İçe dönük, analitik ve detaycı bir kişilik profili.'
+	return {
+		profileLevel: determineProfileLevel(score),
+		traits: determinePersonalityTraits(score),
+		strengths: determineStrengths(score),
+		improvements: determineImprovements(score)
 	}
+}
+
+function determineProfileLevel(score) {
+	if (score > 90) return 'Yüksek Performans Potansiyeli'
+	if (score > 80) return 'Gelişmiş Yetkinlik'
+	if (score > 70) return 'Yeterli Performans'
+	if (score > 60) return 'Gelişime Açık'
+	return 'Temel Seviye'
+}
+
+function determinePersonalityTraits(score) {
+	if (score > 90) {
+		return {
+			leadership: 'Güçlü',
+			innovation: 'Yüksek',
+			teamwork: 'Etkili',
+			communication: 'Mükemmel'
+		}
+	} else if (score > 80) {
+		return {
+			leadership: 'İyi',
+			innovation: 'Gelişmiş',
+			teamwork: 'Güçlü',
+			communication: 'İyi'
+		}
+	} else if (score > 70) {
+		return {
+			leadership: 'Orta',
+			innovation: 'İyi',
+			teamwork: 'Yeterli',
+			communication: 'Gelişebilir'
+		}
+	} else if (score > 60) {
+		return {
+			leadership: 'Gelişebilir',
+			innovation: 'Orta',
+			teamwork: 'Gelişebilir',
+			communication: 'Temel'
+		}
+	} else {
+		return {
+			leadership: 'Temel',
+			innovation: 'Gelişebilir',
+			teamwork: 'Temel',
+			communication: 'Gelişebilir'
+		}
+	}
+}
+
+function determineStrengths(score) {
+	const allStrengths = {
+		90: [
+			'Liderlik',
+			'Stratejik Düşünme',
+			'Yenilikçilik',
+			'İkna Kabiliyeti'
+		],
+		80: [
+			'Takım Çalışması',
+			'Problem Çözme',
+			'İletişim',
+			'Adaptasyon'
+		],
+		70: [
+			'Analitik Düşünme',
+			'Planlama',
+			'Organizasyon',
+			'Detay Odaklılık'
+		],
+		60: ['Bireysel Çalışma', 'Takip', 'Uygulama', 'Düzen'],
+		0: ['Temel Analiz', 'Rutin İşler', 'Yapılandırılmış Görevler']
+	}
+
+	for (const threshold in allStrengths) {
+		if (score > parseInt(threshold)) {
+			return allStrengths[threshold]
+		}
+	}
+	return allStrengths[0]
+}
+
+function determineImprovements(score) {
+	const allImprovements = {
+		90: ['Detay Odaklılık', 'Sabır', 'Rutin İş Toleransı'],
+		80: ['Analitik Düşünme', 'Bireysel Çalışma', 'Risk Yönetimi'],
+		70: ['İnisiyatif Alma', 'Yaratıcılık', 'Liderlik'],
+		60: ['İletişim', 'Takım Çalışması', 'Esneklik'],
+		0: ['Temel Beceriler', 'İş Süreçleri', 'Profesyonel Gelişim']
+	}
+
+	for (const threshold in allImprovements) {
+		if (score > parseInt(threshold)) {
+			return allImprovements[threshold]
+		}
+	}
+	return allImprovements[0]
 }
 
 // Departman uyumluluğu oluşturma fonksiyonu
@@ -151,22 +263,140 @@ function generateDepartmentCompatibility(
 	sharpScore,
 	personalityScore
 ) {
-	const compatibilities = []
+	const departments = [
+		{
+			name: 'Yazılım Geliştirme',
+			weights: {
+				iq: 0.35,
+				practical: 0.2,
+				sharp: 0.35,
+				personality: 0.1
+			},
+			threshold: 50 // Yeni eşik değeri
+		},
+		{
+			name: 'İş Analizi',
+			weights: {
+				iq: 0.3,
+				practical: 0.3,
+				sharp: 0.3,
+				personality: 0.1
+			},
+			threshold: 50 // Yeni eşik değeri
+		},
+		{
+			name: 'Proje Yönetimi',
+			weights: {
+				iq: 0.25,
+				practical: 0.3,
+				sharp: 0.2,
+				personality: 0.25
+			},
+			threshold: 50 // Yeni eşik değeri
+		},
+		{
+			name: 'Ürün Yönetimi',
+			weights: {
+				iq: 0.25,
+				practical: 0.25,
+				sharp: 0.25,
+				personality: 0.25
+			},
+			threshold: 50 // Yeni eşik değeri
+		}
+	]
 
-	if (iqScore > 70 && sharpScore > 60) {
-		compatibilities.push('Ar-Ge Departmanı')
+	const results = departments.map((dept) => {
+		const score = calculateDepartmentScore(
+			dept.weights,
+			iqScore,
+			practicalScore,
+			sharpScore,
+			personalityScore
+		)
+
+		return {
+			department: dept.name,
+			score: Math.round(score),
+			suitable: score >= dept.threshold,
+			details: generateDepartmentDetails(dept.name, score)
+		}
+	})
+
+	return {
+		recommendations: results
+			.filter((r) => r.suitable)
+			.sort((a, b) => b.score - a.score),
+		allScores: results.sort((a, b) => b.score - a.score)
 	}
-	if (practicalScore > 70 && personalityScore > 60) {
-		compatibilities.push('Müşteri İlişkileri Departmanı')
-	}
-	if (iqScore > 60 && practicalScore > 60 && sharpScore > 60) {
-		compatibilities.push('Yönetim Departmanı')
-	}
-	if (sharpScore > 70 && personalityScore < 50) {
-		compatibilities.push('Analiz Departmanı')
+}
+
+function calculateDepartmentScore(
+	weights,
+	iq,
+	practical,
+	sharp,
+	personality
+) {
+	return (
+		weights.iq * iq +
+		weights.practical * practical +
+		weights.sharp * sharp +
+		weights.personality * personality
+	)
+}
+
+function generateDepartmentDetails(department, score) {
+	const details = {
+		'Yazılım Geliştirme': {
+			requirements: [
+				'Analitik düşünme',
+				'Problem çözme',
+				'Teknik beceriler'
+			],
+			benefits: [
+				'Sürekli öğrenme',
+				'Yenilikçi projeler',
+				'Teknik gelişim'
+			],
+			challenges: [
+				'Hızlı değişen teknolojiler',
+				'Karmaşık problemler'
+			]
+		},
+		'İş Analizi': {
+			requirements: ['Analiz yeteneği', 'İletişim', 'Dokümantasyon'],
+			benefits: ['Süreç iyileştirme', 'Çözüm tasarımı', 'İş bilgisi'],
+			challenges: ['Paydaş yönetimi', 'Değişen gereksinimler']
+		},
+		'Proje Yönetimi': {
+			requirements: ['Organizasyon', 'İletişim', 'Risk yönetimi'],
+			benefits: [
+				'Liderlik fırsatı',
+				'Çeşitli projeler',
+				'Strateji geliştirme'
+			],
+			challenges: ['Kaynak yönetimi', 'Zaman baskısı']
+		},
+		'Ürün Yönetimi': {
+			requirements: [
+				'Vizyon oluşturma',
+				'Stratejik düşünme',
+				'Paydaş yönetimi'
+			],
+			benefits: ['Ürün stratejisi', 'Pazar etkisi', 'İnovasyon'],
+			challenges: ['Pazar belirsizliği', 'Rekabet']
+		}
 	}
 
-	return compatibilities.length > 0
-		? compatibilities
-		: ['Genel Departmanlar']
+	return {
+		...details[department],
+		potentialScore: score,
+		recommendation:
+			score >= 80
+				? 'Yüksek uyumluluk'
+				: score >= 70
+				? 'Orta uyumluluk'
+				: 'Düşük uyumluluk'
+	}
 }
