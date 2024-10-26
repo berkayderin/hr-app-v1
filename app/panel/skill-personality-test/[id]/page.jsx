@@ -38,6 +38,16 @@ export default function AdminSkillPersonalityTestDetailPage() {
 	const [test, setTest] = useState(null)
 	const router = useRouter()
 
+	const translateSectionTitle = (title) => {
+		const translations = {
+			'IQ Test': 'IQ Testi',
+			'Practical Intelligence': 'Pratik Zeka',
+			'Sharp Intelligence': 'Keskin Zeka',
+			'Personality Analysis': 'Kişilik Analizi'
+		}
+		return translations[title] || title
+	}
+
 	useEffect(() => {
 		const fetchTest = async () => {
 			try {
@@ -158,7 +168,9 @@ export default function AdminSkillPersonalityTestDetailPage() {
 			{test.sections.map((section, sectionIndex) => (
 				<Card key={sectionIndex}>
 					<CardHeader>
-						<CardTitle>{section.title}</CardTitle>
+						<CardTitle>
+							{translateSectionTitle(section.title)}
+						</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<div className="space-y-6">
