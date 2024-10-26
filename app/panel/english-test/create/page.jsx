@@ -97,7 +97,7 @@ export default function CreateEnglishTestPage() {
 						</label>
 						<Input
 							id="title"
-							placeholder="Test Başlığı"
+							placeholder="Satış Departmanı İngilizce Testi"
 							value={title}
 							onChange={(e) => setTitle(e.target.value)}
 							required
@@ -131,11 +131,11 @@ export default function CreateEnglishTestPage() {
 							htmlFor="prompt"
 							className="block text-sm font-medium text-gray-700 dark:text-gray-300"
 						>
-							AI Soru Üretme Yönergesi
+							AI soru üretmesi için yönerge
 						</label>
 						<Textarea
 							id="prompt"
-							placeholder="AI'nın soru üretmesi için yönerge girin"
+							placeholder="Satış departmanı için bir ingilizce testi oluşturun"
 							value={prompt}
 							onChange={(e) => setPrompt(e.target.value)}
 							required

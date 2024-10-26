@@ -44,7 +44,30 @@ export async function POST(request) {
 		const { title, level, prompt } = await request.json()
 		console.log('Received data:', { title, level, prompt })
 
-		const aiPrompt = `Create 15 multiple-choice questions for an English test at ${level} level. The test should be about "${title}". ${prompt} Each question should have 4 options (A, B, C, D) with one correct answer. Format the output as a JSON array of objects, each containing 'question', 'options' (an array of 4 strings), and 'correctAnswer' (index of the correct option, 0-3).`
+		const aiPrompt = `You will receive a prompt in Turkish describing what kind of English test questions to create. Here's the Turkish prompt: "${prompt}"
+
+		Based on this Turkish prompt, create 15 multiple-choice questions for an English test at ${level} level. Each question should be in English and have 4 options (A, B, C, D) with one correct answer.
+		
+		Important guidelines for creating questions:
+		1. Each question must have exactly one correct answer - no ambiguity allowed.
+		2. Avoid trick questions or questions with multiple possible interpretations.
+		3. Ensure clear, unambiguous wording in both questions and answer options.
+		4. Vary question types across the test:
+		   - Fill in the blank questions
+		   - Sentence completion
+		   - Error identification
+		   - Reading comprehension
+		   - Vocabulary in context
+		5. Include scenario-based questions that reflect real-world situations in professional contexts.
+		6. Make sure distractors (wrong options) are plausible but clearly incorrect.
+		7. All questions and answers must be in English, regardless of the Turkish prompt.
+		
+		Format the output as a JSON array of objects, each containing:
+		- 'question': The question text
+		- 'options': An array of exactly 4 strings (A, B, C, D options)
+		- 'correctAnswer': Index of the correct option (0-3, where 0=A, 1=B, 2=C, 3=D)
+		
+		The questions should follow the requirements specified in both the Turkish prompt and these guidelines.`
 
 		console.log('Sending request to Bedrock...')
 		const input = {
