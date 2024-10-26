@@ -52,6 +52,8 @@ export function DataTable({ columns, data }) {
 		pageSize: 10
 	})
 
+	console.log('-------DATA: ', data)
+
 	const debouncedGlobalFilter = useDebounce(globalFilter, 200)
 
 	const table = useReactTable({

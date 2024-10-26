@@ -39,6 +39,16 @@ export default function AdminSkillPersonalityTestDetailPage() {
 	const [test, setTest] = useState(null)
 	const router = useRouter()
 
+	const translateSectionTitle = (title) => {
+		const translations = {
+			'IQ Test': 'IQ Testi',
+			'Practical Intelligence': 'Pratik Zeka',
+			'Sharp Intelligence': 'Keskin Zeka',
+			'Personality Analysis': 'Kişilik Analizi'
+		}
+		return translations[title] || title
+	}
+
 	useEffect(() => {
 		const fetchTest = async () => {
 			try {
@@ -161,46 +171,49 @@ export default function AdminSkillPersonalityTestDetailPage() {
 			{test.sections.map((section, sectionIndex) => (
 				<Card key={sectionIndex}>
 					<CardHeader>
-						<CardTitle>{section.title}</CardTitle>
+						<CardTitle>
+							{translateSectionTitle(section.title)}
+						</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<div className="space-y-6">
-							{section.questions.map((question, questionIndex) => (
-								<div key={questionIndex} className="space-y-4">
-									<div className="flex items-start">
-										<span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground font-medium text-sm mr-3">
-											{questionIndex + 1}
-										</span>
-										<h3 className="text-lg font-medium">
-											{question.text}
-										</h3>
+							{section.questions &&
+								section.questions.map((question, questionIndex) => (
+									<div key={questionIndex} className="space-y-4">
+										<div className="flex items-start">
+											<span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground font-medium text-sm mr-3">
+												{questionIndex + 1}
+											</span>
+											<h3 className="text-lg font-medium">
+												{question.text || question.question}
+											</h3>
+										</div>
+										<ul className="ml-11 space-y-2">
+											{question.options.map((option, optionIndex) => (
+												<li
+													key={optionIndex}
+													className={`flex items-center space-x-2 ${
+														optionIndex === question.correctAnswer
+															? 'text-green-600 dark:text-green-400 font-medium'
+															: 'text-muted-foreground'
+													}`}
+												>
+													{optionIndex === question.correctAnswer ? (
+														<CheckCircle className="h-5 w-5" />
+													) : (
+														<Circle className="h-5 w-5" />
+													)}
+													<span>
+														{letters[optionIndex]}) {option}
+													</span>
+												</li>
+											))}
+										</ul>
+										{questionIndex < section.questions.length - 1 && (
+											<Separator className="my-4" />
+										)}
 									</div>
-									<ul className="ml-11 space-y-2">
-										{question.options.map((option, optionIndex) => (
-											<li
-												key={optionIndex}
-												className={`flex items-center space-x-2 ${
-													optionIndex === question.correctAnswer
-														? 'text-green-600 dark:text-green-400 font-medium'
-														: 'text-muted-foreground'
-												}`}
-											>
-												{optionIndex === question.correctAnswer ? (
-													<CheckCircle className="h-5 w-5" />
-												) : (
-													<Circle className="h-5 w-5" />
-												)}
-												<span>
-													{letters[optionIndex]}) {option}
-												</span>
-											</li>
-										))}
-									</ul>
-									{questionIndex < section.questions.length - 1 && (
-										<Separator className="my-4" />
-									)}
-								</div>
-							))}
+								))}
 						</div>
 					</CardContent>
 				</Card>

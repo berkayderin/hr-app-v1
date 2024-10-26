@@ -18,6 +18,7 @@ model User {
   updatedAt                     DateTime                       @updatedAt
   assignedTests                 AssignedTest[]
   assignedSkillPersonalityTests AssignedSkillPersonalityTest[]
+  ProductOwnerSimulation        ProductOwnerSimulation[]
 }
 
 model EnglishTest {
@@ -65,4 +66,17 @@ model AssignedSkillPersonalityTest {
   results       Json?
   user          User                 @relation(fields: [userId], references: [id])
   test          SkillPersonalityTest @relation(fields: [testId], references: [id])
+}
+
+model ProductOwnerSimulation {
+  id                    String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId                String    @db.ObjectId
+  startedAt             DateTime  @default(now())
+  completedAt           DateTime?
+  currentTask           String?
+  teamMeeting           Json?
+  backlogPrioritization Json?
+  userStoryWriting      Json?
+  score                 Int?
+  user                  User      @relation(fields: [userId], references: [id])
 }

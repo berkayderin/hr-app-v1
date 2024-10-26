@@ -36,16 +36,53 @@ export async function POST(request) {
 		console.log('Received data:', { title, prompt })
 
 		// AI için prompt oluşturulması
-		const aiPrompt = `Create a skill and personality test titled "${title}". ${prompt}
-    The test should have 4 sections:
-    1. IQ Test (5 questions)
-    2. Practical Intelligence (5 questions)
-    3. Sharp Intelligence (5 questions)
-    4. Personality Analysis (5 questions)
-    
-    Each question should have 4 options (A, B, C, D) with one correct answer.
-    Format the output as a JSON array of objects, each containing 'section', 'question', 'options' (an array of 4 strings), and 'correctAnswer' (index of the correct option, 0-3).
-    Ensure the output is a valid JSON array without any additional text or formatting.`
+		const aiPrompt = `Yetenek ve kişilik testi için sorular oluşturun. ${prompt}
+
+Test 4 bölümden oluşmalıdır:
+
+1. IQ Test (5 soru):
+- Mantık, analitik düşünme ve problem çözme yeteneklerini ölçen sorular
+- Sorular sözel mantık içermeli
+- Her soru gerçek hayat problemlerine dayalı olmalı
+
+2. Practical Intelligence (5 soru):
+- Günlük hayatta karşılaşılan problemleri çözme yeteneğini ölçen sorular
+- İş hayatı, sosyal ilişkiler ve günlük yaşam senaryoları
+- Etik değerlere ve ahlaki kurallara uygun çözümler içermeli
+
+3. Sharp Intelligence (5 soru):
+- Hızlı düşünme ve karar verme yeteneğini ölçen sorular
+- Kritik durumlarda mantıklı kararlar alabilme
+- İş etiği ve profesyonel değerlere uygun seçenekler sunulmalı
+
+4. Personality Analysis (5 soru):
+- Kişilik özelliklerini ve davranış eğilimlerini değerlendiren sorular
+- İş ortamındaki davranışlar ve kişilerarası ilişkiler
+- Etik değerler ve sosyal sorumluluk odaklı seçenekler
+
+Önemli Kriterler:
+- Tüm sorular ve seçenekler Türkçe olmalı
+- Her soru için 4 seçenek (A, B, C, D) bulunmalı
+- Seçenekler doğru/yanlış yerine, duruma en uygun ve mantıklı çözümü sunmalı
+- Cevaplar etik kurallara, ahlaki değerlere ve sosyal normlara uygun olmalı
+- Her senaryo gerçek dünya uygulamalarından esinlenmeli
+- Seçenekler arasında en mantıklı ve yapıcı olan tercih edilmeli
+
+ÖNEMLİ NOT: Bölüm isimleri tam olarak aşağıdaki gibi olmalıdır:
+- IQ Test
+- Practical Intelligence
+- Sharp Intelligence
+- Personality Analysis
+
+Format JSON dizisi olarak aşağıdaki yapıda olmalı:
+{
+    'section': 'Bölüm adı (yukarıdaki 4 isimden biri)',
+    'question': 'Soru metni',
+    'options': ['A seçeneği', 'B seçeneği', 'C seçeneği', 'D seçeneği'],
+    'correctAnswer': 'En mantıklı seçeneğin indeksi (0-3)'
+}
+
+Çıktı sadece geçerli bir JSON dizisi olmalı, ek metin veya biçimlendirme içermemeli.`
 
 		console.log('Sending request to Bedrock...')
 		// Bedrock AI modelini çağırmak için giriş verilerinin hazırlanması

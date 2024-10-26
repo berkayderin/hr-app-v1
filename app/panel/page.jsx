@@ -296,6 +296,28 @@ export default async function PanelPage() {
 						</Card>
 					</>
 				)}
+
+				<Card className="bg-white">
+					<CardHeader className="space-y-1">
+						<CardTitle className="text-2xl flex items-center space-x-2">
+							<Brain className="h-6 w-6 text-primary" />
+							<span>Product Owner Simülasyonu</span>
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<p className="text-sm text-muted-foreground">
+							Product Owner yeteneklerinizi test edin ve geliştirin.
+						</p>
+					</CardContent>
+					<CardFooter>
+						<Button asChild className="w-full">
+							<Link href="/panel/product-owner-simulation">
+								<Brain className="mr-2 h-4 w-4" />
+								Simülasyonu Başlat
+							</Link>
+						</Button>
+					</CardFooter>
+				</Card>
 			</div>
 		</div>
 	)

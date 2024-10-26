@@ -87,7 +87,7 @@ export default function CreateSkillPersonalityTestPage() {
 							</label>
 							<Input
 								id="title"
-								placeholder="Test Başlığı"
+								placeholder="Satış ve Pazarlama Ekibi"
 								value={title}
 								onChange={(e) => setTitle(e.target.value)}
 								required
@@ -102,7 +102,13 @@ export default function CreateSkillPersonalityTestPage() {
 							</label>
 							<Textarea
 								id="prompt"
-								placeholder="AI'nın soru üretmesi için yönerg girin"
+								placeholder="Satış ve pazarlama departmanına alınacak adaylar için test hazırla. Test şunları ölçmeli:
+    - Müşteri ilişkileri yönetimi becerileri
+    - İkna ve müzakere kabiliyeti
+    - Stres altında çalışabilme
+    - Problem çözme yaklaşımı
+    - Sosyal medya ve dijital pazarlama anlayışı
+    Senaryolar gerçek satış durumlarını içermeli. Özellikle zor müşterilerle başa çıkma, satış hedeflerine ulaşma baskısı ve takım içi rekabet gibi durumlar değerlendirilmeli."
 								value={prompt}
 								onChange={(e) => setPrompt(e.target.value)}
 								rows={4}
