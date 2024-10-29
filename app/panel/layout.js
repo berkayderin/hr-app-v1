@@ -105,6 +105,7 @@ const allSidebarItems = [
 		]
 	}
 ]
+
 export default function PanelLayout({ children }) {
 	const [open, setOpen] = useState(false)
 	const pathname = usePathname()
@@ -112,18 +113,15 @@ export default function PanelLayout({ children }) {
 	const [sidebarItems, setSidebarItems] = useState([])
 
 	useEffect(() => {
-		if (status === 'authenticated') {
+		if (status === 'authenticated' && session?.user?.role) {
 			const userRole = session.user.role
-			// Kullanıcının rolüne göre menü öğelerini filtrele
 			const filteredItems = allSidebarItems
 				.filter((item) => item.roles.includes(userRole))
 				.map((item) => ({
 					...item,
-					subItems: item.subItems
-						? item.subItems.filter((subItem) =>
-								subItem.roles.includes(userRole)
-						  )
-						: undefined
+					subItems: item.subItems?.filter((subItem) =>
+						subItem.roles.includes(userRole)
+					)
 				}))
 			setSidebarItems(filteredItems)
 		}
@@ -139,33 +137,27 @@ export default function PanelLayout({ children }) {
 						className="fixed left-4 top-4 z-40 lg:hidden"
 					>
 						<Menu className="h-4 w-4" />
+						<span className="sr-only">Toggle menu</span>
 					</Button>
 				</SheetTrigger>
-				<SheetContent
-					side="left"
-					className="w-[250px] p-0 bg-white dark:bg-gray-950"
-				>
-					<MobileSidebar
-						pathname={pathname}
-						setOpen={setOpen}
-						items={sidebarItems}
-					/>
+				<SheetContent side="left" className="w-[250px] p-0">
+					<Sidebar isMobile setOpen={setOpen} items={sidebarItems} />
 				</SheetContent>
 			</Sheet>
-			<aside className="hidden w-[250px] flex-col border-r lg:flex bg-white dark:bg-gray-950">
-				<DesktopSidebar pathname={pathname} items={sidebarItems} />
+			<aside className="hidden w-[250px] flex-col border-r lg:flex">
+				<Sidebar items={sidebarItems} />
 			</aside>
 			<main className="flex-1 overflow-y-auto p-8">{children}</main>
 		</div>
 	)
 }
 
-function SidebarItem({ item, pathname, onClick, isNested = false }) {
+function SidebarItem({ item, onClick, isNested = false }) {
 	const [isOpen, setIsOpen] = useState(false)
+	const pathname = usePathname()
 	const active =
 		pathname === item.href ||
-		(item.subItems &&
-			item.subItems.some((subItem) => pathname === subItem.href))
+		item.subItems?.some((subItem) => pathname === subItem.href)
 
 	if (item.subItems) {
 		return (
@@ -176,8 +168,8 @@ function SidebarItem({ item, pathname, onClick, isNested = false }) {
 						className={cn(
 							'w-full justify-between',
 							active
-								? 'bg-muted text-primary'
-								: 'text-muted-foreground',
+								? 'bg-primary/10 text-primary'
+								: 'text-muted-foreground hover:bg-primary/5',
 							isNested && 'pl-8'
 						)}
 					>
@@ -197,7 +189,6 @@ function SidebarItem({ item, pathname, onClick, isNested = false }) {
 						<SidebarItem
 							key={subItem.href}
 							item={subItem}
-							pathname={pathname}
 							onClick={onClick}
 							isNested
 						/>
@@ -212,8 +203,10 @@ function SidebarItem({ item, pathname, onClick, isNested = false }) {
 			href={item.href}
 			onClick={onClick}
 			className={cn(
-				'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:text-primary',
-				active ? 'bg-muted text-primary' : 'text-muted-foreground',
+				'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:bg-primary/5',
+				active
+					? 'bg-primary/10 text-primary'
+					: 'text-muted-foreground',
 				isNested && 'pl-8'
 			)}
 		>
@@ -223,7 +216,7 @@ function SidebarItem({ item, pathname, onClick, isNested = false }) {
 	)
 }
 
-function Sidebar({ pathname, isMobile = false, setOpen, items }) {
+function Sidebar({ isMobile = false, setOpen, items }) {
 	return (
 		<div className="flex h-full flex-col">
 			<div className="flex h-14 items-center border-b px-4">
@@ -236,13 +229,12 @@ function Sidebar({ pathname, isMobile = false, setOpen, items }) {
 			</div>
 
 			<ScrollArea className="flex-1">
-				<div className="space-y-1 p-2 font-medium ">
+				<div className="space-y-1 p-2 font-medium">
 					{items.map((item) => (
 						<SidebarItem
 							key={item.href}
 							item={item}
-							pathname={pathname}
-							onClick={isMobile ? () => setOpen(false) : undefined}
+							onClick={isMobile ? () => setOpen?.(false) : undefined}
 						/>
 					))}
 				</div>
@@ -252,9 +244,7 @@ function Sidebar({ pathname, isMobile = false, setOpen, items }) {
 				<Button
 					variant="outline"
 					className="w-full justify-start"
-					onClick={() => {
-						signOut()
-					}}
+					onClick={() => signOut()}
 				>
 					<LogOut className="mr-2 h-4 w-4" />
 					Çıkış Yap
@@ -262,19 +252,4 @@ function Sidebar({ pathname, isMobile = false, setOpen, items }) {
 			</div>
 		</div>
 	)
-}
-
-function MobileSidebar({ pathname, setOpen, items }) {
-	return (
-		<Sidebar
-			pathname={pathname}
-			isMobile
-			setOpen={setOpen}
-			items={items}
-		/>
-	)
-}
-
-function DesktopSidebar({ pathname, items }) {
-	return <Sidebar pathname={pathname} items={items} />
 }
