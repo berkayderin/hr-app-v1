@@ -10,7 +10,7 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
-import UserList from '@/features/users/components/UserList'
+import UserList from '@/features/users/components'
 
 export default async function UserManagementPage() {
 	const session = await getServerSession(authOptions)
