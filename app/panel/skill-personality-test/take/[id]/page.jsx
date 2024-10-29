@@ -191,7 +191,6 @@ export default function TakeSkillPersonalityTestPage() {
 
 	return (
 		<div className="container mx-auto p-6 flex flex-col md:flex-row md:gap-0 gap-6">
-			{/* Sol taraftaki test ilerlemesi */}
 			<div className="md:w-1/4 mr-6 w-full">
 				<Card>
 					<CardHeader>
@@ -220,7 +219,6 @@ export default function TakeSkillPersonalityTestPage() {
 				</Card>
 			</div>
 
-			{/* Sağ taraftaki ana içerik */}
 			<div className="flex-1">
 				<h1 className="text-3xl font-bold mb-8">
 					{translateSectionTitle(currentSectionData.title)}

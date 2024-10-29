@@ -75,11 +75,6 @@ export function DataTable({ columns, data }) {
 		}
 	})
 
-	console.log('Table instance:', table) // Debug log
-	console.log('Table rows:', table.getRowModel().rows) // Debug log
-	console.log('Filtered rows:', table.getFilteredRowModel().rows) // Debug log
-	console.log('Pagination:', pagination) // Debug log
-
 	const handleFilter = useCallback(
 		(event) => {
 			setGlobalFilter(event.target.value)

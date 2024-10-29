@@ -12,7 +12,6 @@ const bedrockClient = new BedrockRuntimeClient({
 	credentials: {
 		accessKeyId: process.env.AWS_ACCESS_KEY_ID,
 		secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-		// sessionToken: process.env.AWS_SESSION_TOKEN
 	}
 })
 
@@ -95,12 +94,10 @@ export async function POST(request) {
 		)
 		console.log('Parsed JSON response:', jsonResponse)
 
-		// Extract the JSON string from the AI's response
 		const jsonString =
 			jsonResponse.content[0].text.match(/\[[\s\S]*\]/)[0]
 		console.log('Extracted JSON string:', jsonString)
 
-		// Parse the extracted JSON string
 		const questions = JSON.parse(jsonString)
 		console.log('Parsed questions:', questions)
 

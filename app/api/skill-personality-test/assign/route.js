@@ -7,7 +7,6 @@ import prisma from '@/lib/prismadb'
 
 export async function POST(request) {
 	try {
-		// Kullanıcı oturumunun kontrol edilmesi
 		const session = await getServerSession(authOptions)
 		if (!session || session.user.role !== 'admin') {
 			return NextResponse.json(
@@ -31,7 +30,6 @@ export async function POST(request) {
 			)
 		}
 
-		// Testin var olup olmadığının kontrol edilmesi
 		const test = await prisma.skillPersonalityTest.findUnique({
 			where: { id: testId }
 		})
@@ -43,11 +41,9 @@ export async function POST(request) {
 			)
 		}
 
-		// Testin her kullanıcıya atanması
 		const assignments = await Promise.all(
 			userIds.map(async (userId) => {
 				try {
-					// Kullanıcının var olup olmadığının kontrol edilmesi
 					const user = await prisma.user.findUnique({
 						where: { id: userId }
 					})
@@ -56,7 +52,6 @@ export async function POST(request) {
 						return { userId, error: 'Kullanıcı bulunamadı' }
 					}
 
-					// Testin kullanıcıya zaten atanıp atanmadığının kontrol edilmesi
 					const existingAssignment =
 						await prisma.assignedSkillPersonalityTest.findFirst({
 							where: {
@@ -73,7 +68,6 @@ export async function POST(request) {
 						}
 					}
 
-					// Testin atanması
 					const assignedTest =
 						await prisma.assignedSkillPersonalityTest.create({
 							data: {
@@ -94,7 +88,6 @@ export async function POST(request) {
 			})
 		)
 
-		// Başarılı ve başarısız atamaların ayrıştırılması
 		const successfulAssignments = assignments.filter((a) => !a.error)
 		const failedAssignments = assignments.filter((a) => a.error)
 

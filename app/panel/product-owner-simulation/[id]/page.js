@@ -87,7 +87,6 @@ export default function SimulationPage({ params }) {
 			}
 		} catch (error) {
 			console.error('Error in handleTaskComplete:', error)
-			// Kullanıcıya hata mesajı göster
 			alert(`Bir hata oluştu: ${error.message}`)
 		}
 	}

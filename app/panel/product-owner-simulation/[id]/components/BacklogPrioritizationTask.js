@@ -15,7 +15,6 @@ export default function BacklogPrioritizationTask({
 
 	useEffect(() => {
 		if (simulation && simulation.backlogPrioritization) {
-			// Ensure each item has a string id
 			const formattedBacklog = simulation.backlogPrioritization.map(
 				(item, index) => ({
 					...item,

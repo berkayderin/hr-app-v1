@@ -21,7 +21,6 @@ export async function GET(request, { params }) {
 		const { id } = params
 		console.log('Atanmış test getiriliyor, ID:', id)
 
-		// Veritabanından belirtilen ID'ye ve kullanıcıya sahip atanmış testin bulunması
 		const assignedTest =
 			await prisma.assignedSkillPersonalityTest.findUnique({
 				where: {
@@ -38,7 +37,6 @@ export async function GET(request, { params }) {
 			assignedTest ? 'Evet' : 'Hayır'
 		)
 
-		// Test bulunamazsa veya kullanıcıya atanmamışsa hata döndürme
 		if (!assignedTest) {
 			console.log('Test bulunamadı veya kullanıcıya atanmamış')
 			return NextResponse.json(

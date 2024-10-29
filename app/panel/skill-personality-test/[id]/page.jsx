@@ -82,7 +82,7 @@ export default function AdminSkillPersonalityTestDetailPage() {
 			}
 
 			const data = await response.json()
-			setTest(data.test) // API'den gelen test verilerini state'e atalım
+			setTest(data.test)
 			toast.success('Doğru cevap güncellendi')
 		} catch (error) {
 			console.error('Error updating correct answer:', error)

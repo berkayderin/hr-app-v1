@@ -16,7 +16,6 @@ export async function POST(request) {
 
 		const { testId, userIds } = await request.json()
 
-		// Check if the test exists
 		const test = await prisma.englishTest.findUnique({
 			where: { id: testId }
 		})
@@ -28,10 +27,8 @@ export async function POST(request) {
 			)
 		}
 
-		// Process each user
 		const results = await Promise.all(
 			userIds.map(async (userId) => {
-				// Check if the user exists
 				const user = await prisma.user.findUnique({
 					where: { id: userId }
 				})
@@ -40,7 +37,6 @@ export async function POST(request) {
 					return { userId, error: 'User not found' }
 				}
 
-				// Check if the test is already assigned to the user
 				const existingAssignment =
 					await prisma.assignedTest.findFirst({
 						where: {
@@ -57,7 +53,6 @@ export async function POST(request) {
 					}
 				}
 
-				// Assign the test
 				const assignedTest = await prisma.assignedTest.create({
 					data: {
 						userId,

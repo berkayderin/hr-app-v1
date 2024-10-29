@@ -83,7 +83,6 @@ export async function PATCH(request, { params }) {
 		const body = await request.json()
 		const { questionIndex, newCorrectAnswer } = body
 
-		// Önce mevcut testi alalım
 		const currentTest = await prisma.englishTest.findUnique({
 			where: { id: params.id },
 			include: {
@@ -102,11 +101,9 @@ export async function PATCH(request, { params }) {
 			)
 		}
 
-		// Questions array'ini güncelleyelim
 		const updatedQuestions = [...currentTest.questions]
 		updatedQuestions[questionIndex].correctAnswer = newCorrectAnswer
 
-		// Testi güncelleyelim
 		const updatedTest = await prisma.englishTest.update({
 			where: { id: params.id },
 			data: {
@@ -142,12 +139,12 @@ export async function DELETE(request, { params }) {
 			)
 		}
 
-		// Önce bu teste ait tüm atanmış testleri silelim
+		// Tüm atanmış testleri sil
 		await prisma.assignedTest.deleteMany({
 			where: { testId: params.id }
 		})
 
-		// Sonra testin kendisini silelim
+		// Testi sil
 		const deletedTest = await prisma.englishTest.delete({
 			where: { id: params.id }
 		})

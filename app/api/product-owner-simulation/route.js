@@ -32,7 +32,6 @@ export async function POST(request) {
 
 		let taskContent = {}
 
-		// Generate content for all tasks
 		const tasks = [
 			'teamMeeting',
 			'backlogPrioritization',
@@ -105,12 +104,10 @@ export async function POST(request) {
 				new TextDecoder().decode(data.body)
 			)
 
-			// Extract the JSON string from the AI's response
 			const jsonString = jsonResponse.content[0].text.match(
 				/\{[\s\S]*\}|\[[\s\S]*\]/
 			)[0]
 
-			// Parse the extracted JSON string
 			taskContent[currentTask] = JSON.parse(jsonString)
 			console.log(
 				`Generated content for ${currentTask}:`,
@@ -118,7 +115,6 @@ export async function POST(request) {
 			)
 		}
 
-		// Find an existing incomplete simulation or create a new one
 		const existingSimulation =
 			await prisma.productOwnerSimulation.findFirst({
 				where: {
@@ -129,7 +125,6 @@ export async function POST(request) {
 
 		let simulation
 		if (existingSimulation) {
-			// Update the existing simulation
 			simulation = await prisma.productOwnerSimulation.update({
 				where: { id: existingSimulation.id },
 				data: {
@@ -138,7 +133,6 @@ export async function POST(request) {
 				}
 			})
 		} else {
-			// Create a new simulation
 			simulation = await prisma.productOwnerSimulation.create({
 				data: {
 					userId: session.user.id,

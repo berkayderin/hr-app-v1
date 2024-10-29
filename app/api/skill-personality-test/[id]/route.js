@@ -7,7 +7,6 @@ import prisma from '@/lib/prismadb'
 
 export async function GET(request, { params }) {
 	try {
-		// Kullanıcı oturumunun kontrol edilmesi
 		const session = await getServerSession(authOptions)
 		if (!session || session.user.role !== 'admin') {
 			return NextResponse.json(
@@ -17,7 +16,7 @@ export async function GET(request, { params }) {
 		}
 
 		const { id } = params
-		// Veritabanından belirtilen ID'ye sahip testin bulunması
+
 		const test = await prisma.skillPersonalityTest.findUnique({
 			where: { id },
 			include: {
@@ -26,7 +25,7 @@ export async function GET(request, { params }) {
 				},
 				assignedTests: {
 					include: {
-						user: true // user bilgileri de döndürülüyor
+						user: true
 					}
 				}
 			}
@@ -72,7 +71,6 @@ export async function PATCH(request, { params }) {
 		const body = await request.json()
 		const { sectionIndex, questionIndex, newCorrectAnswer } = body
 
-		// Önce mevcut testi alalım
 		const currentTest = await prisma.skillPersonalityTest.findUnique({
 			where: { id: params.id },
 			include: {
@@ -94,13 +92,11 @@ export async function PATCH(request, { params }) {
 			)
 		}
 
-		// sections JSON'ını değiştirelim
 		const updatedSections = [...currentTest.sections]
 		updatedSections[sectionIndex].questions[
 			questionIndex
 		].correctAnswer = newCorrectAnswer
 
-		// Testi güncelleyelim
 		const updatedTest = await prisma.skillPersonalityTest.update({
 			where: { id: params.id },
 			data: {
@@ -118,7 +114,6 @@ export async function PATCH(request, { params }) {
 			}
 		})
 
-		// Yanıtı hazırlayalım
 		const response = {
 			...updatedTest,
 			assignmentCount: updatedTest._count.assignedTests

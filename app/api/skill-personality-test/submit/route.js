@@ -20,7 +20,6 @@ export async function POST(request) {
 		console.log('Received payload:', { testId, answers })
 		console.log('User ID from session:', session.user.id)
 
-		// Test ID'sine göre atanmış testin bulunması
 		let assignedTest =
 			await prisma.assignedSkillPersonalityTest.findFirst({
 				where: {
@@ -33,7 +32,6 @@ export async function POST(request) {
 		console.log('Found assigned test:', assignedTest)
 
 		if (!assignedTest) {
-			// Bu kullanıcı için atanmış tüm testlerin loglanması
 			const allAssignedTests =
 				await prisma.assignedSkillPersonalityTest.findMany({
 					where: { userId: session.user.id },
@@ -47,10 +45,8 @@ export async function POST(request) {
 			)
 		}
 
-		// Test sonuçlarının hesaplanması
 		const results = calculateResults(assignedTest.test, answers)
 
-		// Atanmış testin güncellenmesi
 		const updatedAssignedTest =
 			await prisma.assignedSkillPersonalityTest.update({
 				where: { id: assignedTest.id },
@@ -131,7 +127,6 @@ function calculateResults(test, answers) {
 		personalityScore
 	})
 
-	// Sonuçların JSON formatında hazırlanması
 	return {
 		sectionScores,
 		overallResults: {
@@ -272,7 +267,7 @@ function generateDepartmentCompatibility(
 				sharp: 0.35,
 				personality: 0.1
 			},
-			threshold: 50 // Yeni eşik değeri
+			threshold: 50
 		},
 		{
 			name: 'İş Analizi',
@@ -282,7 +277,7 @@ function generateDepartmentCompatibility(
 				sharp: 0.3,
 				personality: 0.1
 			},
-			threshold: 50 // Yeni eşik değeri
+			threshold: 50
 		},
 		{
 			name: 'Proje Yönetimi',
@@ -292,7 +287,7 @@ function generateDepartmentCompatibility(
 				sharp: 0.2,
 				personality: 0.25
 			},
-			threshold: 50 // Yeni eşik değeri
+			threshold: 50
 		},
 		{
 			name: 'Ürün Yönetimi',
@@ -302,7 +297,7 @@ function generateDepartmentCompatibility(
 				sharp: 0.25,
 				personality: 0.25
 			},
-			threshold: 50 // Yeni eşik değeri
+			threshold: 50
 		}
 	]
 

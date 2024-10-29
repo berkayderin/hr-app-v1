@@ -8,13 +8,11 @@ import {
 } from '@aws-sdk/client-bedrock-runtime'
 import prisma from '@/lib/prismadb'
 
-// AWS Bedrock istemcisinin oluşturulması
 const bedrockClient = new BedrockRuntimeClient({
 	region: process.env.AWS_REGION,
 	credentials: {
 		accessKeyId: process.env.AWS_ACCESS_KEY_ID,
 		secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-		// sessionToken: process.env.AWS_SESSION_TOKEN
 	}
 })
 
@@ -23,7 +21,6 @@ export async function POST(request) {
 		'POST request received at /api/skill-personality-test/create'
 	)
 	try {
-		// Kullanıcı oturumunun ve yetkisinin kontrol edilmesi
 		const session = await getServerSession(authOptions)
 		if (!session || session.user.role !== 'admin') {
 			return NextResponse.json(
@@ -35,7 +32,6 @@ export async function POST(request) {
 		const { title, prompt } = await request.json()
 		console.log('Received data:', { title, prompt })
 
-		// AI için prompt oluşturulması
 		const aiPrompt = `Yetenek ve kişilik testi için sorular oluşturun. ${prompt}
 
 Test 4 bölümden oluşmalıdır:
@@ -85,7 +81,6 @@ Format JSON dizisi olarak aşağıdaki yapıda olmalı:
 Çıktı sadece geçerli bir JSON dizisi olmalı, ek metin veya biçimlendirme içermemeli.`
 
 		console.log('Sending request to Bedrock...')
-		// Bedrock AI modelini çağırmak için giriş verilerinin hazırlanması
 		const input = {
 			modelId: 'anthropic.claude-3-sonnet-20240229-v1:0',
 			contentType: 'application/json',
@@ -102,12 +97,10 @@ Format JSON dizisi olarak aşağıdaki yapıda olmalı:
 			})
 		}
 
-		// Bedrock AI modelinin çağrılması
 		const command = new InvokeModelCommand(input)
 		const data = await bedrockClient.send(command)
 		console.log('Received response from Bedrock')
 
-		// AI yanıtının işlenmesi
 		const jsonResponse = JSON.parse(
 			new TextDecoder().decode(data.body)
 		)
@@ -115,11 +108,9 @@ Format JSON dizisi olarak aşağıdaki yapıda olmalı:
 
 		let questions
 		try {
-			// AI yanıtından JSON çıkarma girişimi
 			const responseText = jsonResponse.content[0].text
 			console.log('Raw response text:', responseText)
 
-			// JSON dizisini bulmak için regex kullanımı
 			const jsonMatch = responseText.match(/\[[\s\S]*?\](?=\s*$)/)
 			if (jsonMatch) {
 				questions = JSON.parse(jsonMatch[0])
@@ -141,7 +132,6 @@ Format JSON dizisi olarak aşağıdaki yapıda olmalı:
 
 		console.log('Parsed questions:', questions)
 
-		// Soruların bölümlere göre düzenlenmesi
 		const sections = [
 			{ title: 'IQ Test', questions: [] },
 			{ title: 'Practical Intelligence', questions: [] },
@@ -164,7 +154,6 @@ Format JSON dizisi olarak aşağıdaki yapıda olmalı:
 
 		console.log('Creating test in database...')
 		console.log('User ID:', session.user.id)
-		// Veritabanında testin oluşturulması
 		const test = await prisma.skillPersonalityTest.create({
 			data: {
 				title,

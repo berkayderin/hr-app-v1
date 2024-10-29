@@ -86,7 +86,6 @@ export async function POST(request, { params }) {
 function calculateScore(simulation, taskData) {
 	let score = 0
 
-	// Team Meeting score calculation
 	if (
 		simulation.teamMeeting &&
 		Array.isArray(simulation.teamMeeting)
@@ -102,7 +101,6 @@ function calculateScore(simulation, taskData) {
 		)
 	}
 
-	// Backlog Prioritization score calculation
 	if (
 		simulation.backlogPrioritization &&
 		Array.isArray(simulation.backlogPrioritization)
@@ -119,7 +117,6 @@ function calculateScore(simulation, taskData) {
 		)
 	}
 
-	// User Story Writing score calculation
 	if (taskData.userStoryWriting) {
 		const story = taskData.userStoryWriting
 		if (story.asA && story.iWantTo && story.soThat) {

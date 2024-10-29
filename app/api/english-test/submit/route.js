@@ -6,10 +6,6 @@ import prisma from '@/lib/prismadb'
 
 export const dynamic = 'force-dynamic'
 
-console.log(
-	'API route file loaded: /api/english-test/submit/route.js'
-)
-
 export async function POST(request) {
 	console.log('POST request received at /api/english-test/submit')
 	try {
@@ -28,14 +24,12 @@ export async function POST(request) {
 		console.log('Received testId:', testId)
 		console.log('Received answers:', JSON.stringify(answers, null, 2))
 
-		// Check if the testId is actually an assignedTestId
 		let assignedTest = await prisma.assignedTest.findUnique({
 			where: { id: testId },
 			include: { test: true }
 		})
 
 		if (!assignedTest) {
-			// If not found by id, try to find by testId and userId
 			assignedTest = await prisma.assignedTest.findFirst({
 				where: {
 					testId: testId,
@@ -56,7 +50,6 @@ export async function POST(request) {
 				`Test not found. TestID/AssignedTestID: ${testId}, UserID: ${session.user.id}`
 			)
 
-			// Check if the test was already completed
 			const completedTest = await prisma.assignedTest.findFirst({
 				where: {
 					OR: [{ id: testId }, { testId: testId }],
@@ -79,14 +72,12 @@ export async function POST(request) {
 				)
 			}
 
-			// If not completed, it's truly not found
 			return NextResponse.json(
 				{ error: 'Test not found', testId, userId: session.user.id },
 				{ status: 404 }
 			)
 		}
 
-		// Check if the test is already completed
 		if (assignedTest.completedAt) {
 			console.log(
 				`Test already completed. AssignedTestID: ${assignedTest.id}, UserID: ${session.user.id}`
@@ -109,7 +100,7 @@ export async function POST(request) {
 			data: {
 				completedAt: new Date(),
 				score: score,
-				answers: answers // Assuming you want to store the answers
+				answers: answers
 			}
 		})
 		console.log(

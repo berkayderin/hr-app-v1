@@ -14,14 +14,12 @@ export async function GET(request, { params }) {
 			)
 		}
 
-		// Belirtilen ID'ye sahip atanmış testin veritabanından alınması
 		const assignedTest =
 			await prisma.assignedSkillPersonalityTest.findUnique({
 				where: { id: params.id },
 				include: { test: true }
 			})
 
-		// Testin bulunamadığı veya kullanıcıya ait olmadığı durumun kontrolü
 		if (!assignedTest || assignedTest.userId !== session.user.id) {
 			return NextResponse.json(
 				{ error: 'Test results not found' },
@@ -29,7 +27,6 @@ export async function GET(request, { params }) {
 			)
 		}
 
-		// Testin henüz tamamlanmadığı durumun kontrolü
 		if (!assignedTest.completedAt) {
 			return NextResponse.json(
 				{ error: 'Test not completed yet' },
