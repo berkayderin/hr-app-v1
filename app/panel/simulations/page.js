@@ -118,6 +118,16 @@ export default function SimulationsPage() {
 		}
 	}
 
+	const completedSimulations = simulations.filter(
+		(s) => s.status === 'Tamamlandı'
+	)
+	const averageScore = Math.round(
+		completedSimulations.reduce(
+			(acc, sim) => acc + (sim.score || 0),
+			0
+		) / (completedSimulations.length || 1)
+	)
+
 	if (loading)
 		return (
 			<div className="flex items-center justify-center h-screen">
@@ -131,16 +141,6 @@ export default function SimulationsPage() {
 				Hata: {error}
 			</div>
 		)
-
-	const completedSimulations = simulations.filter(
-		(s) => s.status === 'Tamamlandı'
-	)
-	const averageScore = Math.round(
-		completedSimulations.reduce(
-			(acc, sim) => acc + (sim.score || 0),
-			0
-		) / (completedSimulations.length || 1)
-	)
 
 	return (
 		<div className="container mx-auto p-6 space-y-6">

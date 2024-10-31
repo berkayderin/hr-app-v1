@@ -157,13 +157,16 @@ export default function TakeEnglishTestPage() {
 		}
 	}
 
-	if (isLoading) {
+	const question = test.questions[currentQuestion]
+	const progress =
+		((currentQuestion + 1) / test.questions.length) * 100
+
+	if (isLoading)
 		return (
-			<div className="flex justify-center items-center h-screen">
-				Yükleniyor...
+			<div className="flex items-center justify-center h-screen">
+				<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
 			</div>
 		)
-	}
 
 	if (isTestCompleted) {
 		return (
@@ -173,11 +176,6 @@ export default function TakeEnglishTestPage() {
 			</div>
 		)
 	}
-
-	const question = test.questions[currentQuestion]
-	const progress =
-		((currentQuestion + 1) / test.questions.length) * 100
-
 	return (
 		<div className="min-h-screen bg-gray-50">
 			<div className="bg-white border-b sticky top-0 z-10 shadow-sm">

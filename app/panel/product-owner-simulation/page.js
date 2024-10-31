@@ -119,12 +119,11 @@ export default function ProductOwnerSimulation({ params }) {
 	const renderTask = () => {
 		if (loading)
 			return (
-				<div className="flex justify-center">
-					<div className="animate-pulse text-blue-500">
-						Yükleniyor...
-					</div>
+				<div className="flex items-center justify-center h-screen">
+					<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
 				</div>
 			)
+
 		if (error)
 			return (
 				<Alert variant="destructive">
