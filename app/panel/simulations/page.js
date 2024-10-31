@@ -37,6 +37,14 @@ import {
 } from '@/components/ui/tooltip'
 import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
+import {
+	Breadcrumb,
+	BreadcrumbItem,
+	BreadcrumbLink,
+	BreadcrumbList,
+	BreadcrumbPage,
+	BreadcrumbSeparator
+} from '@/components/ui/breadcrumb'
 
 export default function SimulationsPage() {
 	const [simulations, setSimulations] = useState([])
@@ -143,9 +151,22 @@ export default function SimulationsPage() {
 		)
 
 	return (
-		<div className="container mx-auto p-6 space-y-6">
-			<Card>
-				<CardHeader>
+		<div className="container mx-auto p-4 space-y-6">
+			<Breadcrumb>
+				<BreadcrumbList>
+					<BreadcrumbItem>
+						<BreadcrumbLink href="/panel">Ana Sayfa</BreadcrumbLink>
+					</BreadcrumbItem>
+					<BreadcrumbSeparator />
+					<BreadcrumbItem>
+						<BreadcrumbPage className="font-medium">
+							Simülasyon Sonuçları
+						</BreadcrumbPage>
+					</BreadcrumbItem>
+				</BreadcrumbList>
+			</Breadcrumb>
+			<div>
+				<div className="mb-6">
 					<div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
 						<div>
 							<CardTitle className="text-2xl font-bold">
@@ -167,9 +188,9 @@ export default function SimulationsPage() {
 							</div>
 						</div>
 					</div>
-				</CardHeader>
+				</div>
 
-				<CardContent>
+				<div>
 					{/* İstatistik Kartları */}
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
 						<Card>
@@ -613,8 +634,8 @@ export default function SimulationsPage() {
 							</CardContent>
 						</Card>
 					</div>
-				</CardContent>
-			</Card>
+				</div>
+			</div>
 		</div>
 	)
 }
