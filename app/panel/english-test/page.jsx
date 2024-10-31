@@ -12,7 +12,7 @@ import {
 	CardContent,
 	CardFooter
 } from '@/components/ui/card'
-import { BookOpen, Plus, BarChart, Trash2 } from 'lucide-react'
+import { BookOpen, Plus, Trash2 } from 'lucide-react'
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -35,7 +35,6 @@ import {
 	DialogTrigger
 } from '@/components/ui/dialog'
 
-// DeleteTestButton bileşeni
 const DeleteTestButton = ({ testId, onDelete }) => {
 	const [open, setOpen] = useState(false)
 

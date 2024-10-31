@@ -1,38 +1,40 @@
 'use client'
-import * as Dialog from '@radix-ui/react-dialog';
-import React, { useState } from 'react';
-import { Button } from '../ui/button';
+
+import { useState } from 'react'
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
 
 function AssignedUsersDialog({ assignedTests }) {
-    const [open, setOpen] = useState(false);
-  
-    return (
-      <Dialog.Root open={open} onOpenChange={setOpen}>
-        <Dialog.Trigger asChild>
-          <Button>
-            Atananları Göster
-          </Button>
-        </Dialog.Trigger>
-        <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black/30" />
-          <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-lg shadow-lg w-auto max-w-md">
-            <Dialog.Title className='font-bold'>Atanan Kullanıcılar</Dialog.Title>
-            <ul className="list-disc pl-5 my-4">
-              {assignedTests.map((assignedTest, index) => (
-                <li key={index} className="mb-1">
-                  {assignedTest.user.email}
-                </li>
-              ))}
-            </ul>
-            <Dialog.Close asChild>
-              <Button>
-                Kapat
-              </Button>
-            </Dialog.Close>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
-    );
-  }
-  
-  export default AssignedUsersDialog;
+	const [open, setOpen] = useState(false)
+
+	return (
+		<Dialog open={open} onOpenChange={setOpen}>
+			<DialogTrigger asChild>
+				<Button>Atananları Göster</Button>
+			</DialogTrigger>
+			<DialogContent className="w-full max-w-md">
+				<DialogHeader>
+					<DialogTitle>Atanan Kullanıcılar</DialogTitle>
+				</DialogHeader>
+				<ul className="list-disc pl-5 my-4">
+					{assignedTests.map((assignedTest, index) => (
+						<li key={index} className="mb-1">
+							{assignedTest.user.email}
+						</li>
+					))}
+				</ul>
+				<div className="mt-4 flex justify-end">
+					<Button onClick={() => setOpen(false)}>Kapat</Button>
+				</div>
+			</DialogContent>
+		</Dialog>
+	)
+}
+
+export default AssignedUsersDialog

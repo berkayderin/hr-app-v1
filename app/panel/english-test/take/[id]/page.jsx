@@ -9,21 +9,9 @@ import {
 	RadioGroupItem
 } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
-import {
-	Card,
-	CardHeader,
-	CardTitle,
-	CardContent,
-	CardFooter
-} from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import {
-	AlertCircle,
-	CheckCircle2,
-	ChevronLeft,
-	ChevronRight,
-	Send
-} from 'lucide-react'
+import { AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function TakeEnglishTestPage() {
