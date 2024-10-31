@@ -21,7 +21,8 @@ import {
 	CheckCircle2,
 	ChevronLeft,
 	ChevronRight,
-	Send
+	Send,
+	Timer
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -190,115 +191,178 @@ export default function TakeSkillPersonalityTestPage() {
 		100
 
 	return (
-		<div className="container mx-auto p-6 flex flex-col md:flex-row md:gap-0 gap-6">
-			<div className="md:w-1/4 mr-6 w-full">
-				<Card>
-					<CardHeader>
-						<CardTitle>Test İlerlemesi</CardTitle>
-					</CardHeader>
-					<CardContent>
-						{test.sections.map((section, index) => (
-							<div
-								key={index}
-								className={`p-2 mb-2 rounded flex justify-between items-center ${
-									index === currentSection
-										? 'bg-primary text-primary-foreground'
-										: 'bg-secondary'
-								}`}
-							>
-								<span>
-									{translateSectionTitle(section.title)} ({index + 1}/
-									{test.sections.length})
-								</span>
-								{completedSections.includes(index) && (
-									<CheckCircle2 className="h-5 w-5 text-green-500" />
-								)}
-							</div>
-						))}
-					</CardContent>
-				</Card>
+		<div className="min-h-screen bg-gray-50">
+			<div className="bg-white border-b sticky top-0 z-10 shadow-sm">
+				<div className="container mx-auto px-4 py-4">
+					<div className="flex items-center justify-between">
+						<h1 className="text-xl font-semibold text-gray-800">
+							{translateSectionTitle(currentSectionData.title)}
+						</h1>
+						<div className="flex items-center gap-2 bg-red-50 text-red-600 px-4 py-2 rounded-full">
+							<Timer className="h-4 w-4" />
+							<span className="font-medium">
+								{formatTimeRemaining(timeRemaining)}
+							</span>
+						</div>
+					</div>
+				</div>
 			</div>
 
-			<div className="flex-1">
-				<h1 className="text-3xl font-bold mb-8">
-					{translateSectionTitle(currentSectionData.title)}
-				</h1>
-				<div className="flex items-center justify-between mb-4">
-					<div>
-						Soru {currentQuestion + 1} /{' '}
-						{currentSectionData.questions.length}
-					</div>
-					<div>Kalan Süre: {formatTimeRemaining(timeRemaining)}</div>
-				</div>
-				<Progress value={progress} className="mb-4" />
-				<Card>
-					<CardContent className="pt-6">
-						<p className="mb-4 text-lg">{question.text}</p>
-						<RadioGroup
-							value={
-								answers[
-									`${currentSection}-${currentQuestion}`
-								]?.toString() || ''
-							}
-							onValueChange={(value) =>
-								setAnswers((prev) => ({
-									...prev,
-									[`${currentSection}-${currentQuestion}`]: value
-								}))
-							}
-							className="space-y-2"
-						>
-							{question.options.map((option, index) => (
-								<div
-									key={index}
-									className="flex items-center space-x-2 p-2 rounded-md border border-input"
-								>
-									<RadioGroupItem
-										value={index.toString()}
-										id={`option-${index}`}
-									/>
-									<Label
-										htmlFor={`option-${index}`}
-										className="flex-grow cursor-pointer"
+			<div className="container mx-auto px-4 py-8">
+				<div className="flex gap-8">
+					<div className="w-72 hidden lg:block">
+						<div className="bg-white rounded-lg shadow-sm p-4 sticky top-24">
+							<h2 className="text-lg font-semibold mb-4">
+								Test Bölümleri
+							</h2>
+							<div className="space-y-2">
+								{test.sections.map((section, index) => (
+									<div
+										key={index}
+										className={`p-3 rounded-lg transition-colors ${
+											index === currentSection
+												? 'bg-primary text-white'
+												: completedSections.includes(index)
+												? 'bg-green-50 text-green-700 border border-green-200'
+												: 'bg-gray-50 text-gray-700'
+										}`}
 									>
-										{option}
-									</Label>
+										<div className="flex items-center justify-between">
+											<span className="font-medium">
+												{translateSectionTitle(section.title)}
+											</span>
+											{completedSections.includes(index) && (
+												<CheckCircle2 className="h-4 w-4" />
+											)}
+										</div>
+									</div>
+								))}
+							</div>
+						</div>
+					</div>
+
+					<div className="flex-1 max-w-3xl">
+						<div className="mb-8">
+							<div className="flex justify-between items-center mb-2 text-sm text-gray-600">
+								<span>Bölüm İlerlemesi</span>
+								<span>
+									{currentQuestion + 1} /{' '}
+									{currentSectionData.questions.length}
+								</span>
+							</div>
+							<Progress value={progress} className="h-2" />
+						</div>
+
+						<Card className="border-none shadow-lg">
+							<CardContent className="p-8">
+								<div className="space-y-8">
+									<div>
+										<span className="inline-block bg-primary/10 text-primary rounded-full px-3 py-1 text-sm font-medium mb-4">
+											Soru {currentQuestion + 1}
+										</span>
+										<h2 className="text-xl font-medium text-gray-900">
+											{question.text}
+										</h2>
+									</div>
+
+									<RadioGroup
+										value={
+											answers[
+												`${currentSection}-${currentQuestion}`
+											]?.toString() || ''
+										}
+										onValueChange={(value) =>
+											setAnswers((prev) => ({
+												...prev,
+												[`${currentSection}-${currentQuestion}`]:
+													value
+											}))
+										}
+										className="space-y-4"
+									>
+										{question.options.map((option, index) => (
+											<div key={index} className="relative">
+												<Label
+													htmlFor={`option-${index}`}
+													className={`flex p-4 cursor-pointer transition-all rounded-lg border ${
+														answers[
+															`${currentSection}-${currentQuestion}`
+														]?.toString() === index.toString()
+															? 'bg-primary/5 border-primary text-primary'
+															: 'bg-white hover:bg-gray-50 border-gray-200'
+													}`}
+												>
+													<RadioGroupItem
+														value={index.toString()}
+														id={`option-${index}`}
+														className="mr-3"
+													/>
+													<span className="text-sm font-medium leading-none">
+														{option}
+													</span>
+												</Label>
+											</div>
+										))}
+									</RadioGroup>
+
+									<div className="flex justify-between pt-6">
+										<Button
+											onClick={() => {
+												if (currentQuestion > 0) {
+													setCurrentQuestion((prev) => prev - 1)
+												} else if (currentSection > 0) {
+													setCurrentSection((prev) => prev - 1)
+													setCurrentQuestion(
+														test.sections[currentSection - 1]
+															.questions.length - 1
+													)
+												}
+											}}
+											disabled={
+												currentSection === 0 && currentQuestion === 0
+											}
+											variant="outline"
+											className="w-32"
+										>
+											<ChevronLeft className="mr-2 h-4 w-4" /> Önceki
+										</Button>
+
+										{currentSection < test.sections.length - 1 ||
+										currentQuestion <
+											currentSectionData.questions.length - 1 ? (
+											<Button
+												onClick={handleNextQuestion}
+												className="w-32"
+											>
+												Sonraki{' '}
+												<ChevronRight className="ml-2 h-4 w-4" />
+											</Button>
+										) : (
+											<Button
+												onClick={handleSubmit}
+												disabled={isSubmitting}
+												className="w-32 bg-green-600 hover:bg-green-700"
+											>
+												{isSubmitting ? (
+													<div className="flex items-center">
+														<span className="animate-spin mr-2">
+															◌
+														</span>
+														Gönderiliyor
+													</div>
+												) : (
+													<>
+														Bitir <Send className="ml-2 h-4 w-4" />
+													</>
+												)}
+											</Button>
+										)}
+									</div>
 								</div>
-							))}
-						</RadioGroup>
-					</CardContent>
-					<CardFooter className="flex justify-between mt-4">
-						<Button
-							onClick={() => {
-								if (currentQuestion > 0) {
-									setCurrentQuestion((prev) => prev - 1)
-								} else if (currentSection > 0) {
-									setCurrentSection((prev) => prev - 1)
-									setCurrentQuestion(
-										test.sections[currentSection - 1].questions
-											.length - 1
-									)
-								}
-							}}
-							disabled={currentSection === 0 && currentQuestion === 0}
-							variant="outline"
-						>
-							<ChevronLeft className="mr-2 h-4 w-4" /> Önceki
-						</Button>
-						{currentSection < test.sections.length - 1 ||
-						currentQuestion <
-							currentSectionData.questions.length - 1 ? (
-							<Button onClick={handleNextQuestion}>
-								Sonraki <ChevronRight className="ml-2 h-4 w-4" />
-							</Button>
-						) : (
-							<Button onClick={handleSubmit} disabled={isSubmitting}>
-								{isSubmitting ? 'Gönderiliyor...' : 'Bitir'}{' '}
-								<Send className="ml-2 h-4 w-4" />
-							</Button>
-						)}
-					</CardFooter>
-				</Card>
+							</CardContent>
+						</Card>
+					</div>
+				</div>
 			</div>
 		</div>
 	)

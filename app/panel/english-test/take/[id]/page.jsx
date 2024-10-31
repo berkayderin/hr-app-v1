@@ -179,76 +179,114 @@ export default function TakeEnglishTestPage() {
 		((currentQuestion + 1) / test.questions.length) * 100
 
 	return (
-		<div className="container mx-auto p-6 max-w-2xl">
-			<h1 className="text-3xl font-bold mb-8 text-center">
-				İngilizce Testim: {test.title}
-			</h1>
-			<div className="flex items-center justify-start gap-1 mb-4 border rounded-md p-2">
-				<AlertCircle className="h-5 w-5" />
-				<div className="font-medium">Kalan Süre:</div>
-				<div>
-					{Math.floor(timeRemaining / 60)}:
-					{(timeRemaining % 60).toString().padStart(2, '0')}
+		<div className="min-h-screen bg-gray-50">
+			<div className="bg-white border-b sticky top-0 z-10 shadow-sm">
+				<div className="container mx-auto px-4 py-4">
+					<div className="flex items-center justify-between">
+						<h1 className="text-xl font-semibold text-gray-800">
+							{test.title}
+						</h1>
+						<div className="flex items-center gap-2 bg-red-50 text-red-600 px-4 py-2 rounded-full">
+							<AlertCircle className="h-4 w-4" />
+							<span className="font-medium">
+								{Math.floor(timeRemaining / 60)}:
+								{(timeRemaining % 60).toString().padStart(2, '0')}
+							</span>
+						</div>
+					</div>
 				</div>
 			</div>
-			<Progress value={progress} className="mb-4" />
-			<Card>
-				<CardHeader>
-					<CardTitle>
-						Soru {currentQuestion + 1} / {test.questions.length}
-					</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<p className="mb-4 text-lg">{question.question}</p>
-					<RadioGroup
-						value={answers[currentQuestion]?.toString() || ''}
-						onValueChange={handleAnswer}
-						className="space-y-2"
-					>
-						{question.options.map((option, index) => (
-							<div
-								key={index}
-								className="flex items-center space-x-2 p-2 rounded-md hover:bg-secondary"
-							>
-								<RadioGroupItem
-									value={index.toString()}
-									id={`option-${index}`}
-								/>
-								<Label
-									htmlFor={`option-${index}`}
-									className="flex-grow cursor-pointer"
+
+			<div className="container mx-auto px-4 py-8">
+				<div className="max-w-3xl mx-auto">
+					<div className="mb-8">
+						<div className="flex justify-between items-center mb-2 text-sm text-gray-600">
+							<span>İlerleme</span>
+							<span>
+								{currentQuestion + 1} / {test.questions.length}
+							</span>
+						</div>
+						<Progress value={progress} className="h-2" />
+					</div>
+
+					<Card className="border-none shadow-lg">
+						<CardContent className="p-8">
+							<div className="space-y-8">
+								<div>
+									<span className="inline-block bg-primary/10 text-primary rounded-full px-3 py-1 text-sm font-medium mb-4">
+										Soru {currentQuestion + 1}
+									</span>
+									<h2 className="text-xl font-medium text-gray-900">
+										{question.question}
+									</h2>
+								</div>
+
+								<RadioGroup
+									value={answers[currentQuestion]?.toString() || ''}
+									onValueChange={handleAnswer}
+									className="space-y-4"
 								>
-									{option}
-								</Label>
+									{question.options.map((option, index) => (
+										<div key={index} className="relative">
+											<Label
+												htmlFor={`option-${index}`}
+												className={`flex p-4 cursor-pointer transition-all rounded-lg border ${
+													answers[currentQuestion]?.toString() ===
+													index.toString()
+														? 'bg-primary/5 border-primary text-primary'
+														: 'bg-white hover:bg-gray-50 border-gray-200'
+												}`}
+											>
+												<RadioGroupItem
+													value={index.toString()}
+													id={`option-${index}`}
+													className="mr-3"
+												/>
+												<span className="text-sm font-medium leading-none">
+													{option}
+												</span>
+											</Label>
+										</div>
+									))}
+								</RadioGroup>
+
+								<div className="flex justify-between pt-6">
+									<Button
+										onClick={handlePrevious}
+										disabled={currentQuestion === 0}
+										variant="outline"
+										className="w-32"
+									>
+										<ChevronLeft className="mr-2 h-4 w-4" /> Önceki
+									</Button>
+
+									{currentQuestion < test.questions.length - 1 ? (
+										<Button onClick={handleNext} className="w-32">
+											Sonraki{' '}
+											<ChevronRight className="ml-2 h-4 w-4" />
+										</Button>
+									) : (
+										<Button
+											onClick={handleSubmit}
+											disabled={isSubmitting || isTestCompleted}
+											className="w-32 bg-green-600 hover:bg-green-700"
+										>
+											{isSubmitting ? (
+												<div className="flex items-center">
+													<span className="animate-spin mr-2">◌</span>
+													Gönderiliyor
+												</div>
+											) : (
+												'Testi Bitir'
+											)}
+										</Button>
+									)}
+								</div>
 							</div>
-						))}
-					</RadioGroup>
-				</CardContent>
-				<CardFooter className="flex justify-between">
-					<Button
-						onClick={handlePrevious}
-						disabled={currentQuestion === 0}
-						variant="outline"
-					>
-						<ChevronLeft className="mr-2 h-4 w-4" /> Önceki
-					</Button>
-					{currentQuestion < test.questions.length - 1 ? (
-						<Button onClick={handleNext}>
-							Sonraki <ChevronRight className="ml-2 h-4 w-4" />
-						</Button>
-					) : (
-						<Button
-							onClick={handleSubmit}
-							disabled={isSubmitting || isTestCompleted}
-							className="mt-4"
-						>
-							{isSubmitting
-								? 'Gönderiliyor...'
-								: 'Testi Bitir ve Gönder'}
-						</Button>
-					)}
-				</CardFooter>
-			</Card>
+						</CardContent>
+					</Card>
+				</div>
+			</div>
 		</div>
 	)
 }
