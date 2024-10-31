@@ -103,6 +103,12 @@ const allSidebarItems = [
 				roles: ['admin']
 			}
 		]
+	},
+	{
+		icon: Brain,
+		label: 'Simülasyon Sonuçları',
+		href: '/panel/simulations',
+		roles: ['admin']
 	}
 ]
 
