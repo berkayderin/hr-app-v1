@@ -87,7 +87,7 @@ export async function POST(request) {
 				accept: 'application/json',
 				body: JSON.stringify({
 					anthropic_version: 'bedrock-2023-05-31',
-					max_tokens: 2000,
+					max_tokens: 20000,
 					messages: [
 						{
 							role: 'user',

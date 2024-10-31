@@ -127,6 +127,14 @@ export default function PanelLayout({ children }) {
 		}
 	}, [status, session])
 
+	if (
+		pathname.includes('/panel/english-test/take/') ||
+		pathname.includes('/panel/skill-personality-test/take/') ||
+		pathname.includes('/panel/product-owner-simulation/')
+	) {
+		return children
+	}
+
 	return (
 		<div className="flex min-h-screen bg-background">
 			<Sheet open={open} onOpenChange={setOpen}>

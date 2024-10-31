@@ -24,6 +24,9 @@ import {
 	Brain
 } from 'lucide-react'
 import { PrismaClient } from '@prisma/client'
+import TestButton from '@/components/TestButton'
+import SkillPersonalityTestButton from '@/components/SkillPersonalityTestButton'
+import ProductOwnerSimulationButton from '@/components/ProductOwnerSimulationButton'
 
 const prisma = new PrismaClient()
 
@@ -185,13 +188,7 @@ export default async function PanelPage() {
 															<span>{assignedTest.test.title}</span>
 														</div>
 													) : (
-														<Link
-															href={`/panel/english-test/take/${assignedTest.id}`}
-															className="text-primary hover:text-primary-dark font-bold flex items-center space-x-2"
-														>
-															<ClipboardList className="h-4 w-4" />
-															<span>{assignedTest.test.title}</span>
-														</Link>
+														<TestButton assignedTest={assignedTest} />
 													)}
 												</div>
 												{assignedTest.completedAt && (
@@ -212,18 +209,6 @@ export default async function PanelPage() {
 									</p>
 								)}
 							</CardContent>
-							{/* <CardFooter>
-								<Button
-									asChild
-									variant="outline"
-									className="w-full hover:bg-primary hover:text-white transition-colors"
-								>
-									<Link href="/panel/english-test">
-										<BookOpen className="mr-2 h-4 w-4" />
-										Tüm İngilizce Testlerini Görüntüle
-									</Link>
-								</Button>
-							</CardFooter> */}
 						</Card>
 
 						<Card className="bg-white">
@@ -253,13 +238,9 @@ export default async function PanelPage() {
 																<span>{assignedTest.test.title}</span>
 															</div>
 														) : (
-															<Link
-																href={`/panel/skill-personality-test/take/${assignedTest.id}`}
-																className="text-primary hover:text-primary-dark font-bold flex items-center space-x-2"
-															>
-																<ClipboardList className="h-4 w-4" />
-																<span>{assignedTest.test.title}</span>
-															</Link>
+															<SkillPersonalityTestButton
+																assignedTest={assignedTest}
+															/>
 														)}
 													</div>
 													{assignedTest.completedAt && (
@@ -281,18 +262,6 @@ export default async function PanelPage() {
 									</p>
 								)}
 							</CardContent>
-							{/* <CardFooter>
-								<Button
-									asChild
-									variant="outline"
-									className="w-full hover:bg-primary hover:text-white transition-colors"
-								>
-									<Link href="/panel/skill-personality-test">
-										<Brain className="mr-2 h-4 w-4" />
-										Tüm Yetenek ve Kişilik Testlerini Görüntüle
-									</Link>
-								</Button>
-							</CardFooter> */}
 						</Card>
 					</>
 				)}
@@ -310,12 +279,7 @@ export default async function PanelPage() {
 						</p>
 					</CardContent>
 					<CardFooter>
-						<Button asChild className="w-full">
-							<Link href="/panel/product-owner-simulation">
-								<Brain className="mr-2 h-4 w-4" />
-								Simülasyonu Başlat
-							</Link>
-						</Button>
+						<ProductOwnerSimulationButton />
 					</CardFooter>
 				</Card>
 			</div>

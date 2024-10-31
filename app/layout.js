@@ -2,7 +2,6 @@ import { Roboto } from 'next/font/google'
 import './globals.css'
 import NextAuthSessionProvider from '@/providers/NextAuthSessionProvider'
 import { ThemeProvider } from '@/components/theme-provider'
-import { ModeToggle } from '@/components/ModeToggle'
 import TansTackProvider from '@/providers/TanStackProvider'
 import { Toaster } from 'sonner'
 const roboto = Roboto({
@@ -24,13 +23,11 @@ export default function RootLayout({ children }) {
 				<TansTackProvider>
 					<ThemeProvider
 						attribute="class"
-						defaultTheme="system"
-						enableSystem
+						defaultTheme="light"
+						enableSystem={false}
+						forcedTheme="light"
 						disableTransitionOnChange
 					>
-						{/* <div className="fixed top-0 right-0 p-4 z-50">
-						<ModeToggle />
-					</div> */}
 						<NextAuthSessionProvider>
 							{children}
 						</NextAuthSessionProvider>
