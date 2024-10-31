@@ -5,7 +5,10 @@ const nextConfig = {
 		NEXTAUTH_URL: process.env.NEXTAUTH_URL
 	},
 	optimizeFonts: true,
-	swcMinify: true
+	swcMinify: true,
+	experimental: {
+		optimizeCss: true
+	}
 }
 
 module.exports = nextConfig
