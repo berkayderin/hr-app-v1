@@ -12,6 +12,10 @@ import {
 	BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
 
+export const metadata = {
+	title: 'Hesap Ayarları'
+}
+
 export default async function AccountSettingsPage() {
 	const session = await getServerSession(authOptions)
 

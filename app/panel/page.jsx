@@ -30,6 +30,10 @@ import ProductOwnerSimulationButton from '@/components/ProductOwnerSimulationBut
 
 const prisma = new PrismaClient()
 
+export const metadata = {
+	title: 'Anasayfa | Yapay Zeka Destekli Aday Değerlendirme Platformu'
+}
+
 export default async function PanelPage() {
 	const session = await getServerSession(authOptions)
 

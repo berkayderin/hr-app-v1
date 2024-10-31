@@ -12,6 +12,10 @@ import {
 } from '@/components/ui/breadcrumb'
 import UserList from '@/features/users/components'
 
+export const metadata = {
+	title: 'Kullanıcı Yönetimi'
+}
+
 export default async function UserManagementPage() {
 	const session = await getServerSession(authOptions)
 
