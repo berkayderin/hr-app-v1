@@ -30,7 +30,6 @@ import {
 	BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
 import { Separator } from '@/components/ui/separator'
-import AssignedUsersDialog from '@/components/Dialogs/AssignedUsersDialog'
 import { toast } from 'sonner'
 import {
 	Select,
@@ -40,6 +39,7 @@ import {
 	SelectValue
 } from '@/components/ui/select'
 import { useSession } from 'next-auth/react'
+import AssignedUsersDialog from '@/components/AssignedUsersDialog'
 
 export default function EnglishTestDetailPage() {
 	const params = useParams()
@@ -205,7 +205,6 @@ export default function EnglishTestDetailPage() {
 
 							<AssignedUsersDialog
 								assignedTests={test.assignedTests}
-								user={JSON.stringify(test.assignedTests)}
 							/>
 						</div>
 					)}

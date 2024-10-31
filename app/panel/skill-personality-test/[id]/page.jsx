@@ -38,8 +38,7 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
-import { Separator } from '@/components/ui/separator'
-import AssignedUsersDialog from '@/components/Dialogs/AssignedUsersDialog'
+import AssignedUsersDialog from '@/components/AssignedUsersDialog'
 
 export default function AdminSkillPersonalityTestDetailPage() {
 	const params = useParams()
@@ -204,10 +203,7 @@ export default function AdminSkillPersonalityTestDetailPage() {
 							</Link>
 						</Button>
 
-						<AssignedUsersDialog
-							assignedTests={test.assignedTests}
-							user={JSON.stringify(test.assignedTests)}
-						/>
+						<AssignedUsersDialog assignedTests={test.assignedTests} />
 					</div>
 				</CardContent>
 			</Card>

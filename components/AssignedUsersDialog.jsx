@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 
-function AssignedUsersDialog({ assignedTests }) {
+export default function AssignedUsersDialog({ assignedTests }) {
 	const [open, setOpen] = useState(false)
 
 	return (
@@ -36,5 +36,3 @@ function AssignedUsersDialog({ assignedTests }) {
 		</Dialog>
 	)
 }
-
-export default AssignedUsersDialog
