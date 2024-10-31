@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-	font-family: Arial, sans-serif;
-}
-
 @layer utilities {
 	.text-balance {
 		text-wrap: balance;
@@ -69,13 +65,29 @@ body {
 		--chart-4: 280 65% 60%;
 		--chart-5: 340 75% 55%;
 	}
-}
 
-@layer base {
 	* {
 		@apply border-border;
 	}
+
+	html {
+		font-family: var(--font-inter);
+	}
+
 	body {
-		@apply bg-background text-foreground;
+		@apply bg-background text-foreground font-sans;
+		font-family: var(--font-inter) !important;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6,
+	p,
+	span,
+	div {
+		font-family: var(--font-inter) !important;
 	}
 }

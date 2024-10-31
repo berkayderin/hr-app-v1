@@ -1,14 +1,17 @@
-import { Roboto } from 'next/font/google'
 import './globals.css'
 import NextAuthSessionProvider from '@/providers/NextAuthSessionProvider'
 import { ThemeProvider } from '@/components/theme-provider'
 import TansTackProvider from '@/providers/TanStackProvider'
 import { Toaster } from 'sonner'
-const roboto = Roboto({
-	weight: ['300', '400', '500', '700'],
-	subsets: ['latin'],
+import { Inter } from 'next/font/google'
+
+const inter = Inter({
+	subsets: ['latin', 'latin-ext'],
 	display: 'swap',
-	variable: '--font-roboto'
+	weight: ['300', '400', '500', '600', '700'],
+	variable: '--font-inter',
+	preload: true,
+	fallback: ['system-ui', 'arial']
 })
 
 export const metadata = {
@@ -19,7 +22,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
 	return (
 		<html lang="en">
-			<body className={`${roboto.variable} font-sans antialiased`}>
+			<body className={`${inter.variable} font-sans antialiased`}>
 				<TansTackProvider>
 					<ThemeProvider
 						attribute="class"
