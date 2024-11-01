@@ -12,7 +12,7 @@ const inter = Inter({
 })
 
 export const metadata = {
-	title: 'Evaltalent - AI',
+	title: 'EvalTalent - AI',
 	description: 'Yeni Nesil Aday Değerlendirme Platformu'
 }
 

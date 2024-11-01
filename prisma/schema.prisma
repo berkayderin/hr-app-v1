@@ -19,6 +19,7 @@ model User {
   assignedTests                 AssignedTest[]
   assignedSkillPersonalityTests AssignedSkillPersonalityTest[]
   ProductOwnerSimulation        ProductOwnerSimulation[]
+  cvEvaluations                 CvEvaluation[]
 }
 
 model EnglishTest {
@@ -79,4 +80,15 @@ model ProductOwnerSimulation {
   userStoryWriting      Json?
   score                 Int?
   user                  User      @relation(fields: [userId], references: [id])
+}
+
+model CvEvaluation {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  cvData     Json
+  evaluation Json
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }

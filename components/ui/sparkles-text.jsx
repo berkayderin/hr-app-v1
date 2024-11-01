@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 
 const SparklesText = ({
 	text,
-	colors = { first: '#9E7AFF', second: '#FE8BBB' },
+	colors = { first: '#2563eb', second: '#e11d48' },
 	className,
 	sparklesCount = 10,
 	...props

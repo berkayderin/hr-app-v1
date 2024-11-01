@@ -21,6 +21,7 @@ import {
 	BarChart,
 	BookOpen,
 	Brain,
+	BrainCog,
 	ChevronDown,
 	ChevronRight,
 	ClipboardList,
@@ -38,12 +39,6 @@ const allSidebarItems = [
 		icon: Home,
 		label: 'Ana Sayfa',
 		href: '/panel',
-		roles: ['user', 'admin']
-	},
-	{
-		icon: User,
-		label: 'Hesap Ayarları',
-		href: '/panel/account',
 		roles: ['user', 'admin']
 	},
 	{
@@ -109,6 +104,18 @@ const allSidebarItems = [
 		label: 'Simülasyon Sonuçları',
 		href: '/panel/simulations',
 		roles: ['admin']
+	},
+	{
+		icon: BrainCog,
+		label: 'CV Değerlendir',
+		href: '/panel/cv',
+		roles: ['admin', 'user']
+	},
+	{
+		icon: User,
+		label: 'Hesap Ayarları',
+		href: '/panel/account',
+		roles: ['user', 'admin']
 	}
 ]
 
