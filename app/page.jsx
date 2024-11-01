@@ -1,3 +1,5 @@
+'use client'
+
 import {
 	Brain,
 	Globe,
@@ -25,11 +27,7 @@ import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import { RainbowButton } from '@/components/ui/rainbow-button'
 import SparklesText from '@/components/ui/sparkles-text'
-
-export const metadata = {
-	title: 'Evaltalent - AI ',
-	description: 'Yeni Nesil Aday Değerlendirme Platformu'
-}
+import { Element, ScrollLink } from 'react-scroll'
 
 const FEATURES = [
 	{
@@ -153,14 +151,47 @@ const FAQS = [
 	}
 ]
 
+const SECTIONS = [
+	{ id: 'hero', label: 'Ana Sayfa' },
+	{ id: 'how-it-works', label: 'Nasıl Çalışır' },
+	{ id: 'features', label: 'Özellikler' },
+	{ id: 'interview-types', label: 'Mülakat Türleri' },
+	{ id: 'faq', label: 'SSS' },
+	{ id: 'cta', label: 'İletişim' }
+]
+
 export default function PanelHomePage() {
 	return (
 		<div className="flex flex-col items-center justify-center min-h-screen">
+			<div className="fixed right-6 top-1/2 -translate-y-1/2 z-50 hidden md:block">
+				<div className="flex flex-col gap-4">
+					{SECTIONS.map((section) => (
+						<ScrollLink
+							key={section.id}
+							to={section.id}
+							spy={true}
+							smooth={true}
+							duration={5000}
+							offset={-50}
+							className="group cursor-pointer flex items-center gap-2"
+						>
+							<span className="opacity-0 group-hover:opacity-100 transition-opacity bg-white text-sm text-blue-600 py-1 px-2 rounded-md shadow-sm whitespace-nowrap">
+								{section.label}
+							</span>
+							<div className="h-3 w-3 rounded-full bg-blue-200 group-hover:bg-blue-600 transition-all duration-300" />
+						</ScrollLink>
+					))}
+				</div>
+			</div>
+
 			<SparklesText
 				text="EvalTalent"
 				className="text-7xl font-bold my-10"
 			/>
-			<section className="relative flex size-fit items-center justify-center overflow-hidden rounded-lg border bg-background p-20">
+			<Element
+				name="hero"
+				className="relative flex size-fit items-center justify-center overflow-hidden rounded-lg border bg-background p-20"
+			>
 				<div className="flex flex-col items-center justify-center space-y-6 text-center">
 					<div className="bg-blue-100 text-blue-600 px-4 py-1 rounded-full text-base z-10 whitespace-pre-wrap text-center font-medium tracking-tighter">
 						YAPAY ZEKA DESTEKLİ
@@ -195,8 +226,12 @@ export default function PanelHomePage() {
 						'[mask-image:linear-gradient(to_bottom_right,white,transparent,transparent)] '
 					)}
 				/>
-			</section>
-			<section className="max-w-5xl mx-auto py-5 md:py-20">
+			</Element>
+
+			<Element
+				name="how-it-works"
+				className="max-w-5xl mx-auto py-5 md:py-20 w-full"
+			>
 				<div className="container px-4 md:px-6">
 					<div className="flex flex-col items-center space-y-4 text-center">
 						<h2 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-5xl">
@@ -223,8 +258,12 @@ export default function PanelHomePage() {
 						))}
 					</div>
 				</div>
-			</section>
-			<section className="max-w-5xl mx-auto py-5 md:py-20">
+			</Element>
+
+			<Element
+				name="features"
+				className="max-w-5xl mx-auto py-5 md:py-20 w-full"
+			>
 				<div className="container px-4 md:px-0">
 					<h2 className="text-4xl font-bold text-center mb-12">
 						Platform Özellikleri
@@ -246,9 +285,12 @@ export default function PanelHomePage() {
 						))}
 					</div>
 				</div>
-			</section>
+			</Element>
 
-			<section className="max-w-5xl mx-auto py-5 md:py-10">
+			<Element
+				name="interview-types"
+				className="max-w-5xl mx-auto py-5 md:py-10 w-full"
+			>
 				<div className="container px-4 md:px-0">
 					<div className="text-center mb-10">
 						<h2 className="text-4xl font-bold mb-4">
@@ -282,9 +324,12 @@ export default function PanelHomePage() {
 						))}
 					</div>
 				</div>
-			</section>
+			</Element>
 
-			<section className="max-w-5xl mx-auto w-full py-5 md:py-10">
+			<Element
+				name="faq"
+				className="max-w-5xl mx-auto w-full py-5 md:py-10"
+			>
 				<Card className="border-none">
 					<CardHeader className="text-center space-y-2 py-6">
 						<CardTitle className="text-base text-blue-700 font-mono font-medium tracking-tight">
@@ -317,9 +362,12 @@ export default function PanelHomePage() {
 						</Accordion>
 					</CardContent>
 				</Card>
-			</section>
+			</Element>
 
-			<section className="max-w-5xl mx-auto w-full py-5 bg-blue-700 text-white rounded-xl mb-10">
+			<Element
+				name="cta"
+				className="max-w-5xl mx-auto w-full py-5 bg-blue-700 text-white rounded-xl mb-10"
+			>
 				<div className="px-4 md:px-6">
 					<div className="flex flex-col md:flex-row items-center justify-between">
 						<div className="mb-8 md:mb-0 text-center md:text-left">
@@ -339,7 +387,7 @@ export default function PanelHomePage() {
 						</div>
 					</div>
 				</div>
-			</section>
+			</Element>
 		</div>
 	)
 }

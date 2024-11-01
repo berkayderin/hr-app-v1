@@ -1,9 +1,6 @@
 import './globals.css'
-import NextAuthSessionProvider from '@/providers/NextAuthSessionProvider'
-import { ThemeProvider } from '@/components/theme-provider'
-import TansTackProvider from '@/providers/TanStackProvider'
-import { Toaster } from 'sonner'
 import { Inter } from 'next/font/google'
+import RootLayoutClient from './RootLayoutClient'
 
 const inter = Inter({
 	subsets: ['latin', 'latin-ext'],
@@ -15,28 +12,17 @@ const inter = Inter({
 })
 
 export const metadata = {
-	title: 'HR App',
+	title: 'Evaltalent - AI',
 	description: 'Yeni Nesil Aday Değerlendirme Platformu'
 }
 
 export default function RootLayout({ children }) {
 	return (
-		<html lang="en">
-			<body className={`${inter.variable} font-sans antialiased`}>
-				<TansTackProvider>
-					<ThemeProvider
-						attribute="class"
-						defaultTheme="light"
-						enableSystem={false}
-						forcedTheme="light"
-						disableTransitionOnChange
-					>
-						<NextAuthSessionProvider>
-							{children}
-						</NextAuthSessionProvider>
-						<Toaster />
-					</ThemeProvider>
-				</TansTackProvider>
+		<html lang="en" className="h-full">
+			<body
+				className={`${inter.variable} font-sans antialiased h-full`}
+			>
+				<RootLayoutClient>{children}</RootLayoutClient>
 			</body>
 		</html>
 	)
