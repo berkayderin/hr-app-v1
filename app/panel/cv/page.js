@@ -218,7 +218,7 @@ const CVPage = () => {
 			<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 				<Card className="p-6">
 					<CardHeader>
-						<CardTitle>CV Oluştur</CardTitle>
+						<CardTitle>CV Değerlendir</CardTitle>
 						<CardDescription>
 							Detaylı bir değerlendirme için tüm alanları doldurunuz
 						</CardDescription>
