@@ -36,10 +36,6 @@ export async function GET(request, { params }) {
 
 		return NextResponse.json(assignedTest.results)
 	} catch (error) {
-		console.error(
-			'Error in /api/skill-personality-test/results/[id]:',
-			error
-		)
 		return NextResponse.json(
 			{
 				error: 'Failed to fetch test results',

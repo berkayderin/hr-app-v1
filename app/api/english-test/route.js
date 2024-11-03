@@ -53,7 +53,6 @@ export async function GET() {
 			userRole: session.user.role
 		})
 	} catch (error) {
-		console.error('Error fetching tests:', error)
 		return NextResponse.json(
 			{ error: 'Internal server error', details: error.message },
 			{ status: 500 }

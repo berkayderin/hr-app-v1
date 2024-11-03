@@ -40,7 +40,6 @@ export async function POST(req) {
 			headers: { 'Content-Type': 'application/json' }
 		})
 	} catch (error) {
-		console.error('Kayıt olurken hata oluştu: ', error)
 		return new NextResponse('Internal Error', { status: 500 })
 	}
 }

@@ -79,10 +79,6 @@ export async function POST(request) {
 
 					return { userId, assignedTest }
 				} catch (error) {
-					console.error(
-						`${userId} ID'li kullanıcıya test atanırken hata oluştu:`,
-						error
-					)
 					return { userId, error: 'Test atama başarısız oldu' }
 				}
 			})
@@ -97,11 +93,6 @@ export async function POST(request) {
 			message: `${successfulAssignments.length} kullanıcıya başarıyla atandı. ${failedAssignments.length} kullanıcı için başarısız oldu.`
 		})
 	} catch (error) {
-		console.error(
-			'/api/skill-personality-test/assign işleminde hata:',
-			error
-		)
-
 		return NextResponse.json(
 			{ error: 'Test atama başarısız oldu', details: error.message },
 			{ status: 500 }

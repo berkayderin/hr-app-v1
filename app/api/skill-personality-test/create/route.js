@@ -17,9 +17,6 @@ const bedrockClient = new BedrockRuntimeClient({
 })
 
 export async function POST(request) {
-	console.log(
-		'POST request received at /api/skill-personality-test/create'
-	)
 	try {
 		const session = await getServerSession(authOptions)
 		if (!session || session.user.role !== 'admin') {
@@ -30,7 +27,6 @@ export async function POST(request) {
 		}
 
 		const { title, prompt } = await request.json()
-		console.log('Received data:', { title, prompt })
 
 		const aiPrompt = `Yetenek ve kişilik testi için sorular oluşturun. ${prompt}
 
@@ -80,7 +76,6 @@ Format JSON dizisi olarak aşağıdaki yapıda olmalı:
 
 Çıktı sadece geçerli bir JSON dizisi olmalı, ek metin veya biçimlendirme içermemeli.`
 
-		console.log('Sending request to Bedrock...')
 		const input = {
 			modelId: 'anthropic.claude-3-sonnet-20240229-v1:0',
 			contentType: 'application/json',
@@ -99,17 +94,14 @@ Format JSON dizisi olarak aşağıdaki yapıda olmalı:
 
 		const command = new InvokeModelCommand(input)
 		const data = await bedrockClient.send(command)
-		console.log('Received response from Bedrock')
 
 		const jsonResponse = JSON.parse(
 			new TextDecoder().decode(data.body)
 		)
-		console.log('Parsed JSON response:', jsonResponse)
 
 		let questions
 		try {
 			const responseText = jsonResponse.content[0].text
-			console.log('Raw response text:', responseText)
 
 			const jsonMatch = responseText.match(/\[[\s\S]*?\](?=\s*$)/)
 			if (jsonMatch) {
@@ -118,8 +110,6 @@ Format JSON dizisi olarak aşağıdaki yapıda olmalı:
 				throw new Error('No valid JSON array found in the response')
 			}
 		} catch (error) {
-			console.error('Error parsing AI response:', error)
-			console.log('Full AI response:', jsonResponse.content[0].text)
 			return NextResponse.json(
 				{
 					error: 'Failed to parse AI response',
@@ -129,8 +119,6 @@ Format JSON dizisi olarak aşağıdaki yapıda olmalı:
 				{ status: 500 }
 			)
 		}
-
-		console.log('Parsed questions:', questions)
 
 		const sections = [
 			{ title: 'IQ Test', questions: [] },
@@ -152,8 +140,6 @@ Format JSON dizisi olarak aşağıdaki yapıda olmalı:
 			}
 		})
 
-		console.log('Creating test in database...')
-		console.log('User ID:', session.user.id)
 		const test = await prisma.skillPersonalityTest.create({
 			data: {
 				title,
@@ -161,14 +147,9 @@ Format JSON dizisi olarak aşağıdaki yapıda olmalı:
 				createdBy: session.user.id
 			}
 		})
-		console.log('Test created:', test)
 
 		return NextResponse.json(test)
 	} catch (error) {
-		console.error(
-			'Error in /api/skill-personality-test/create:',
-			error
-		)
 		return NextResponse.json(
 			{
 				error: 'Failed to create test',

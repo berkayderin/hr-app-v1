@@ -32,7 +32,6 @@ export async function GET() {
 
 		return NextResponse.json(cvList)
 	} catch (error) {
-		console.error('CV list fetch error:', error)
 		return NextResponse.json(
 			{ error: 'Internal server error' },
 			{ status: 500 }

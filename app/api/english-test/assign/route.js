@@ -61,12 +61,6 @@ export async function POST(request) {
 					}
 				})
 
-				console.log(
-					'Test atandı. Test ID:',
-					testId,
-					'Kullanıcı ID:',
-					userId
-				)
 				return { userId, success: true, assignedTest }
 			})
 		)
@@ -81,7 +75,6 @@ export async function POST(request) {
 			failedAssignments
 		})
 	} catch (error) {
-		console.error('Error in /api/english-test/assign:', error)
 		return NextResponse.json(
 			{ error: 'Failed to assign test', details: error.message },
 			{ status: 500 }

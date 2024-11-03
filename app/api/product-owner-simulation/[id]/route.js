@@ -37,10 +37,6 @@ export async function GET(request, { params }) {
 
 		return NextResponse.json(simulation)
 	} catch (error) {
-		console.error(
-			'Error in GET /api/product-owner-simulation/[id]:',
-			error
-		)
 		return NextResponse.json(
 			{ error: 'Internal server error', details: error.message },
 			{ status: 500 }

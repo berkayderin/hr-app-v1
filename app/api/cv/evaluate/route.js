@@ -118,13 +118,11 @@ export async function POST(request) {
 				}
 			})
 		} catch (dbError) {
-			console.error('Database error:', dbError)
+			console.log('Database error:', dbError)
 		}
 
 		return NextResponse.json(evaluation)
 	} catch (error) {
-		console.error('CV evaluation error:', error)
-
 		let errorMessage = 'CV değerlendirme sırasında bir hata oluştu'
 		let statusCode = 500
 

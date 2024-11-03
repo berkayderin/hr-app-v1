@@ -7,10 +7,8 @@ import prisma from '@/lib/prismadb'
 export const dynamic = 'force-dynamic'
 
 export async function GET(request, { params }) {
-	console.log('API route called with params:', params)
 	try {
 		const session = await getServerSession(authOptions)
-		console.log('Session:', session)
 		if (!session) {
 			return NextResponse.json(
 				{ error: 'Unauthorized' },
@@ -26,15 +24,7 @@ export async function GET(request, { params }) {
 			include: { test: true }
 		})
 
-		console.log('AssignedTest ID:', params.id)
-		console.log('User ID:', session.user.id)
-		console.log('Query result:', assignedTest)
-		console.log('Database query result:', assignedTest)
-
 		if (!assignedTest) {
-			console.log(
-				`AssignedTest not found. ID: ${params.id}, User ID: ${session.user.id}`
-			)
 			return NextResponse.json(
 				{
 					error: 'Test not found or not assigned',
@@ -51,7 +41,6 @@ export async function GET(request, { params }) {
 
 		return NextResponse.json(testData)
 	} catch (error) {
-		console.error('Error in /api/english-test/assigned/[id]:', error)
 		return NextResponse.json(
 			{ error: 'Internal server error', details: error.message },
 			{ status: 500 }

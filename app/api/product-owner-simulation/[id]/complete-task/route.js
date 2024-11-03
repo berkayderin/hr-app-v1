@@ -72,10 +72,6 @@ export async function POST(request, { params }) {
 
 		return NextResponse.json({ ...updatedSimulation, completed })
 	} catch (error) {
-		console.error(
-			'Error in POST /api/product-owner-simulation/[id]/complete-task:',
-			error
-		)
 		return NextResponse.json(
 			{ error: 'Internal server error', details: error.message },
 			{ status: 500 }

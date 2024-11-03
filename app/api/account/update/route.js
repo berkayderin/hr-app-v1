@@ -61,7 +61,6 @@ export async function POST(req) {
 			message: 'Account updated successfully'
 		})
 	} catch (error) {
-		console.error('Error updating account:', error)
 		return NextResponse.json(
 			{ message: `Internal Server Error: ${error.message}` },
 			{ status: 500 }

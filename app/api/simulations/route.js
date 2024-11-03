@@ -67,7 +67,6 @@ export async function GET(request) {
 
 		return NextResponse.json(formattedSimulations)
 	} catch (error) {
-		console.error('Error in simulations API:', error)
 		return NextResponse.json(
 			{ error: 'Internal server error', details: error.message },
 			{ status: 500 }

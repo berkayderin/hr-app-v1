@@ -11,7 +11,6 @@ export async function GET(request, { params }) {
 	try {
 		const session = await getServerSession(authOptions)
 		if (!session) {
-			console.log('Yetkisiz erişim girişimi')
 			return NextResponse.json(
 				{ error: 'Yetkisiz erişim' },
 				{ status: 401 }
@@ -19,7 +18,6 @@ export async function GET(request, { params }) {
 		}
 
 		const { id } = params
-		console.log('Atanmış test getiriliyor, ID:', id)
 
 		const assignedTest =
 			await prisma.assignedSkillPersonalityTest.findUnique({
@@ -31,11 +29,6 @@ export async function GET(request, { params }) {
 					test: true
 				}
 			})
-
-		console.log(
-			'Atanmış test bulundu:',
-			assignedTest ? 'Evet' : 'Hayır'
-		)
 
 		if (!assignedTest) {
 			console.log('Test bulunamadı veya kullanıcıya atanmamış')
@@ -51,14 +44,8 @@ export async function GET(request, { params }) {
 			timeRemaining: assignedTest.timeRemaining
 		}
 
-		console.log('Yanıt gönderiliyor:', response)
-
 		return NextResponse.json(response)
 	} catch (error) {
-		console.error(
-			'GET /api/skill-personality-test/assigned/[id] işleminde hata:',
-			error
-		)
 		return NextResponse.json(
 			{ error: 'Test getirme başarısız', details: error.message },
 			{ status: 500 }

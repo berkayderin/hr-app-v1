@@ -29,7 +29,6 @@ export async function POST(req) {
 
 		return NextResponse.json(updatedUser)
 	} catch (error) {
-		console.error('Error updating user role:', error)
 		return new NextResponse('Internal Server Error', { status: 500 })
 	}
 }

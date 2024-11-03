@@ -17,8 +17,6 @@ export async function POST(request) {
 		}
 
 		const { testId, answers } = await request.json()
-		console.log('Received payload:', { testId, answers })
-		console.log('User ID from session:', session.user.id)
 
 		let assignedTest =
 			await prisma.assignedSkillPersonalityTest.findFirst({
@@ -29,15 +27,12 @@ export async function POST(request) {
 				include: { test: true }
 			})
 
-		console.log('Found assigned test:', assignedTest)
-
 		if (!assignedTest) {
 			const allAssignedTests =
 				await prisma.assignedSkillPersonalityTest.findMany({
 					where: { userId: session.user.id },
 					select: { id: true, testId: true }
 				})
-			console.log('All assigned tests for user:', allAssignedTests)
 
 			return NextResponse.json(
 				{ error: 'Test not found or already completed' },
@@ -57,14 +52,8 @@ export async function POST(request) {
 				}
 			})
 
-		console.log('Updated assigned test:', updatedAssignedTest)
-
 		return NextResponse.json(updatedAssignedTest)
 	} catch (error) {
-		console.error(
-			'Error in /api/skill-personality-test/submit:',
-			error
-		)
 		return NextResponse.json(
 			{ error: 'Failed to submit test', details: error.message },
 			{ status: 500 }

@@ -28,7 +28,6 @@ export async function POST(request) {
 		}
 
 		const { task } = await request.json()
-		console.log('Received task:', task)
 
 		let taskContent = {}
 
@@ -79,8 +78,6 @@ export async function POST(request) {
 					)
 			}
 
-			console.log(`Generating content for ${currentTask}`)
-
 			const input = {
 				modelId: 'anthropic.claude-3-sonnet-20240229-v1:0',
 				contentType: 'application/json',
@@ -109,10 +106,6 @@ export async function POST(request) {
 			)[0]
 
 			taskContent[currentTask] = JSON.parse(jsonString)
-			console.log(
-				`Generated content for ${currentTask}:`,
-				taskContent[currentTask]
-			)
 		}
 
 		const existingSimulation =
@@ -142,10 +135,8 @@ export async function POST(request) {
 			})
 		}
 
-		console.log('Final simulation data:', simulation)
 		return NextResponse.json(simulation)
 	} catch (error) {
-		console.error('Error in /api/product-owner-simulation:', error)
 		return NextResponse.json(
 			{
 				error: 'Failed to create simulation task',

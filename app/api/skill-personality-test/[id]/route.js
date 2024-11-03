@@ -45,11 +45,6 @@ export async function GET(request, { params }) {
 			}
 		})
 	} catch (error) {
-		console.error(
-			'GET /api/skill-personality-test/[id] işleminde hata:',
-			error
-		)
-
 		return NextResponse.json(
 			{ error: 'Test getirme başarısız', details: error.message },
 			{ status: 500 }
@@ -152,10 +147,6 @@ export async function DELETE(request, { params }) {
 
 		return NextResponse.json(deletedTest)
 	} catch (error) {
-		console.error(
-			'Error in DELETE /api/skill-personality-test/[id]:',
-			error
-		)
 		return NextResponse.json(
 			{ error: 'Failed to delete test', details: error.message },
 			{ status: 500 }

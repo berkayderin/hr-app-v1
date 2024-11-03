@@ -7,13 +7,11 @@ import prisma from '@/lib/prismadb'
 export const dynamic = 'force-dynamic'
 
 export async function POST(request) {
-	console.log('POST request received at /api/english-test/submit')
 	try {
 		const session = await getServerSession(authOptions)
 		console.log('Session:', JSON.stringify(session, null, 2))
 
 		if (!session) {
-			console.log('Unauthorized: No session found')
 			return NextResponse.json(
 				{ error: 'Unauthorized' },
 				{ status: 401 }
@@ -21,8 +19,6 @@ export async function POST(request) {
 		}
 
 		const { testId, answers } = await request.json()
-		console.log('Received testId:', testId)
-		console.log('Received answers:', JSON.stringify(answers, null, 2))
 
 		let assignedTest = await prisma.assignedTest.findUnique({
 			where: { id: testId },
@@ -40,16 +36,7 @@ export async function POST(request) {
 			})
 		}
 
-		console.log(
-			'Found assignedTest:',
-			JSON.stringify(assignedTest, null, 2)
-		)
-
 		if (!assignedTest) {
-			console.log(
-				`Test not found. TestID/AssignedTestID: ${testId}, UserID: ${session.user.id}`
-			)
-
 			const completedTest = await prisma.assignedTest.findFirst({
 				where: {
 					OR: [{ id: testId }, { testId: testId }],
@@ -59,9 +46,6 @@ export async function POST(request) {
 			})
 
 			if (completedTest) {
-				console.log(
-					`Test already completed. TestID/AssignedTestID: ${testId}, UserID: ${session.user.id}`
-				)
 				return NextResponse.json(
 					{
 						error: 'Test already completed',
@@ -79,9 +63,6 @@ export async function POST(request) {
 		}
 
 		if (assignedTest.completedAt) {
-			console.log(
-				`Test already completed. AssignedTestID: ${assignedTest.id}, UserID: ${session.user.id}`
-			)
 			return NextResponse.json(
 				{
 					error: 'Test already completed',
@@ -93,7 +74,6 @@ export async function POST(request) {
 		}
 
 		const score = calculateScore(assignedTest.test.questions, answers)
-		console.log('Calculated score:', score)
 
 		const updatedAssignedTest = await prisma.assignedTest.update({
 			where: { id: assignedTest.id },
@@ -103,14 +83,9 @@ export async function POST(request) {
 				answers: answers
 			}
 		})
-		console.log(
-			'Updated assignedTest:',
-			JSON.stringify(updatedAssignedTest, null, 2)
-		)
 
 		return NextResponse.json(updatedAssignedTest)
 	} catch (error) {
-		console.error('Error in /api/english-test/submit:', error)
 		return NextResponse.json(
 			{ error: 'Failed to submit test', details: error.message },
 			{ status: 500 }
