@@ -127,10 +127,8 @@ export default function ViewEnglishTestsPage() {
 
 	if (loading) {
 		return (
-			<div className="container mx-auto p-4">
-				<div className="flex justify-center items-center min-h-[200px]">
-					<p className="text-muted-foreground">Yükleniyor...</p>
-				</div>
+			<div className="flex items-center justify-center h-screen">
+				<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
 			</div>
 		)
 	}

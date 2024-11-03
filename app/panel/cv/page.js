@@ -48,7 +48,6 @@ import { Progress } from '@/components/ui/progress'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 
-// Turkish field labels mapping
 const fieldLabels = {
 	fullName: 'Ad Soyad',
 	email: 'E-posta',
@@ -63,7 +62,6 @@ const fieldLabels = {
 	summary: 'Özet'
 }
 
-// Turkish placeholders mapping
 const fieldPlaceholders = {
 	fullName: 'Ad ve soyadınızı giriniz',
 	email: 'E-posta adresinizi giriniz',
@@ -139,14 +137,6 @@ const CVPage = () => {
 		return (filledFields.length / fields.length) * 100
 	}, [])
 
-	useEffect(() => {
-		const subscription = form.watch((values) => {
-			setProgress(calculateProgress(values))
-		})
-		return () => subscription.unsubscribe()
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [form.watch, calculateProgress])
-
 	const onSubmit = async (data) => {
 		setLoading(true)
 		try {
@@ -200,6 +190,13 @@ const CVPage = () => {
 		}
 	}
 
+	useEffect(() => {
+		const subscription = form.watch((values) => {
+			setProgress(calculateProgress(values))
+		})
+		return () => subscription.unsubscribe()
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [form.watch, calculateProgress])
 	return (
 		<div className="container mx-auto py-8 px-4">
 			<div className="mb-8">
@@ -303,10 +300,9 @@ const CVPage = () => {
 										disabled={loading}
 									>
 										{loading ? (
-											<>
-												<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-												Değerlendiriliyor
-											</>
+											<div className="flex items-center justify-center h-screen">
+												<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+											</div>
 										) : (
 											<>
 												<Send className="mr-2 h-4 w-4" />
