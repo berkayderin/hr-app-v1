@@ -3,6 +3,14 @@
 
 import { Button } from '@/components/ui/button'
 import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle
+} from '@/components/ui/dialog'
+import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
@@ -10,9 +18,10 @@ import {
 	DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { format } from 'date-fns'
-import { Eye, MoreHorizontal } from 'lucide-react'
+import { Eye, MoreHorizontal, Trash2 } from 'lucide-react'
+import { useState } from 'react'
 
-export const createColumns = (handleViewDetails) => [
+export const createColumns = (handleViewDetails, handleDelete) => [
 	{
 		accessorFn: (row) => row.cvData.fullName,
 		header: 'Ad Soyad',
@@ -59,20 +68,62 @@ export const createColumns = (handleViewDetails) => [
 		id: 'actions',
 		cell: ({ row }) => {
 			const cv = row.original
+			// eslint-disable-next-line react-hooks/rules-of-hooks
+			const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
 			return (
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="ghost" size="icon">
-							<MoreHorizontal className="h-4 w-4" />
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end">
-						<DropdownMenuItem onClick={() => handleViewDetails(cv)}>
-							Detayları Görüntüle
-						</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
+				<>
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button variant="ghost" size="icon">
+								<MoreHorizontal className="h-4 w-4" />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end">
+							<DropdownMenuItem onClick={() => handleViewDetails(cv)}>
+								Detayları Görüntüle
+							</DropdownMenuItem>
+							<DropdownMenuItem
+								onClick={() => setShowDeleteDialog(true)}
+								className="text-destructive focus:text-destructive"
+							>
+								Sil
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+
+					<Dialog
+						open={showDeleteDialog}
+						onOpenChange={setShowDeleteDialog}
+					>
+						<DialogContent>
+							<DialogHeader>
+								<DialogTitle>CV'yi Sil</DialogTitle>
+								<DialogDescription>
+									Bu CV'yi silmek istediğinizden emin misiniz? Bu
+									işlem geri alınamaz.
+								</DialogDescription>
+							</DialogHeader>
+							<DialogFooter className="gap-2 sm:gap-0">
+								<Button
+									variant="outline"
+									onClick={() => setShowDeleteDialog(false)}
+								>
+									İptal
+								</Button>
+								<Button
+									variant="destructive"
+									onClick={() => {
+										handleDelete(cv.id)
+										setShowDeleteDialog(false)
+									}}
+								>
+									Sil
+								</Button>
+							</DialogFooter>
+						</DialogContent>
+					</Dialog>
+				</>
 			)
 		}
 	}

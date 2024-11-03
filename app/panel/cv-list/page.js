@@ -51,6 +51,7 @@ import {
 } from '@tanstack/react-table'
 import { Input } from '@/components/ui/input'
 import { createColumns } from './components/columns'
+import { toast } from 'sonner'
 
 const CvListTable = () => {
 	const [sorting, setSorting] = useState([])
@@ -61,16 +62,33 @@ const CvListTable = () => {
 	const [selectedCv, setSelectedCv] = useState(null)
 	const [openDialog, setOpenDialog] = useState(false)
 
-	console.log('data:', data)
-
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const handleViewDetails = (cv) => {
 		setSelectedCv(cv)
 		setOpenDialog(true)
 	}
 
+	const handleDelete = async (id) => {
+		try {
+			const response = await fetch(`/api/cv/${id}`, {
+				method: 'DELETE'
+			})
+
+			if (!response.ok) {
+				throw new Error('Silme işlemi başarısız')
+			}
+
+			setData((prevData) => prevData.filter((cv) => cv.id !== id))
+
+			toast.success('CV başarıyla silindi')
+		} catch (error) {
+			console.error('CV delete error:', error)
+			toast.error('CV silinirken bir hata oluştu')
+		}
+	}
+
 	const columns = useMemo(
-		() => createColumns(handleViewDetails),
+		() => createColumns(handleViewDetails, handleDelete),
 		[handleViewDetails]
 	)
 
