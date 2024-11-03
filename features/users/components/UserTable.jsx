@@ -58,7 +58,6 @@ export function UserTable({ table, columns }) {
 											</div>
 										)}
 
-										{/* Hover durumunda alt çizgi */}
 										{header.column.getCanSort() && (
 											<div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-200" />
 										)}

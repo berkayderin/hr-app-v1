@@ -36,8 +36,6 @@ const UserList = () => {
 	}
 
 	const handleDeleteUser = async (userId) => {
-		if (!confirm('Kullanıcıyı silmek istediğinize emin misiniz?'))
-			return
 		try {
 			await deleteUser.mutateAsync(userId)
 			toast.success('Kullanıcı silindi.')

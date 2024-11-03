@@ -1,10 +1,9 @@
 // features/users/components/UserList/UserTableActions.jsx
+import { useState } from 'react'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
 	DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
@@ -15,13 +14,25 @@ import {
 	SelectTrigger,
 	SelectValue
 } from '@/components/ui/select'
-import { MoreHorizontal, Trash2, UserCheck } from 'lucide-react'
+import { MoreHorizontal, UserCheck } from 'lucide-react'
+import { DeleteUserDialog } from './DeleteUserDialog'
 
 export function UserTableActions({
 	user,
 	onRoleChange,
 	onDeleteUser
 }) {
+	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+
+	const handleDeleteClick = () => {
+		setIsDeleteDialogOpen(true)
+	}
+
+	const handleDeleteConfirm = () => {
+		onDeleteUser(user.id)
+		setIsDeleteDialogOpen(false)
+	}
+
 	return (
 		<div className="flex items-center gap-2">
 			<Select
@@ -63,14 +74,20 @@ export function UserTableActions({
 				</DropdownMenuTrigger>
 				<DropdownMenuContent align="end">
 					<DropdownMenuItem
-						onClick={() => onDeleteUser(user.id)}
+						onClick={handleDeleteClick}
 						className="text-destructive focus:text-destructive"
 					>
-						<Trash2 className="mr-2 h-4 w-4" />
 						<span>Sil</span>
 					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>
+
+			<DeleteUserDialog
+				isOpen={isDeleteDialogOpen}
+				onClose={() => setIsDeleteDialogOpen(false)}
+				onConfirm={handleDeleteConfirm}
+				userName={user.email}
+			/>
 		</div>
 	)
 }
