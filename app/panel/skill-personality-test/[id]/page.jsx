@@ -38,7 +38,7 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
-import AssignedUsersDialog from '@/components/AssignedUsersDialog'
+import AssignedUsersDialog from '@/components/main/AssignedUsersDialog'
 
 export default function AdminSkillPersonalityTestDetailPage() {
 	const params = useParams()

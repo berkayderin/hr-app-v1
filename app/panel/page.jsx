@@ -11,22 +11,18 @@ import {
 	CardFooter
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import LogoutButton from '@/components/main/LogoutButton'
 import {
-	Users,
 	ClipboardList,
-	Settings,
 	BookOpen,
 	PenTool,
-	User,
 	BarChart,
 	CheckCircle,
 	Brain
 } from 'lucide-react'
 import { PrismaClient } from '@prisma/client'
-import TestButton from '@/components/TestButton'
-import SkillPersonalityTestButton from '@/components/SkillPersonalityTestButton'
-import ProductOwnerSimulationButton from '@/components/ProductOwnerSimulationButton'
+import TestButton from '@/components/main/TestButton'
+import SkillPersonalityTestButton from '@/components/main/SkillPersonalityTestButton'
+import ProductOwnerSimulationButton from '@/components/main/ProductOwnerSimulationButton'
 
 const prisma = new PrismaClient()
 

@@ -46,7 +46,6 @@ export function UserTable({ table, columns }) {
 													header.getContext()
 											  )}
 
-										{/* Sıralama ikonları */}
 										{header.column.getCanSort() && (
 											<div className="flex items-center">
 												{header.column.getIsSorted() === 'desc' ? (

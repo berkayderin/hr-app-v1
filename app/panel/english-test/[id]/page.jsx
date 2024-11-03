@@ -39,7 +39,7 @@ import {
 	SelectValue
 } from '@/components/ui/select'
 import { useSession } from 'next-auth/react'
-import AssignedUsersDialog from '@/components/AssignedUsersDialog'
+import AssignedUsersDialog from '@/components/main/AssignedUsersDialog'
 
 export default function EnglishTestDetailPage() {
 	const params = useParams()
