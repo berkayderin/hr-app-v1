@@ -166,7 +166,7 @@ export default function PanelLayout({ children }) {
 					<Sidebar isMobile setOpen={setOpen} items={sidebarItems} />
 				</SheetContent>
 			</Sheet>
-			<aside className="hidden w-[250px] flex-col border-r lg:flex">
+			<aside className="hidden w-[250px] flex-col border-r border-rose-200 bg-white lg:flex">
 				<Sidebar items={sidebarItems} />
 			</aside>
 			<main className="flex-1 overflow-y-auto p-8">{children}</main>
@@ -190,8 +190,8 @@ function SidebarItem({ item, onClick, isNested = false }) {
 						className={cn(
 							'w-full justify-between',
 							active
-								? 'bg-primary/10 text-primary'
-								: 'text-muted-foreground hover:bg-primary/5',
+								? 'bg-rose-100 text-rose-700'
+								: 'text-gray-600 hover:bg-rose-50 hover:text-rose-600',
 							isNested && 'pl-8'
 						)}
 					>
@@ -225,10 +225,8 @@ function SidebarItem({ item, onClick, isNested = false }) {
 			href={item.href}
 			onClick={onClick}
 			className={cn(
-				'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:bg-primary/5',
-				active
-					? 'bg-primary/10 text-primary'
-					: 'text-muted-foreground',
+				'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:bg-rose-50 hover:text-rose-600',
+				active ? 'bg-rose-100 text-rose-700' : 'text-gray-600',
 				isNested && 'pl-8'
 			)}
 		>
@@ -241,10 +239,10 @@ function SidebarItem({ item, onClick, isNested = false }) {
 function Sidebar({ isMobile = false, setOpen, items }) {
 	return (
 		<div className="flex h-full flex-col">
-			<div className="flex h-14 items-center border-b px-4">
+			<div className="flex h-14 items-center border-b border-rose-200 px-4">
 				<Link
 					href="/"
-					className="font-bold text-2xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary"
+					className="font-bold text-2xl bg-clip-text text-transparent bg-gradient-to-r from-rose-500 to-rose-700"
 				>
 					EVALTALENT
 				</Link>
@@ -262,10 +260,10 @@ function Sidebar({ isMobile = false, setOpen, items }) {
 				</div>
 			</ScrollArea>
 
-			<div className="border-t p-4">
+			<div className="border-t border-rose-200 p-4">
 				<Button
 					variant="outline"
-					className="w-full justify-start"
+					className="w-full justify-start text-rose-600 hover:bg-rose-50 hover:text-rose-700"
 					onClick={() => signOut()}
 				>
 					<LogOut className="mr-2 h-4 w-4" />
