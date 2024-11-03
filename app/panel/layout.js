@@ -25,6 +25,7 @@ import {
 	ChevronDown,
 	ChevronRight,
 	ClipboardList,
+	FileText,
 	Home,
 	LogOut,
 	Menu,
@@ -103,6 +104,12 @@ const allSidebarItems = [
 		icon: Brain,
 		label: 'Simülasyon Sonuçları',
 		href: '/panel/simulations',
+		roles: ['admin']
+	},
+	{
+		icon: FileText,
+		label: 'CV Değerlendirmeleri',
+		href: '/panel/cv-list',
 		roles: ['admin']
 	},
 	{
