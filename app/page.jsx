@@ -1,14 +1,6 @@
 'use client'
 
-import {
-	Brain,
-	Globe,
-	Puzzle,
-	Target,
-	Sparkles,
-	Rocket,
-	CheckCircle2
-} from 'lucide-react'
+import { CheckCircle2 } from 'lucide-react'
 import {
 	Accordion,
 	AccordionContent,
@@ -28,137 +20,14 @@ import Link from 'next/link'
 import { RainbowButton } from '@/components/ui/rainbow-button'
 import SparklesText from '@/components/ui/sparkles-text'
 import { Element, ScrollLink } from 'react-scroll'
-
-const FEATURES = [
-	{
-		icon: <Brain className="h-6 w-6" />,
-		title: 'AI Destekli Değerlendirme',
-		description:
-			'Claude 3 yapay zeka modeli ile güçlendirilmiş objektif değerlendirme sistemi ve detaylı yetkinlik analizleri.'
-	},
-	{
-		icon: <Globe className="h-6 w-6" />,
-		title: 'İngilizce Dil Değerlendirmesi',
-		description:
-			'Profesyonel iş hayatına yönelik, kapsamlı İngilizce seviye tespit ve değerlendirme sistemi.'
-	},
-	{
-		icon: <Puzzle className="h-6 w-6" />,
-		title: 'Kişilik ve Yetenek Analizi',
-		description:
-			'IQ, pratik zeka ve kişilik özelliklerini ölçen, departman uyumluluğunu analiz eden bilimsel testler.'
-	},
-	{
-		icon: <Target className="h-6 w-6" />,
-		title: 'Product Owner Simülasyonu',
-		description:
-			'Gerçek iş senaryolarıyla Product Owner rolü için interaktif değerlendirme ve yetkinlik ölçümü.'
-	},
-	{
-		icon: <Sparkles className="h-6 w-6" />,
-		title: 'Detaylı Raporlama',
-		description:
-			'Yapay zeka destekli kapsamlı analiz raporları, departman uyumluluk önerileri ve gelişim tavsiyeleri.'
-	},
-	{
-		icon: <Rocket className="h-6 w-6" />,
-		title: 'Hızlı ve Güvenilir',
-		description:
-			'20 dakikalık testler ile hızlı değerlendirme, %95+ güvenilirlik oranıyla doğru sonuçlar.'
-	}
-]
-
-const STEPS = [
-	{
-		title: '1. Test Oluşturma',
-		description:
-			'Yapay zeka ile role özel testler ve simülasyonlar oluşturun',
-		icon: <Target className="h-10 w-10 text-rose-900" />,
-		bgColor: 'bg-rose-50'
-	},
-	{
-		title: '2. Aday Değerlendirme',
-		description:
-			'Adaylara özel testler atayın ve süreçlerini takip edin',
-		icon: <Brain className="h-10 w-10 text-rose-900" />,
-		bgColor: 'bg-rose-50'
-	},
-	{
-		title: '3. Sonuç Analizi',
-		description: 'AI destekli detaylı raporlar ve öneriler alın',
-		icon: <Sparkles className="h-10 w-10 text-rose-900" />,
-		bgColor: 'bg-rose-50'
-	}
-]
-
-const INTERVIEW_TYPES = [
-	{
-		title: 'İngilizce Yetkinlik',
-		icon: <Globe className="h-6 w-6" />,
-		description:
-			'İş hayatına yönelik kapsamlı İngilizce değerlendirmesi',
-		features: [
-			'15 sorudan oluşan kapsamlı test',
-			'İş İngilizcesi odaklı sorular',
-			'20 dakikalık süre limiti',
-			'Anında sonuç analizi'
-		]
-	},
-	{
-		title: 'Kişilik ve Yetenek',
-		icon: <Brain className="h-6 w-6" />,
-		description: 'Çok boyutlu yetenek ve kişilik analizi',
-		features: [
-			'IQ ve pratik zeka ölçümü',
-			'Kişilik profili analizi',
-			'Departman uyumluluk raporu',
-			'Gelişim önerileri'
-		]
-	},
-	{
-		title: 'Product Owner Simülasyonu',
-		icon: <Target className="h-6 w-6" />,
-		description: 'Gerçek senaryolarla Product Owner değerlendirmesi',
-		features: [
-			'Takım toplantısı simülasyonu',
-			'Backlog önceliklendirme',
-			'User Story yazımı',
-			'Kapsamlı performans analizi'
-		]
-	}
-]
-
-const FAQS = [
-	{
-		question: 'Yapay zeka değerlendirme sistemi nasıl çalışır?',
-		answer:
-			'Claude 3 AI modeli, adayların test performanslarını, simülasyon sonuçlarını ve yanıtlarını analiz ederek objektif bir değerlendirme sunar. Sistem, teknik bilgi, problem çözme yeteneği ve kişilik özelliklerini kapsamlı şekilde değerlendirir.'
-	},
-	{
-		question: 'Testler ne kadar süre alıyor?',
-		answer:
-			'Her bir test modülü ortalama 20 dakika sürmektedir. İngilizce testi 15 soru, yetenek testi 20 soru ve Product Owner simülasyonu 3 aşamadan oluşmaktadır.'
-	},
-	{
-		question: 'Test sonuçları ne kadar güvenilir?',
-		answer:
-			'Testlerimiz, endüstri standardı metodolojiler ve yapay zeka destekli analiz sistemleri ile %95 üzeri güvenilirlik oranına sahiptir. Her soru ve senaryo, uzman ekibimiz tarafından titizlikle hazırlanmaktadır.'
-	},
-	{
-		question: 'Sonuçları nasıl değerlendirebilirim?',
-		answer:
-			'Her test sonrasında AI destekli detaylı bir rapor sunulur. Bu rapor, adayın performansını, güçlü yönlerini, gelişim alanlarını ve departman uyumluluk önerilerini içerir.'
-	}
-]
-
-const SECTIONS = [
-	{ id: 'hero', label: 'Ana Sayfa' },
-	{ id: 'how-it-works', label: 'Nasıl Çalışır' },
-	{ id: 'features', label: 'Özellikler' },
-	{ id: 'interview-types', label: 'Mülakat Türleri' },
-	{ id: 'faq', label: 'SSS' },
-	{ id: 'cta', label: 'İletişim' }
-]
+import { BentoCard, BentoGrid } from '@/components/ui/bento-grid'
+import {
+	FAQS,
+	FEATURES,
+	INTERVIEW_TYPES,
+	SECTIONS,
+	STEPS
+} from '@/features/home/data'
 
 export default function PanelHomePage() {
 	return (
@@ -268,22 +137,11 @@ export default function PanelHomePage() {
 					<h2 className="text-4xl font-bold text-center mb-12">
 						Platform Özellikleri
 					</h2>
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-						{FEATURES.map((feature, index) => (
-							<Card
-								key={`feature-${feature.title}-${index}`}
-								className="p-6 space-y-4"
-							>
-								<div className="text-rose-700">{feature.icon}</div>
-								<h3 className="text-2xl font-bold">
-									{feature.title}
-								</h3>
-								<p className="text-base text-gray-500">
-									{feature.description}
-								</p>
-							</Card>
+					<BentoGrid className="lg:grid-rows-3">
+						{FEATURES.map((feature) => (
+							<BentoCard key={feature.name} {...feature} />
 						))}
-					</div>
+					</BentoGrid>
 				</div>
 			</Element>
 
@@ -300,7 +158,7 @@ export default function PanelHomePage() {
 							Kapsamlı değerlendirme araçlarımızla tanışın
 						</p>
 					</div>
-					<div className="grid md:grid-cols-3 gap-8">
+					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
 						{INTERVIEW_TYPES.map((type, index) => (
 							<Card key={index} className="p-6">
 								<div className="flex items-center mb-4">
