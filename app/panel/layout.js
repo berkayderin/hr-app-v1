@@ -113,12 +113,6 @@ const allSidebarItems = [
 		roles: ['admin']
 	},
 	{
-		icon: BrainCog,
-		label: 'CV Değerlendir',
-		href: '/panel/cv',
-		roles: ['admin', 'user']
-	},
-	{
 		icon: User,
 		label: 'Hesap Ayarları',
 		href: '/panel/account',

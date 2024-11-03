@@ -17,7 +17,9 @@ import {
 	PenTool,
 	BarChart,
 	CheckCircle,
-	Brain
+	Brain,
+	FileText,
+	BrainCog
 } from 'lucide-react'
 import { PrismaClient } from '@prisma/client'
 import TestButton from '@/components/main/TestButton'
@@ -157,6 +159,42 @@ export default async function PanelPage() {
 								</Button>
 							</CardFooter>
 						</Card>
+						<Card className="bg-white">
+							<CardHeader className="space-y-1">
+								<CardTitle className="text-2xl flex items-center space-x-2">
+									<BrainCog className="h-6 w-6 text-primary" />
+									<span>CV Değerlendirme</span>
+								</CardTitle>
+							</CardHeader>
+							<CardContent>
+								<p className="text-sm text-muted-foreground">
+									Yapay zeka destekli CV değerlendirme sistemi ile
+									adayların CV'lerini analiz edin ve değerlendirin.
+								</p>
+							</CardContent>
+							<CardFooter className="flex flex-col space-y-2">
+								<Button
+									asChild
+									variant="outline"
+									className="w-full hover:bg-primary hover:text-white transition-colors"
+								>
+									<Link href="/panel/cv">
+										<FileText className="mr-2 h-4 w-4" />
+										CV Değerlendirme Sistemine Git
+									</Link>
+								</Button>
+								<Button
+									asChild
+									variant="outline"
+									className="w-full hover:bg-primary hover:text-white transition-colors"
+								>
+									<Link href="/panel/cv-list">
+										<BarChart className="mr-2 h-4 w-4" />
+										Değerlendirme Sonuçlarını Görüntüle
+									</Link>
+								</Button>
+							</CardFooter>
+						</Card>
 					</>
 				)}
 
@@ -262,6 +300,33 @@ export default async function PanelPage() {
 									</p>
 								)}
 							</CardContent>
+						</Card>
+
+						<Card className="bg-white">
+							<CardHeader className="space-y-1">
+								<CardTitle className="text-2xl flex items-center space-x-2">
+									<BrainCog className="h-6 w-6 text-primary" />
+									<span>CV Değerlendirme</span>
+								</CardTitle>
+							</CardHeader>
+							<CardContent>
+								<p className="text-sm text-muted-foreground">
+									CV'nizi oluşturun ve yapay zeka destekli sistemimiz
+									ile değerlendirme alın.
+								</p>
+							</CardContent>
+							<CardFooter>
+								<Button
+									asChild
+									variant="outline"
+									className="w-full hover:bg-primary hover:text-white transition-colors"
+								>
+									<Link href="/panel/cv">
+										<FileText className="mr-2 h-4 w-4" />
+										CV'ni Değerlendir
+									</Link>
+								</Button>
+							</CardFooter>
 						</Card>
 					</>
 				)}

@@ -127,7 +127,7 @@ const CvListTable = () => {
 
 	return (
 		<div className="space-y-4">
-			<Card>
+			<div>
 				<CardHeader>
 					<CardTitle className="text-2xl">
 						CV Değerlendirmeleri
@@ -220,7 +220,7 @@ const CvListTable = () => {
 						</div>
 					</div>
 				</CardContent>
-			</Card>
+			</div>
 
 			<Dialog open={openDialog} onOpenChange={setOpenDialog}>
 				<DialogContent className="max-w-4xl max-h-[90vh]">
