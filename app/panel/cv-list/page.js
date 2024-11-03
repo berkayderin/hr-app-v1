@@ -82,7 +82,6 @@ const CvListTable = () => {
 
 			toast.success('CV başarıyla silindi')
 		} catch (error) {
-			console.error('CV delete error:', error)
 			toast.error('CV silinirken bir hata oluştu')
 		}
 	}

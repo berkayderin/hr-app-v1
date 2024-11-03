@@ -43,7 +43,6 @@ export default function AssignEnglishTestPage({ params }) {
 					data.map((user) => ({ value: user.id, label: user.email }))
 				)
 			} catch (error) {
-				console.error('Kullanıcıları yükleme hatası:', error)
 				toast.error(
 					'Kullanıcılar yüklenemedi. Lütfen tekrar deneyin.'
 				)
@@ -73,7 +72,6 @@ export default function AssignEnglishTestPage({ params }) {
 			toast.success('Test başarıyla atandı')
 			router.push('/panel/english-test')
 		} catch (error) {
-			console.error('Test atama hatası:', error)
 			toast.error('Test atanırken bir hata oluştu')
 		} finally {
 			setIsLoading(false)

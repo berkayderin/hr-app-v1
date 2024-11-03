@@ -152,7 +152,6 @@ const CVPage = () => {
 			setAiEvaluation(result)
 			setCurrentTab('evaluation')
 		} catch (error) {
-			console.error('CV evaluation error:', error)
 			setAiEvaluation({
 				generalFeedback:
 					'Değerlendirme sırasında bir hata oluştu. Lütfen tekrar deneyin.',

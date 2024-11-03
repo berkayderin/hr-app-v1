@@ -35,8 +35,6 @@ export default async function ViewTestResultsPage() {
 		orderBy: { completedAt: 'desc' }
 	})
 
-	console.log('Fetched results:', results)
-
 	return (
 		<div className="container mx-auto p-6">
 			<Breadcrumb className="mb-4">

@@ -43,7 +43,6 @@ export default function TakeEnglishTestPage() {
 				setTimeout(() => router.push('/panel/'), 3000) // 3 saniye sonra yönlendir
 			}
 		} catch (error) {
-			console.error('Test yükleme hatası:', error)
 			toast.error('Test yüklenirken bir hata oluştu')
 			router.push('/panel/')
 		} finally {
@@ -132,7 +131,6 @@ export default function TakeEnglishTestPage() {
 			setIsTestCompleted(true)
 			setTimeout(() => router.push('/panel/'), 3000) // 3 saniye sonra yönlendir
 		} catch (error) {
-			console.error('Test gönderme hatası:', error)
 			if (error.message === 'Test already completed') {
 				toast.info('Bu test daha önce tamamlanmış')
 				setIsTestCompleted(true)

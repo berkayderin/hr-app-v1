@@ -37,11 +37,9 @@ export default function ProductOwnerSimulation({ params }) {
 			const res = await fetch(`/api/product-owner-simulation/${id}`)
 			if (!res.ok) throw new Error('Failed to fetch simulation')
 			const data = await res.json()
-			console.log('Fetched simulation data:', data)
 			setSimulation(data)
 			setCurrentTask(data.currentTask)
 		} catch (error) {
-			console.error('Error fetching simulation:', error)
 			setError('Failed to load simulation. Please try again.')
 		} finally {
 			setLoading(false)
@@ -59,12 +57,10 @@ export default function ProductOwnerSimulation({ params }) {
 			})
 			if (!res.ok) throw new Error('Failed to start simulation')
 			const data = await res.json()
-			console.log('Started simulation:', data)
 			setSimulation(data)
 			setCurrentTask('teamMeeting')
 			router.push(`/panel/product-owner-simulation/${data.id}`)
 		} catch (error) {
-			console.error('Error starting simulation:', error)
 			setError('Failed to start simulation. Please try again.')
 		} finally {
 			setLoading(false)
@@ -73,7 +69,6 @@ export default function ProductOwnerSimulation({ params }) {
 
 	const handleTaskComplete = async (taskData) => {
 		if (!simulation || !simulation.id) {
-			console.error('No active simulation found')
 			setError(
 				'No active simulation found. Please start a new simulation.'
 			)
@@ -93,7 +88,6 @@ export default function ProductOwnerSimulation({ params }) {
 			)
 			if (!res.ok) throw new Error('Failed to complete task')
 			const data = await res.json()
-			console.log('Completed task:', data)
 			if (data.completed) {
 				router.push(
 					`/panel/product-owner-simulation/${simulation.id}/results`
@@ -103,7 +97,6 @@ export default function ProductOwnerSimulation({ params }) {
 				setCurrentTask(data.currentTask)
 			}
 		} catch (error) {
-			console.error('Error completing task:', error)
 			setError('Failed to complete task. Please try again.')
 		} finally {
 			setLoading(false)

@@ -58,7 +58,6 @@ export default function EnglishTestDetailPage() {
 				const data = await response.json()
 				setTest(data)
 			} catch (error) {
-				console.error('Error fetching test:', error)
 				toast.error('Test yüklenirken bir hata oluştu')
 				router.push('/panel/english-test')
 			} finally {
@@ -96,7 +95,6 @@ export default function EnglishTestDetailPage() {
 			setTest(updatedTest)
 			toast.success('Doğru cevap güncellendi')
 		} catch (error) {
-			console.error('Error updating correct answer:', error)
 			toast.error('Doğru cevap güncellenirken bir hata oluştu')
 		}
 	}

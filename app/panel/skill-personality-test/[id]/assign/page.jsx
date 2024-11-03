@@ -55,7 +55,6 @@ export default function AssignSkillPersonalityTestPage() {
 					}))
 				)
 			} catch (error) {
-				console.error('Error fetching data:', error)
 				toast.error('Veri yüklenemedi. Lütfen tekrar deneyin.')
 				router.push('/panel/skill-personality-test')
 			} finally {
@@ -109,7 +108,6 @@ export default function AssignSkillPersonalityTestPage() {
 
 			router.push(`/panel/skill-personality-test/${params.id}`)
 		} catch (error) {
-			console.error('Test atama hatası:', error)
 			toast.error('Test atanırken bir hata oluştu')
 		} finally {
 			setIsLoading(false)

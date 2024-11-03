@@ -81,7 +81,6 @@ export default function CreateSkillPersonalityTestPage() {
 			toast.success('Test başarıyla oluşturuldu')
 			router.push('/panel/skill-personality-test')
 		} catch (error) {
-			console.error('Test creation error:', error)
 			toast.error('Test oluşturulurken bir hata oluştu')
 		}
 	}

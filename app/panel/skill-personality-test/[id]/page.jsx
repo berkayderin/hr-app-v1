@@ -84,7 +84,6 @@ export default function AdminSkillPersonalityTestDetailPage() {
 			setTest(data.test)
 			toast.success('Doğru cevap güncellendi')
 		} catch (error) {
-			console.error('Error updating correct answer:', error)
 			toast.error('Doğru cevap güncellenirken bir hata oluştu')
 		}
 	}
@@ -102,7 +101,6 @@ export default function AdminSkillPersonalityTestDetailPage() {
 				const data = await response.json()
 				setTest(data.test)
 			} catch (error) {
-				console.error('Error fetching test:', error)
 				toast.error(error.message || 'Failed to load test')
 				router.push('/panel/skill-personality-test')
 			}

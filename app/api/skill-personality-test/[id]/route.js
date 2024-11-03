@@ -116,7 +116,6 @@ export async function PATCH(request, { params }) {
 
 		return NextResponse.json({ test: response })
 	} catch (error) {
-		console.error('Error updating test:', error)
 		return NextResponse.json(
 			{ error: 'Failed to update test', details: error.message },
 			{ status: 500 }

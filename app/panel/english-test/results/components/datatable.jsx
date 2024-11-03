@@ -45,9 +45,6 @@ function useDebounce(value, delay) {
 }
 
 export function DataTable({ columns, data }) {
-	console.log('DataTable received data:', data) // Debug log
-	console.log('DataTable received columns:', columns) // Debug log
-
 	const [sorting, setSorting] = useState([])
 	const [globalFilter, setGlobalFilter] = useState('')
 	const [pagination, setPagination] = useState({

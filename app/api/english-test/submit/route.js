@@ -9,7 +9,6 @@ export const dynamic = 'force-dynamic'
 export async function POST(request) {
 	try {
 		const session = await getServerSession(authOptions)
-		console.log('Session:', JSON.stringify(session, null, 2))
 
 		if (!session) {
 			return NextResponse.json(

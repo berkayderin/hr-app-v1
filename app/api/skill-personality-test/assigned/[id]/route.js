@@ -31,7 +31,6 @@ export async function GET(request, { params }) {
 			})
 
 		if (!assignedTest) {
-			console.log('Test bulunamadı veya kullanıcıya atanmamış')
 			return NextResponse.json(
 				{ error: 'Test bulunamadı veya kullanıcıya atanmamış' },
 				{ status: 404 }

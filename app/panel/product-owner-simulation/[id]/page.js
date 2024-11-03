@@ -56,7 +56,6 @@ export default function SimulationPage({ params }) {
 
 	const handleTaskComplete = async (taskData) => {
 		try {
-			console.log('Sending task data:', taskData)
 			const res = await fetch(
 				`/api/product-owner-simulation/${params.id}/complete-task`,
 				{
@@ -68,14 +67,12 @@ export default function SimulationPage({ params }) {
 
 			if (!res.ok) {
 				const errorData = await res.json()
-				console.error('Server error:', errorData)
 				throw new Error(
 					`HTTP error! status: ${res.status}, message: ${errorData.error}`
 				)
 			}
 
 			const data = await res.json()
-			console.log('Received data:', data)
 
 			if (data.completed) {
 				router.push(
@@ -86,7 +83,6 @@ export default function SimulationPage({ params }) {
 				setCurrentTask(data.currentTask)
 			}
 		} catch (error) {
-			console.error('Error in handleTaskComplete:', error)
 			alert(`Bir hata oluştu: ${error.message}`)
 		}
 	}

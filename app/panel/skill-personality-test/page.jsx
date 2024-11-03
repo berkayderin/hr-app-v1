@@ -53,7 +53,6 @@ const DeleteTestButton = ({ testId, onDelete }) => {
 			toast.success('Test başarıyla silindi')
 			setOpen(false)
 		} catch (error) {
-			console.error('Error deleting test:', error)
 			toast.error('Test silinirken bir hata oluştu')
 		}
 	}

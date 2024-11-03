@@ -80,7 +80,6 @@ export default function CreateEnglishTestPage() {
 			toast.success('Test başarıyla oluşturuldu')
 			router.push('/panel/english-test')
 		} catch (error) {
-			console.error('Test oluşturma hatası:', error)
 			toast.error('Test oluşturulurken bir hata oluştu')
 		} finally {
 			setIsLoading(false)

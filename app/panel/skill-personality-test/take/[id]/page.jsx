@@ -46,19 +46,15 @@ export default function TakeSkillPersonalityTestPage() {
 
 	const fetchTest = useCallback(async () => {
 		try {
-			console.log('Fetching test with params.id:', params.id)
 			const response = await fetch(
 				`/api/skill-personality-test/assigned/${params.id}`
 			)
 			if (!response.ok) throw new Error('Failed to fetch test')
 			const data = await response.json()
-			console.log('Fetched test data:', data)
 			setTest(data.test)
 			setTimeRemaining(data.timeRemaining)
 			setAssignedTestId(data.id)
-			console.log('Set assignedTestId:', data.id)
 		} catch (error) {
-			console.error('Error fetching test:', error)
 			toast.error('Failed to load test')
 			router.push('/panel')
 		}
@@ -68,9 +64,7 @@ export default function TakeSkillPersonalityTestPage() {
 		fetchTest()
 	}, [fetchTest])
 
-	useEffect(() => {
-		console.log('Current assignedTestId:', assignedTestId)
-	}, [assignedTestId])
+	useEffect(() => {}, [assignedTestId])
 
 	useEffect(() => {
 		if (timeRemaining === null) return
@@ -99,16 +93,10 @@ export default function TakeSkillPersonalityTestPage() {
 	const handleSubmit = async () => {
 		setIsSubmitting(true)
 		try {
-			console.log(
-				'handleSubmit called. Current assignedTestId:',
-				assignedTestId
-			)
 			if (!assignedTestId) {
-				console.error('Test ID is not available:', assignedTestId)
 				throw new Error('Test ID is not available')
 			}
 			const payload = { testId: assignedTestId, answers }
-			console.log('Sending payload:', payload)
 
 			const response = await fetch(
 				'/api/skill-personality-test/submit',
@@ -120,7 +108,6 @@ export default function TakeSkillPersonalityTestPage() {
 			)
 
 			const result = await response.json()
-			console.log('Received response:', result)
 
 			if (!response.ok) {
 				throw new Error(
@@ -131,7 +118,6 @@ export default function TakeSkillPersonalityTestPage() {
 			toast.success('Test başarıyla gönderildi')
 			router.push('/panel/')
 		} catch (error) {
-			console.error('Test gönderme hatası:', error)
 			toast.error(
 				error.message || 'Test gönderilirken bir hata oluştu'
 			)
