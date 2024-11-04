@@ -143,9 +143,9 @@ export default function TakeEnglishTestPage() {
 		}
 	}
 
-	const question = test.questions[currentQuestion]
+	const question = test?.questions[currentQuestion]
 	const progress =
-		((currentQuestion + 1) / test.questions.length) * 100
+		((currentQuestion + 1) / test?.questions.length) * 100
 
 	if (isLoading)
 		return (
