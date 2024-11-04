@@ -175,21 +175,21 @@ const STEPS = [
 		title: '1. Test Oluşturma',
 		description:
 			'Yapay zeka ile role özel testler ve simülasyonlar oluşturun',
-		icon: <Target className="h-10 w-10 text-rose-900" />,
-		bgColor: 'bg-rose-50'
+		icon: <Target className="h-10 w-10 text-sky-900" />,
+		bgColor: 'bg-sky-50'
 	},
 	{
 		title: '2. Aday Değerlendirme',
 		description:
 			'Adaylara özel testler atayın ve süreçlerini takip edin',
-		icon: <Brain className="h-10 w-10 text-rose-900" />,
-		bgColor: 'bg-rose-50'
+		icon: <Brain className="h-10 w-10 text-sky-900" />,
+		bgColor: 'bg-sky-50'
 	},
 	{
 		title: '3. Sonuç Analizi',
 		description: 'AI destekli detaylı raporlar ve öneriler alın',
-		icon: <Sparkles className="h-10 w-10 text-rose-900" />,
-		bgColor: 'bg-rose-50'
+		icon: <Sparkles className="h-10 w-10 text-sky-900" />,
+		bgColor: 'bg-sky-50'
 	}
 ]
 

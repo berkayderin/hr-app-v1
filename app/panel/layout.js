@@ -184,8 +184,8 @@ function SidebarItem({ item, onClick, isNested = false }) {
 						className={cn(
 							'w-full justify-between',
 							active
-								? 'bg-rose-100 text-rose-700'
-								: 'text-gray-600 hover:bg-rose-50 hover:text-rose-600',
+								? 'bg-sky-100 text-sky-700'
+								: 'text-gray-600 hover:bg-sky-50 hover:text-sky-600',
 							isNested && 'pl-8'
 						)}
 					>
@@ -219,8 +219,8 @@ function SidebarItem({ item, onClick, isNested = false }) {
 			href={item.href}
 			onClick={onClick}
 			className={cn(
-				'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:bg-rose-50 hover:text-rose-600',
-				active ? 'bg-rose-100 text-rose-700' : 'text-gray-600',
+				'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:bg-sky-50 hover:text-sky-600',
+				active ? 'bg-sky-100 text-sky-700' : 'text-gray-600',
 				isNested && 'pl-8'
 			)}
 		>
@@ -233,10 +233,10 @@ function SidebarItem({ item, onClick, isNested = false }) {
 function Sidebar({ isMobile = false, setOpen, items }) {
 	return (
 		<div className="flex h-full flex-col">
-			<div className="flex h-14 items-center border-b border-rose-200 px-4">
+			<div className="flex h-14 items-center border-b border-sky-200 px-4">
 				<Link
 					href="/"
-					className="font-bold text-2xl bg-clip-text text-transparent bg-gradient-to-r from-rose-500 to-rose-700"
+					className="font-bold text-2xl bg-clip-text text-transparent bg-gradient-to-r from-sky-500 to-sky-700"
 				>
 					EVALTALENT
 				</Link>
@@ -254,10 +254,10 @@ function Sidebar({ isMobile = false, setOpen, items }) {
 				</div>
 			</ScrollArea>
 
-			<div className="border-t border-rose-200 p-4">
+			<div className="border-t border-sky-200 p-4">
 				<Button
 					variant="outline"
-					className="w-full justify-start text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+					className="w-full justify-start text-sky-600 hover:bg-sky-50 hover:text-sky-700"
 					onClick={() => signOut()}
 				>
 					<LogOut className="mr-2 h-4 w-4" />

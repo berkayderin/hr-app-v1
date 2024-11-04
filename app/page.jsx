@@ -44,10 +44,10 @@ export default function PanelHomePage() {
 							offset={-50}
 							className="group cursor-pointer flex items-center gap-2"
 						>
-							<span className="opacity-0 group-hover:opacity-100 transition-opacity bg-white text-sm text-rose-600 py-1 px-2 rounded-md shadow-sm whitespace-nowrap">
+							<span className="opacity-0 group-hover:opacity-100 transition-opacity bg-white text-sm text-sky-600 py-1 px-2 rounded-md shadow-sm whitespace-nowrap">
 								{section.label}
 							</span>
-							<div className="h-3 w-3 rounded-full bg-rose-200 group-hover:bg-rose-600 transition-all duration-300" />
+							<div className="h-3 w-3 rounded-full bg-sky-200 group-hover:bg-sky-600 transition-all duration-300" />
 						</ScrollLink>
 					))}
 				</div>
@@ -62,12 +62,12 @@ export default function PanelHomePage() {
 				className="relative flex size-fit items-center justify-center overflow-hidden rounded-lg border bg-background p-20"
 			>
 				<div className="flex flex-col items-center justify-center space-y-6 text-center">
-					<div className="bg-rose-100 text-rose-600 px-4 py-1 rounded-full text-base z-10 whitespace-pre-wrap text-center font-medium tracking-tighter">
+					<div className="bg-sky-100 text-sky-600 px-4 py-1 rounded-full text-base z-10 whitespace-pre-wrap text-center font-medium tracking-tighter">
 						YAPAY ZEKA DESTEKLİ
 					</div>
 					<p className="z-10 whitespace-pre-wrap text-center text-6xl font-medium tracking-tighter">
 						Yeni Nesil{' '}
-						<span className="text-rose-700">
+						<span className="text-sky-700">
 							Mülakat Değerlendirmesi
 						</span>
 					</p>
@@ -75,7 +75,7 @@ export default function PanelHomePage() {
 						Claude 3 yapay zeka ile güçlendirilmiş değerlendirme
 						sistemi. <br /> İngilizce yetkinlikten, kişilik analizine
 						ve role özel simülasyonlara kadar <br />
-						<span className="bg-rose-600 text-white px-2 py-1 rounded-md font-medium tracking-tighter">
+						<span className="bg-sky-600 text-white px-2 py-1 rounded-md font-medium tracking-tighter">
 							tüm süreçler tek platformda.
 						</span>
 					</p>
@@ -146,7 +146,7 @@ export default function PanelHomePage() {
 						{INTERVIEW_TYPES.map((type, index) => (
 							<Card key={index} className="p-6">
 								<div className="flex items-center mb-4">
-									<div className="p-2 rounded-full bg-rose-50 text-rose-700 mr-4">
+									<div className="p-2 rounded-full bg-sky-50 text-sky-700 mr-4">
 										{type.icon}
 									</div>
 									<h3 className="text-2xl font-bold">{type.title}</h3>
@@ -157,7 +157,7 @@ export default function PanelHomePage() {
 								<ul className="space-y-2">
 									{type.features.map((feature, i) => (
 										<li key={i} className="flex items-center">
-											<CheckCircle2 className="h-4 w-4 text-rose-600 mr-2" />
+											<CheckCircle2 className="h-4 w-4 text-sky-600 mr-2" />
 											<span className="text-base">{feature}</span>
 										</li>
 									))}
@@ -174,7 +174,7 @@ export default function PanelHomePage() {
 			>
 				<Card className="border-none">
 					<CardHeader className="text-center space-y-2 py-6">
-						<CardTitle className="text-base text-rose-700 font-mono font-medium tracking-tight">
+						<CardTitle className="text-base text-sky-700 font-mono font-medium tracking-tight">
 							SSS
 						</CardTitle>
 						<CardTitle className="text-5xl mb-2 text-balance max-w-3xl mx-auto tracking-tighter">
@@ -208,7 +208,7 @@ export default function PanelHomePage() {
 
 			<Element
 				name="cta"
-				className="max-w-5xl mx-auto w-full py-5 bg-rose-700 text-white rounded-xl mb-10"
+				className="max-w-5xl mx-auto w-full py-5 bg-sky-700 text-white rounded-xl mb-10"
 			>
 				<div className="px-4 md:px-6">
 					<div className="flex flex-col md:flex-row items-center justify-between">
@@ -218,12 +218,12 @@ export default function PanelHomePage() {
 								<br />
 								Mülakat Deneyimi
 							</h2>
-							<p className="text-xl text-rose-100 max-w-md">
+							<p className="text-xl text-sky-100 max-w-md">
 								Size özel demo ile tüm özellikleri keşfedin.
 							</p>
 						</div>
 						<div className="w-full md:w-auto">
-							<Button className="w-full text-lg rounded-md md:w-auto bg-white text-rose-700 hover:bg-rose-50 transition-colors hover:text-rose-800">
+							<Button className="w-full text-lg rounded-md md:w-auto bg-white text-sky-700 hover:bg-sky-50 transition-colors hover:text-sky-800">
 								Demo Talep Et
 							</Button>
 						</div>
