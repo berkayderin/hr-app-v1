@@ -205,31 +205,6 @@ export default function PanelHomePage() {
 					</CardContent>
 				</Card>
 			</Element>
-
-			<Element
-				name="cta"
-				className="max-w-5xl mx-auto w-full py-5 bg-sky-700 text-white rounded-xl mb-10"
-			>
-				<div className="px-4 md:px-6">
-					<div className="flex flex-col md:flex-row items-center justify-between">
-						<div className="mb-8 md:mb-0 text-center md:text-left">
-							<h2 className="text-4xl font-bold mb-4">
-								Yapay Zeka Destekli
-								<br />
-								Mülakat Deneyimi
-							</h2>
-							<p className="text-xl text-sky-100 max-w-md">
-								Size özel demo ile tüm özellikleri keşfedin.
-							</p>
-						</div>
-						<div className="w-full md:w-auto">
-							<Button className="w-full text-lg rounded-md md:w-auto bg-white text-sky-700 hover:bg-sky-50 transition-colors hover:text-sky-800">
-								Demo Talep Et
-							</Button>
-						</div>
-					</div>
-				</div>
-			</Element>
 		</div>
 	)
 }
