@@ -130,22 +130,6 @@ export default function PanelHomePage() {
 			</Element>
 
 			<Element
-				name="features"
-				className="max-w-5xl mx-auto py-5 md:py-20 w-full"
-			>
-				<div className="container px-4 md:px-0">
-					<h2 className="text-4xl font-bold text-center mb-12">
-						Platform Özellikleri
-					</h2>
-					<BentoGrid className="lg:grid-rows-3">
-						{FEATURES.map((feature) => (
-							<BentoCard key={feature.name} {...feature} />
-						))}
-					</BentoGrid>
-				</div>
-			</Element>
-
-			<Element
 				name="interview-types"
 				className="max-w-5xl mx-auto py-5 md:py-10 w-full"
 			>

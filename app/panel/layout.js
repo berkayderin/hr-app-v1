@@ -107,12 +107,6 @@ const allSidebarItems = [
 		roles: ['admin']
 	},
 	{
-		icon: FileText,
-		label: 'CV Değerlendirmeleri',
-		href: '/panel/cv-list',
-		roles: ['admin']
-	},
-	{
 		icon: User,
 		label: 'Hesap Ayarları',
 		href: '/panel/account',
@@ -166,7 +160,7 @@ export default function PanelLayout({ children }) {
 					<Sidebar isMobile setOpen={setOpen} items={sidebarItems} />
 				</SheetContent>
 			</Sheet>
-			<aside className="hidden w-[250px] flex-col border-r border-rose-200 bg-white lg:flex">
+			<aside className="hidden w-[250px] flex-col border-r lg:flex">
 				<Sidebar items={sidebarItems} />
 			</aside>
 			<main className="flex-1 overflow-y-auto p-8">{children}</main>

@@ -56,60 +56,6 @@ const FEATURES = [
 		)
 	},
 	{
-		Icon: FileText,
-		name: 'AI CV Değerlendirmesi',
-		description:
-			"Claude 3 yapay zeka ile CV'nizi analiz edin, profesyonel geri bildirimler ve geliştirme önerileri alın.",
-		href: '/',
-		cta: 'Detaylı Bilgi',
-		className:
-			'lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3',
-		background: (
-			<svg
-				className="absolute inset-0 w-full h-full opacity-30"
-				viewBox="0 0 100 100"
-			>
-				<rect
-					x="20"
-					y="10"
-					width="60"
-					height="80"
-					fill="none"
-					stroke="currentColor"
-					strokeWidth="0.3"
-					strokeDasharray="2"
-				/>
-				<line
-					x1="30"
-					y1="30"
-					x2="70"
-					y2="30"
-					stroke="currentColor"
-					strokeWidth="0.5"
-					strokeLinecap="round"
-				/>
-				<line
-					x1="30"
-					y1="45"
-					x2="60"
-					y2="45"
-					stroke="currentColor"
-					strokeWidth="0.5"
-					strokeLinecap="round"
-				/>
-				<line
-					x1="30"
-					y1="60"
-					x2="50"
-					y2="60"
-					stroke="currentColor"
-					strokeWidth="0.5"
-					strokeLinecap="round"
-				/>
-			</svg>
-		)
-	},
-	{
 		Icon: Globe,
 		name: 'İngilizce Dil Değerlendirmesi',
 		description:
@@ -281,17 +227,6 @@ const INTERVIEW_TYPES = [
 			'User Story yazımı',
 			'Kapsamlı performans analizi'
 		]
-	},
-	{
-		title: 'CV Değerlendirmesi',
-		icon: <FileText className="h-6 w-6" />,
-		description: 'Yapay zeka destekli profesyonel CV analizi',
-		features: [
-			'Detaylı CV incelemesi',
-			'Sektör trendlerine göre öneriler',
-			'Güçlü ve zayıf yönler analizi',
-			'Geliştirme tavsiyeleri'
-		]
 	}
 ]
 
@@ -315,11 +250,6 @@ const FAQS = [
 		question: 'Sonuçları nasıl değerlendirebilirim?',
 		answer:
 			'Her test sonrasında AI destekli detaylı bir rapor sunulur. Bu rapor, adayın performansını, güçlü yönlerini, gelişim alanlarını ve departman uyumluluk önerilerini içerir.'
-	},
-	{
-		question: 'CV değerlendirmesi nasıl çalışır?',
-		answer:
-			"Claude 3 AI modeli, CV'nizi profesyonel bir bakış açısıyla analiz eder. İş verenlerinin beklentileri ve modern CV trendlerini göz önünde bulundurarak detaylı geri bildirimler, güçlü yönler, gelişim alanları ve sektöre özel öneriler sunar."
 	}
 ]
 

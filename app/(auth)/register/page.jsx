@@ -10,15 +10,10 @@ import {
 	CardTitle
 } from '@/components/ui/card'
 import RegisterForm from '@/features/auth/components/RegisterForm'
-import SparklesText from '@/components/ui/sparkles-text'
 
 export default function RegisterPage() {
 	return (
 		<div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
-			<SparklesText
-				text="EvalTalent"
-				className="text-5xl font-bold my-5"
-			/>
 			<Card className="w-[350px]">
 				<CardHeader>
 					<CardTitle>Kayıt Ol</CardTitle>
