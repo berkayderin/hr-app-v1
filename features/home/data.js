@@ -94,9 +94,9 @@ const FEATURES = [
 	},
 	{
 		Icon: Target,
-		name: 'Product Owner Simülasyonu',
+		name: 'İş Simülasyonu',
 		description:
-			'Gerçek iş senaryolarıyla Product Owner rolü için interaktif değerlendirme ve yetkinlik ölçümü.',
+			'İş dünyasına özel, gerçek senaryolarla iş simülasyonları ve performans değerlendirme testleri.',
 		href: '/',
 		cta: 'Detaylı Bilgi',
 		className:
@@ -218,9 +218,10 @@ const INTERVIEW_TYPES = [
 		]
 	},
 	{
-		title: 'Product Owner Simülasyonu',
+		title: 'İş Simülasyonu',
 		icon: <Target className="h-6 w-6" />,
-		description: 'Gerçek senaryolarla Product Owner değerlendirmesi',
+		description:
+			'Gerçek iş senaryoları ve performans değerlendirme testleri',
 		features: [
 			'Takım toplantısı simülasyonu',
 			'Backlog önceliklendirme',
